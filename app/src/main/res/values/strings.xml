@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">UniTube</string>
+    <string name="Login">Login</string>
+    <string name="userName">username:</string>
+    <string name="password">password:</string>
+    <string name="restorePassword">forgot your password?:</string>
+    <string name="defaultText">complete here later</string>
+    <string name="forgot_your_password">Forgot your password?</string>
+    <string name="don_t_have_an_account_sign_up">Don\'t have an account? Sign up!</string>
+
 </resources>
