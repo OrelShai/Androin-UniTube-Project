@@ -14,5 +14,10 @@
     <string name="sign_up_title">Sign up</string>
     <string name="already_have_an_account_sign_in">Already have an account? Login!</string>
     <string name="logo">LOGO</string>
+    <string name="upload_photo">Upload Photo</string>
+    <string name="profile_photo">Profile Photo</string>
+    <string name="name_instruction">Must contain letters only</string>
+    <string name="user_name_instruction">Must contain letters and numbers only</string>
+    <string name="password_instructions">at least 8 characters, letters and numbers only.</string>
 
 </resources>

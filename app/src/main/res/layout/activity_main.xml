@@ -19,46 +19,119 @@
 
     <LinearLayout
         android:id="@+id/textBoxSignUpLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         style="@style/textBoxLayout"
-
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
 
+        <LinearLayout
+            android:id="@+id/uploadPhotoLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/uploadPhotoButton"
+                style="@style/my_Btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/upload_photo" />
+
+            <ImageView
+                android:id="@+id/profileImageView"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_margin="5dp"
+                android:contentDescription="@string/profile_photo" />
+
+        </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/SignUpFirstName"
+        style="@style/textBoxLayout">
 
         <EditText
-            android:id="@+id/FirstNameSignIn"
+            android:id="@+id/SignUpFirstNameEditText"
+            style="@style/editText"
+            android:autofillHints="firstname"
             android:hint="@string/first_name"
-            android:inputType="text"
-            style="@style/editText"/>
+            android:inputType="text" />
+
+        <TextView
+            android:id="@+id/firstNameHint"
+            android:text="@string/name_instruction"
+            style="@style/textBoxInstructions" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/SignUpLastName"
+        style="@style/textBoxLayout">
 
         <EditText
-            android:id="@+id/lastNameSignIn"
+            android:id="@+id/SignUpLastNameEditText"
+            style="@style/editText"
+            android:autofillHints="lastname"
             android:hint="@string/last_name"
-            android:inputType="text"
-            style="@style/editText"/>
+            android:inputType="text" />
+
+        <TextView
+            android:id="@+id/lastNameHint"
+            android:text="@string/name_instruction"
+            style="@style/textBoxInstructions" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/SignUpPassword"
+        style="@style/textBoxLayout">
 
         <EditText
-            android:id="@+id/passwordSignIn"
+            android:id="@+id/SignUpPasswordEditText"
+            style="@style/editText"
+            android:autofillHints="password"
             android:hint="@string/password"
-            android:inputType="textPassword"
-            style="@style/editText"/>
+            android:inputType="textPassword" />
+
+        <TextView
+            android:id="@+id/passwordHint"
+            android:text="@string/password_instructions"
+            style="@style/textBoxInstructions" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/SignUpReEnterPassword"
+        style="@style/textBoxLayout">
 
         <EditText
-            android:id="@+id/reEnterPasswordSignIn"
+            android:id="@+id/SignUpReEnterPasswordEditText"
+            style="@style/editText"
+            android:autofillHints="password"
             android:hint="@string/re_enter_password"
-            android:inputType="textPassword"
-            style="@style/editText"/>
+            android:inputType="textPassword" />
+
+        <TextView
+            android:id="@+id/reEnterPasswordHint"
+            android:text="@string/password_instructions"
+            style="@style/textBoxInstructions" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/SignUpUserName"
+        style="@style/textBoxLayout">
 
         <EditText
-            android:id="@+id/userNameSignIn"
+            android:id="@+id/SignUpUserNameEditText"
+            style="@style/editText"
+            android:autofillHints="username"
             android:hint="@string/user_name"
-            android:inputType="text"
-            style="@style/editText"/>
+            android:inputType="text" />
+
+        <TextView
+            android:id="@+id/userNameHint"
+            android:text="@string/user_name_instruction"
+            style="@style/textBoxInstructions" />
+    </LinearLayout>
 
     </LinearLayout>
 
@@ -81,11 +154,11 @@
 
     <ImageView
         android:id="@+id/signUpLogoImage"
+        style="@style/logoImage"
         android:contentDescription="@string/logo"
         app:layout_constraintBottom_toTopOf="@+id/signUpTitle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        style="@style/logoImage" />
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
