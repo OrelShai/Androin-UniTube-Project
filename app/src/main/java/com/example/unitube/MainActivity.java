@@ -10,14 +10,36 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import android.Manifest;
+import android.content.DialogInterface;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.net.Uri;
+import android.provider.MediaStore;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
+import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
+
 public class MainActivity extends Activity {
     private static final int PICK_IMAGE_REQUEST = 1;
+    private static final int CAPTURE_IMAGE_REQUEST = 2;
+
     private ImageView profileImageView;
     private EditText firstNameEditText;
     private EditText lastNameEditText;
     private EditText passwordEditText;
     private EditText reEnterPasswordEditText;
     private EditText userNameEditText;
+
+    // List of users and the current logged-in user
+    public static List<User> usersList = new LinkedList<>();
+    public static User currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,22 +67,92 @@ public class MainActivity extends Activity {
         Button signUpButton = findViewById(R.id.signUpButton);
 
         // Set click listener for upload photo button
-        uploadPhotoButton.setOnClickListener(v -> openImageChooser());
+        uploadPhotoButton.setOnClickListener(v -> showImagePickerOptions());
+
+        // Set default profile image if no image is selected
+        profileImageView.setImageResource(R.drawable.default_profile_image);
 
         // Set click listener for sign up button
         signUpButton.setOnClickListener(v -> {
             if (validateFields()) {
+                User user = new User(
+                        firstNameEditText.getText().toString(),
+                        lastNameEditText.getText().toString(),
+                        userNameEditText.getText().toString(),
+                        passwordEditText.getText().toString(),
+                        profileImageView.getTag() != null ? profileImageView.getTag().toString() : null);
+
+                // Add the user to the list and set as current user
+                usersList.add(user);
+
+                // show "Sign up successful" toast and move to sign-in page
                 Toast.makeText(this, "Sign up successful", Toast.LENGTH_SHORT).show();
+                Intent i  = new Intent(this, LoginScreen.class);
+                startActivity(i);
             }
         });
     }
 
-    private void openImageChooser() {
+    private void showImagePickerOptions() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Select Image Source");
+        builder.setItems(new CharSequence[]{"Choose from Gallery", "Take a Photo"},
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        switch (which) {
+                            case 0:
+                                pickImageFromGallery();
+                                break;
+                            case 1:
+                                captureImageFromCamera();
+                                break;
+                        }
+                    }
+                });
+        builder.show();
+    }
+
+    private void pickImageFromGallery() {
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(Intent.createChooser(intent, "Select Picture"),
-                PICK_IMAGE_REQUEST);
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
+    }
+
+    private void captureImageFromCamera() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, CAPTURE_IMAGE_REQUEST);
+        } else {
+            Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+                startActivityForResult(takePictureIntent, CAPTURE_IMAGE_REQUEST);
+            }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == RESULT_OK) {
+            if (requestCode == PICK_IMAGE_REQUEST && data != null && data.getData() != null) {
+                Uri imageUri = data.getData();
+                try {
+                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
+                    profileImageView.setImageBitmap(bitmap);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else if (requestCode == CAPTURE_IMAGE_REQUEST && data != null) {
+                Bundle extras = data.getExtras();
+                Bitmap imageBitmap = (Bitmap) extras.get("data");
+                profileImageView.setImageBitmap(imageBitmap);
+
+                // Set a default URI for captured image (you may adjust this as per your requirements)
+                profileImageView.setTag("default_image_uri");
+            }
+        }
     }
 
     private boolean validateFields() {
@@ -119,5 +211,18 @@ public class MainActivity extends Activity {
         }
 
         return isValid;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == CAPTURE_IMAGE_REQUEST) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                captureImageFromCamera();
+            } else {
+                Toast.makeText(this, "Camera and storage permissions are required to take a photo", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 }
