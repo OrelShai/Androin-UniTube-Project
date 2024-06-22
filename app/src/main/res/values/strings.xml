@@ -1,5 +1,24 @@
 <resources>
     <string name="app_name">UniTube</string>
+    <string name="Login">Login</string>
+    <string name="user_name">user name:</string>
+    <string name="first_name">First Name:</string>
+    <string name="last_name">Last Name:</string>
+    <string name="password">password:</string>
+    <string name="restore_password">forgot your password?:</string>
+    <string name="default_text">complete here later</string>
+    <string name="forgot_your_password">Forgot your password?</string>
+    <string name="don_t_have_an_account_sign_up">Don\'t have an account? Sign up!</string>
+    <string name="sign_up">Sign me up!</string>
+    <string name="re_enter_password">re-enter password</string>
+    <string name="sign_up_title">Sign up</string>
+    <string name="already_have_an_account_sign_in">Already have an account? Login!</string>
+    <string name="logo">LOGO</string>
+    <string name="upload_photo">Upload Photo</string>
+    <string name="profile_photo">Profile Photo</string>
+    <string name="name_instruction">Must contain letters only</string>
+    <string name="user_name_instruction">Must contain letters and numbers only</string>
+    <string name="password_instructions">at least 8 characters, letters and numbers only.</string>
     <string name="video_thumbnail">Video Thumbnail</string>
     <string name="add_to_playlist">add movie to playlist</string>
     <string name="logo_description">logo for UniTube</string>
