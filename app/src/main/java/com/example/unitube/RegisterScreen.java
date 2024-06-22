@@ -12,7 +12,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import android.Manifest;
-import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -34,7 +33,7 @@ import java.util.List;
  * the gallery or taking a new photo using the camera.
  * This activity also manages permission requests for camera and storage.
  */
-public class MainActivity extends Activity {
+public class RegisterScreen extends Activity {
     private static final int PICK_IMAGE_REQUEST = 1;
     private static final int CAPTURE_IMAGE_REQUEST = 2;
     private static final int CAMERA_PERMISSION_REQUEST = 100;
@@ -71,7 +70,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_register_screen);
 
         // Initialize UI components
         initializeUIComponents();
