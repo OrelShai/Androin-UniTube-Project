@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/linearLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center">
+
+
+    <TextView
+        android:id="@+id/loginTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/Login"
+        style="@style/headline"
+
+        app:layout_constraintBottom_toTopOf="@+id/textBoxLoginLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/loginLogoImage" />
+
+    <LinearLayout
+        android:id="@+id/textBoxLoginLayout"
+        android:gravity="center"
+        style="@style/textBoxLayout"
+
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <EditText
+            android:id="@+id/UserNameLoginTextBox"
+            android:autofillHints="username"
+            android:hint="@string/user_name"
+            android:inputType="text"
+            style="@style/editText" />
+
+        <EditText
+            android:id="@+id/passwordLoginTextBox"
+            android:autofillHints="password"
+            android:hint="@string/password"
+            android:inputType="textPassword"
+            style="@style/editText"/>
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/loginButton"
+        android:text="@string/Login"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textBoxLoginLayout"
+        style="@style/my_Btn" />
+
+    <TextView
+        android:id="@+id/DoNotHaveAnAccount"
+        android:text="@string/don_t_have_an_account_sign_up"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/loginButton"
+        style="@style/textViewLinks" />
+
+
+    <ImageView
+        android:id="@+id/loginLogoImage"
+        android:contentDescription="@string/logo"
+        app:layout_constraintBottom_toTopOf="@+id/loginTitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        style="@style/logoImage" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
