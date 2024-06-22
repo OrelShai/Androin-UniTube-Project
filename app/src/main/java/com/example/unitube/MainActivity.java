@@ -18,7 +18,7 @@ public class MainActivity extends Activity {
     private EditText passwordEditText;
     private EditText reEnterPasswordEditText;
     private EditText userNameEditText;
-
+//work
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
