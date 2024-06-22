@@ -3,12 +3,12 @@ plugins {
 }
 
 android {
-    namespace = "com.example.unitube"
+    namespace = "com.project.unitube"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.unitube"
-        minSdk = 24
+        applicationId = "com.project.unitube"
+        minSdk = 25
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -19,10 +19,7 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
     compileOptions {
@@ -32,7 +29,6 @@ android {
 }
 
 dependencies {
-
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
@@ -40,4 +36,7 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+
+    // Picasso dependency
+    //implementation("com.squareup.picasso:picasso:2.71828")
 }

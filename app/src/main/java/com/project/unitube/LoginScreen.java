@@ -1,4 +1,4 @@
-package com.example.unitube;
+package com.project.unitube;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -15,6 +15,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+
+import com.project.unitube.R;
 
 import java.util.List;
 
@@ -41,7 +43,7 @@ public class LoginScreen extends Activity {
 
             if (foundUser != null) {
                 // Set the currentUser reference to the found user
-                MainActivity.currentUser = foundUser;
+                RegisterScreen.currentUser = foundUser;
                 Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show();
                 // Navigate to another activity, e.g., user's dashboard
             } else {
@@ -59,9 +61,9 @@ public class LoginScreen extends Activity {
 
     private User findUser(String username, String password) {
         // Iterate through the usersList and find the user
-        List<User> usersList = MainActivity.usersList;
+        List<User> usersList = RegisterScreen.usersList;
         for (User user : usersList) {
-            if (user.getUsername().equals(username) && user.getPassword().equals(password)) {
+            if (user.getUserName().equals(username) && user.getPassword().equals(password)) {
                 return user;
             }
         }

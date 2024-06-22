@@ -1,4 +1,4 @@
-package com.example.unitube;
+package com.project.unitube;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -21,6 +21,9 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+
+import com.project.unitube.LoginScreen;
+import com.project.unitube.R;
 
 import java.io.IOException;
 import java.util.LinkedList;
@@ -286,8 +289,8 @@ public class RegisterScreen extends Activity {
         } else if (!password.matches("[a-zA-Z0-9]+")) {
             passwordEditText.setError("Password should contain only letters and numbers");
         } else if (password.length() < 8) {
-        passwordEditText.setError("Password must be at least 8 characters");
-        isValid = false;
+            passwordEditText.setError("Password must be at least 8 characters");
+            isValid = false;
         }
 
         // Check if re-enter password is empty or do not match password
@@ -325,7 +328,7 @@ public class RegisterScreen extends Activity {
     private Boolean isUsernameTaken(String username) {
         // Iterate through the usersList and find the user
         for (User user : usersList) {
-            if (user.getUsername().equals(username)) {
+            if (user.getUserName().equals(username)) {
                 return true;
             }
         }

@@ -19,5 +19,14 @@
     <string name="name_instruction">Must contain letters only</string>
     <string name="user_name_instruction">Must contain letters and numbers only</string>
     <string name="password_instructions">at least 8 characters, letters and numbers only.</string>
-
+    <string name="video_thumbnail">Video Thumbnail</string>
+    <string name="add_to_playlist">add movie to playlist</string>
+    <string name="logo_description">logo for UniTube</string>
+    <string name="menu_description">open menu icon</string>
+    <string name="search_hint">search in the app</string>
+    <string name="navigation_drawer_open">navigation drawer open</string>
+    <string name="navigation_drawer_close">navigation drawer close</string>
+    <string name="add_video">add new video</string>
+    <string name="toggle_mode">toggle mode</string>
+    <string name="home">home page</string>
 </resources>

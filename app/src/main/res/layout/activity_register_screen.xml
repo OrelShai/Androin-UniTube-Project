@@ -48,90 +48,90 @@
 
         </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/SignUpFirstName"
-        style="@style/textBoxLayout">
+        <LinearLayout
+            android:id="@+id/SignUpFirstName"
+            style="@style/textBoxLayout">
 
-        <EditText
-            android:id="@+id/SignUpFirstNameEditText"
-            style="@style/editText"
-            android:autofillHints="firstname"
-            android:hint="@string/first_name"
-            android:inputType="text" />
+            <EditText
+                android:id="@+id/SignUpFirstNameEditText"
+                style="@style/editText"
+                android:autofillHints="firstname"
+                android:hint="@string/first_name"
+                android:inputType="text" />
 
-        <TextView
-            android:id="@+id/firstNameHint"
-            android:text="@string/name_instruction"
-            style="@style/textBoxInstructions" />
-    </LinearLayout>
+            <TextView
+                android:id="@+id/firstNameHint"
+                android:text="@string/name_instruction"
+                style="@style/textBoxInstructions" />
+        </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/SignUpLastName"
-        style="@style/textBoxLayout">
+        <LinearLayout
+            android:id="@+id/SignUpLastName"
+            style="@style/textBoxLayout">
 
-        <EditText
-            android:id="@+id/SignUpLastNameEditText"
-            style="@style/editText"
-            android:autofillHints="lastname"
-            android:hint="@string/last_name"
-            android:inputType="text" />
+            <EditText
+                android:id="@+id/SignUpLastNameEditText"
+                style="@style/editText"
+                android:autofillHints="lastname"
+                android:hint="@string/last_name"
+                android:inputType="text" />
 
-        <TextView
-            android:id="@+id/lastNameHint"
-            android:text="@string/name_instruction"
-            style="@style/textBoxInstructions" />
-    </LinearLayout>
+            <TextView
+                android:id="@+id/lastNameHint"
+                android:text="@string/name_instruction"
+                style="@style/textBoxInstructions" />
+        </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/SignUpPassword"
-        style="@style/textBoxLayout">
+        <LinearLayout
+            android:id="@+id/SignUpPassword"
+            style="@style/textBoxLayout">
 
-        <EditText
-            android:id="@+id/SignUpPasswordEditText"
-            style="@style/editText"
-            android:autofillHints="password"
-            android:hint="@string/password"
-            android:inputType="textPassword" />
+            <EditText
+                android:id="@+id/SignUpPasswordEditText"
+                style="@style/editText"
+                android:autofillHints="password"
+                android:hint="@string/password"
+                android:inputType="textPassword" />
 
-        <TextView
-            android:id="@+id/passwordHint"
-            android:text="@string/password_instructions"
-            style="@style/textBoxInstructions" />
-    </LinearLayout>
+            <TextView
+                android:id="@+id/passwordHint"
+                android:text="@string/password_instructions"
+                style="@style/textBoxInstructions" />
+        </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/SignUpReEnterPassword"
-        style="@style/textBoxLayout">
+        <LinearLayout
+            android:id="@+id/SignUpReEnterPassword"
+            style="@style/textBoxLayout">
 
-        <EditText
-            android:id="@+id/SignUpReEnterPasswordEditText"
-            style="@style/editText"
-            android:autofillHints="password"
-            android:hint="@string/re_enter_password"
-            android:inputType="textPassword" />
+            <EditText
+                android:id="@+id/SignUpReEnterPasswordEditText"
+                style="@style/editText"
+                android:autofillHints="password"
+                android:hint="@string/re_enter_password"
+                android:inputType="textPassword" />
 
-        <TextView
-            android:id="@+id/reEnterPasswordHint"
-            android:text="@string/password_instructions"
-            style="@style/textBoxInstructions" />
-    </LinearLayout>
+            <TextView
+                android:id="@+id/reEnterPasswordHint"
+                android:text="@string/password_instructions"
+                style="@style/textBoxInstructions" />
+        </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/SignUpUserName"
-        style="@style/textBoxLayout">
+        <LinearLayout
+            android:id="@+id/SignUpUserName"
+            style="@style/textBoxLayout">
 
-        <EditText
-            android:id="@+id/SignUpUserNameEditText"
-            style="@style/editText"
-            android:autofillHints="username"
-            android:hint="@string/user_name"
-            android:inputType="text" />
+            <EditText
+                android:id="@+id/SignUpUserNameEditText"
+                style="@style/editText"
+                android:autofillHints="username"
+                android:hint="@string/user_name"
+                android:inputType="text" />
 
-        <TextView
-            android:id="@+id/userNameHint"
-            android:text="@string/user_name_instruction"
-            style="@style/textBoxInstructions" />
-    </LinearLayout>
+            <TextView
+                android:id="@+id/userNameHint"
+                android:text="@string/user_name_instruction"
+                style="@style/textBoxInstructions" />
+        </LinearLayout>
 
     </LinearLayout>
 
