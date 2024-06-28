@@ -45,7 +45,8 @@ public class LoginScreen extends Activity {
                 // Set the currentUser reference to the found user
                 RegisterScreen.currentUser = foundUser;
                 Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show();
-                // Navigate to another activity, e.g., user's dashboard
+                Intent intent = new Intent(this, MainActivity.class);
+                startActivity(intent);
             } else {
                 Toast.makeText(this, "Invalid username or password", Toast.LENGTH_SHORT).show();
             }
@@ -53,7 +54,7 @@ public class LoginScreen extends Activity {
 
         TextView alreadyHaveAccount = findViewById(R.id.DoNotHaveAnAccount);
         alreadyHaveAccount.setOnClickListener(v -> {
-            Intent i  = new Intent(this, MainActivity.class);
+            Intent i  = new Intent(this, RegisterScreen.class);
             startActivity(i);
         });
     }

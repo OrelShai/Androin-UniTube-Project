@@ -1,8 +1,11 @@
 package com.project.unitube;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
@@ -22,6 +25,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //Initializes the UI components. Binds the XML views to the corresponding Java objects.
+        initializeUIComponents();
+
+        //Sets up listeners for the buttons in the activity.
+        setUpListeners();
+    }
+
+    private void initializeUIComponents() {
         // Initialize Toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -47,7 +58,9 @@ public class MainActivity extends AppCompatActivity {
                 findViewById(R.id.button_home),
                 navigationView
         );
+    }
 
+    private void setUpListeners() {
         // Set up action_menu button to open the drawer
         findViewById(R.id.action_menu).setOnClickListener(view -> {
             if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
@@ -62,9 +75,18 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, "Add Video selected");
             // Handle add video action
         });
+
+        //Set click listener on sign out button to the login activity
+        LinearLayout signOutLinearLayout = findViewById(R.id.signOutLinearLayout);
+        signOutLinearLayout.setOnClickListener(view -> {
+            Intent intent = new Intent(MainActivity.this, LoginScreen.class);
+            startActivity(intent);
+        });
     }
 
-    @Override
+
+
+        @Override
     public void onBackPressed() {
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START);
