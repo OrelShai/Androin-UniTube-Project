@@ -122,8 +122,8 @@ public class RegisterScreen extends Activity {
                 User user = new User(
                         firstNameEditText.getText().toString(),
                         lastNameEditText.getText().toString(),
-                        userNameEditText.getText().toString(),
                         passwordEditText.getText().toString(),
+                        userNameEditText.getText().toString(),
                         profileImageView.getTag() != null ? profileImageView.getTag().toString() : null);
 
                 // Add the user to the list and set as current user

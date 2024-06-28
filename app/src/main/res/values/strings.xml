@@ -29,4 +29,7 @@
     <string name="add_video">add new video</string>
     <string name="toggle_mode">toggle mode</string>
     <string name="home">home page</string>
+    <string name="dark_mode_button">dark mode bottun</string>
+    <string name="sign_out_icon">Sign out icon</string>
+    <string name="sign_out">Sign Out</string>
 </resources>
