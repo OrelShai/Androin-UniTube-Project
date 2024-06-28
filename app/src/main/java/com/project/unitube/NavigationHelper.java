@@ -47,7 +47,7 @@ public class NavigationHelper implements NavigationView.OnNavigationItemSelected
     }
 
     private void setupSignOutButton(NavigationView navigationView) {
-        View signOutView = navigationView.getHeaderView(0).findViewById(R.id.icon_sign_out);
+        View signOutView = navigationView.getHeaderView(0).findViewById(R.id.icon_auth);
         if (signOutView != null) {
             signOutView.setOnClickListener(v -> {
                 Log.d(TAG, "Sign Out selected");

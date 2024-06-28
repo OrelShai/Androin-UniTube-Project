@@ -4,7 +4,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -58,7 +61,48 @@ public class MainActivity extends AppCompatActivity {
                 findViewById(R.id.button_home),
                 navigationView
         );
+
+        // Initialize the auth button (Sign In/Sign Out)
+        initializeAuthButton();
     }
+
+    private void initializeAuthButton() {
+        // Find the LinearLayout and its components
+        LinearLayout authLinearLayout = findViewById(R.id.authLinearLayout);
+        TextView authText = findViewById(R.id.text_auth);
+        ImageView authIcon = findViewById(R.id.icon_auth);
+
+        // Check if there is a logged in user
+        if (RegisterScreen.currentUser == null) {
+            // No user logged in, set to "Sign In"
+            authText.setText("Sign In");
+            authIcon.setImageResource(R.drawable.icon_sign_in); // Change icon if needed
+
+            authLinearLayout.setOnClickListener(view -> {
+                // Go to LoginScreen activity
+                Intent intent = new Intent(MainActivity.this, LoginScreen.class);
+                startActivity(intent);
+            });
+        } else {
+            // User is logged in, set to "Sign Out"
+            authText.setText("Sign Out");
+            authIcon.setImageResource(R.drawable.icon_sign_out); // Change icon if needed
+
+            authLinearLayout.setOnClickListener(view -> {
+                // Handle sign out and go to LoginScreen
+                Toast.makeText(this, "User signed out", Toast.LENGTH_SHORT).show();
+                RegisterScreen.currentUser = null;
+
+                // Navigate to LoginScreen after sign out
+                Intent intent = new Intent(MainActivity.this, LoginScreen.class);
+                startActivity(intent);
+            });
+        }
+    }
+
+
+
+
 
     private void setUpListeners() {
         // Set up action_menu button to open the drawer
@@ -74,13 +118,6 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.button_add_video).setOnClickListener(view -> {
             Log.d(TAG, "Add Video selected");
             // Handle add video action
-        });
-
-        //Set click listener on sign out button to the login activity
-        LinearLayout signOutLinearLayout = findViewById(R.id.signOutLinearLayout);
-        signOutLinearLayout.setOnClickListener(view -> {
-            Intent intent = new Intent(MainActivity.this, LoginScreen.class);
-            startActivity(intent);
         });
     }
 

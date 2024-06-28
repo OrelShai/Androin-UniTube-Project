@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/signOutLinearLayout"
+    android:id="@+id/authLinearLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
@@ -13,7 +13,7 @@
     android:focusable="true">
 
     <ImageView
-        android:id="@+id/icon_sign_out"
+        android:id="@+id/icon_auth"
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:contentDescription="@string/sign_out_icon"
@@ -22,7 +22,7 @@
         android:layout_marginEnd="8dp"/>
 
     <TextView
-        android:id="@+id/text_sign_out"
+        android:id="@+id/text_auth"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/sign_out"
