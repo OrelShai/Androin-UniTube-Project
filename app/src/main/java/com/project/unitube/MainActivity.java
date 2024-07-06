@@ -100,10 +100,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
-
-
-
     private void setUpListeners() {
         // Set up action_menu button to open the drawer
         findViewById(R.id.action_menu).setOnClickListener(view -> {

@@ -1,6 +1,7 @@
 package com.project.unitube;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -54,10 +55,25 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
             holder.uploaderProfileImage.setImageResource(R.drawable.placeholder_profile); // Fallback profile image
         }
 
+        // Handle more options button logic
         holder.moreOptionsButton.setOnClickListener(v -> {
             // Handle more options logic here
         });
+
+        // Set click listener on the whole item view to open VideoPlayActivity
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Create an Intent to start VideoPlayActivity
+                Intent intent = new Intent(context, VideoPlayActivity.class);
+                // Pass the video object to the activity
+                intent.putExtra("VIDEO", video);
+                // Start the activity
+                context.startActivity(intent);
+            }
+        });
     }
+
 
     @Override
     public int getItemCount() {

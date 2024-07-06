@@ -111,4 +111,13 @@ public class DataManager {
         }
         return null; // or throw an exception if user is not found
     }
+
+    public Video getVideoById(int videoId) {
+        for (Video video : videoList) {
+            if (video.getId() == videoId) {
+                return video;
+            }
+        }
+        return null;
+    }
 }

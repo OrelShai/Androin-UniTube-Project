@@ -1,12 +1,13 @@
 package com.project.unitube;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class Video {
+public class Video implements Serializable {
     private static int nextId = 1;
     private int id;
     private String title;
