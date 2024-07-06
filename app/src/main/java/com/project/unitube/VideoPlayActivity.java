@@ -47,24 +47,25 @@ public class VideoPlayActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // Show custom toast message for 2 seconds
-                LayoutInflater inflater = getLayoutInflater();
-                View layout = inflater.inflate(R.layout.custom_toast, (ViewGroup) findViewById(R.id.toast_layout_root));
+                showToast("Download...");
+            }
+        });
 
-                TextView toastText = layout.findViewById(R.id.toast_text);
-                toastText.setText("Download...");
+        // Initialize send button
+        View sendButton = findViewById(R.id.button_send);
+        ImageView sendIcon = sendButton.findViewById(R.id.button_icon);
+        TextView sendText = sendButton.findViewById(R.id.button_text);
 
-                final Toast toast = new Toast(getApplicationContext());
-                toast.setDuration(Toast.LENGTH_SHORT);
-                toast.setView(layout);
-                toast.show();
+        // Set icon and text for send button
+        sendIcon.setImageResource(R.drawable.ic_share); // Ensure you have an appropriate icon in the drawable folder
+        sendText.setText("share");
 
-                // Handler to remove the toast after 2 seconds
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        toast.cancel();
-                    }
-                }, 1500); // 1500 milliseconds = 1.5 seconds
+        // Set click listener for the send button
+        sendButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Show custom toast message for 2 seconds
+                showToast("share...");
             }
         });
 
@@ -76,6 +77,28 @@ public class VideoPlayActivity extends AppCompatActivity {
                 loadVideo(video);
             }
         }
+    }
+
+    private void showToast(String message) {
+        // Show custom toast message
+        LayoutInflater inflater = getLayoutInflater();
+        View layout = inflater.inflate(R.layout.custom_toast, findViewById(R.id.toast_layout_root));
+
+        TextView toastText = layout.findViewById(R.id.toast_text);
+        toastText.setText(message);
+
+        final Toast toast = new Toast(getApplicationContext());
+        toast.setDuration(Toast.LENGTH_SHORT);
+        toast.setView(layout);
+        toast.show();
+
+        // Handler to remove the toast after 2 seconds
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                toast.cancel();
+            }
+        }, 2000); // 2000 milliseconds = 2 seconds
     }
 
     private void loadVideo(Video video) {

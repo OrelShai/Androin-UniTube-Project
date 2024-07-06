@@ -12,5 +12,9 @@
         <include
             layout="@layout/button_layout"
             android:id="@+id/button_download" />
+
+        <include
+            layout="@layout/button_layout"
+            android:id="@+id/button_send" />
     </LinearLayout>
 </HorizontalScrollView>
