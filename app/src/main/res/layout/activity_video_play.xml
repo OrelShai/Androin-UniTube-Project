@@ -13,4 +13,5 @@
 
     <include
         layout="@layout/video_info" />
+    <include layout="@layout/video_buttons" />
 </LinearLayout>
