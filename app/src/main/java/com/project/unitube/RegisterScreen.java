@@ -394,4 +394,14 @@ public class RegisterScreen extends Activity {
         startActivity(intent);
     }
 
+    /**
+     * Checks if a user is currently logged in.
+     *
+     * @return true if a user is logged in, false otherwise.
+     */
+    public static boolean isUserLoggedIn() {
+        return currentUser != null;
+    }
+
+
 }

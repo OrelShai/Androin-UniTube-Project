@@ -21,5 +21,9 @@
         <include
             layout="@layout/button_layout"
             android:id="@+id/button_more" />
+
+        <include
+            layout="@layout/button_like_dislike" />
+
     </LinearLayout>
 </HorizontalScrollView>

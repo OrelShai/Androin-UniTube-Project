@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
@@ -22,6 +21,9 @@ public class VideoPlayActivity extends AppCompatActivity {
     private TextView descriptionTextView;
     private ImageView uploaderProfileImageView;
     private TextView uploaderNameTextView;
+    private LinearLayout likeButton;
+    private LinearLayout dislikeButton;
+    private Video currentVideo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +36,21 @@ public class VideoPlayActivity extends AppCompatActivity {
         descriptionTextView = findViewById(R.id.video_description);
         uploaderProfileImageView = findViewById(R.id.uploaderProfileImage);
         uploaderNameTextView = findViewById(R.id.uploaderName);
+
+        // Initialize like and dislike buttons
+        likeButton = findViewById(R.id.button_like);
+        dislikeButton = findViewById(R.id.button_dislike);
+
+        // Load video if intent contains video data
+        Intent intent = getIntent();
+        if (intent != null && intent.hasExtra("VIDEO")) {
+            Video video = (Video) intent.getSerializableExtra("VIDEO");
+            if (video != null) {
+                currentVideo = video;
+                loadVideo(video);
+                updateLikeDislikeCounts();
+            }
+        }
 
         // Initialize download button
         View downloadButton = findViewById(R.id.button_download);
@@ -87,15 +104,15 @@ public class VideoPlayActivity extends AppCompatActivity {
                 showPopupMenu(v);
             }
         });
+    }
 
-        // Load video if intent contains video data
-        Intent intent = getIntent();
-        if (intent != null && intent.hasExtra("VIDEO")) {
-            Video video = (Video) intent.getSerializableExtra("VIDEO");
-            if (video != null) {
-                loadVideo(video);
-            }
-        }
+    private void updateLikeDislikeCounts() {
+        // Update like and dislike counts
+        TextView likeCount = likeButton.findViewById(R.id.like_count);
+        TextView dislikeCount = dislikeButton.findViewById(R.id.dislike_count);
+
+        likeCount.setText(String.valueOf(currentVideo.getLikes()));
+        dislikeCount.setText(String.valueOf(currentVideo.getDislikes()));
     }
 
     private void showPopupMenu(View anchorView) {
@@ -186,18 +203,17 @@ public class VideoPlayActivity extends AppCompatActivity {
         } else {
             uploaderProfileImageView.setImageResource(R.drawable.placeholder_profile); // Fallback profile image
         }
+            // Construct the Uri for the video in the raw folder
+            int videoResourceId = getResources().getIdentifier(video.getUrl(), "raw", getPackageName());
+            Uri videoUri = Uri.parse("android.resource://" + getPackageName() + "/" + videoResourceId);
 
-        // Construct the Uri for the video in the raw folder
-        int videoResourceId = getResources().getIdentifier(video.getUrl(), "raw", getPackageName());
-        Uri videoUri = Uri.parse("android.resource://" + getPackageName() + "/" + videoResourceId);
+            // Set the video URI and start the video
+            videoView.setVideoURI(videoUri);
+            videoView.start();
+        }
 
-        // Set the video URI and start the video
-        videoView.setVideoURI(videoUri);
-        videoView.start();
+        private int dpToPx(int dp) {
+            float density = getResources().getDisplayMetrics().density;
+            return Math.round(dp * density);
+        }
     }
-
-    private int dpToPx(int dp) {
-        float density = getResources().getDisplayMetrics().density;
-        return Math.round(dp * density);
-    }
-}
