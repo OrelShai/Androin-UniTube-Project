@@ -4,14 +4,16 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import androidx.appcompat.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
+import androidx.appcompat.app.AppCompatActivity;
 
 public class VideoPlayActivity extends AppCompatActivity {
 
@@ -51,21 +53,38 @@ public class VideoPlayActivity extends AppCompatActivity {
             }
         });
 
-        // Initialize send button
-        View sendButton = findViewById(R.id.button_send);
-        ImageView sendIcon = sendButton.findViewById(R.id.button_icon);
-        TextView sendText = sendButton.findViewById(R.id.button_text);
+        // Initialize share button
+        View shareButton = findViewById(R.id.button_share);
+        ImageView shareIcon = shareButton.findViewById(R.id.button_icon);
+        TextView shareText = shareButton.findViewById(R.id.button_text);
 
-        // Set icon and text for send button
-        sendIcon.setImageResource(R.drawable.ic_share); // Ensure you have an appropriate icon in the drawable folder
-        sendText.setText("share");
+        // Set icon and text for share button
+        shareIcon.setImageResource(R.drawable.ic_share); // Ensure you have an appropriate icon in the drawable folder
+        shareText.setText("Share");
 
-        // Set click listener for the send button
-        sendButton.setOnClickListener(new View.OnClickListener() {
+        // Set click listener for the share button
+        shareButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // Show custom toast message for 2 seconds
-                showToast("share...");
+                showToast("Share...");
+            }
+        });
+
+        // Initialize more button
+        View moreButton = findViewById(R.id.button_more);
+        ImageView moreIcon = moreButton.findViewById(R.id.button_icon);
+        TextView moreText = moreButton.findViewById(R.id.button_text);
+
+        // Set icon and text for more button
+        moreIcon.setImageResource(R.drawable.ic_more); // Ensure you have an appropriate icon in the drawable folder
+        moreText.setText("More");
+
+        // Set click listener for the more button to show the popup menu
+        moreButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showPopupMenu(v);
             }
         });
 
@@ -77,6 +96,57 @@ public class VideoPlayActivity extends AppCompatActivity {
                 loadVideo(video);
             }
         }
+    }
+
+    private void showPopupMenu(View anchorView) {
+        // Inflate the popup menu layout
+        LayoutInflater inflater = getLayoutInflater();
+        View popupView = inflater.inflate(R.layout.editor_video_menu, null);
+
+        // Create the popup window
+        final PopupWindow popupWindow = new PopupWindow(popupView,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                true);
+
+        // Initialize edit and delete buttons
+        View editButton = popupView.findViewById(R.id.button_edit);
+        ImageView editIcon = editButton.findViewById(R.id.button_icon);
+        TextView editText = editButton.findViewById(R.id.button_text);
+        editIcon.setImageResource(R.drawable.ic_edit);
+        editIcon.setLayoutParams(new LinearLayout.LayoutParams(dpToPx(17), dpToPx(17)));
+        editIcon.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        editText.setText("    Edit");
+
+        View deleteButton = popupView.findViewById(R.id.button_delete);
+        ImageView deleteIcon = deleteButton.findViewById(R.id.button_icon);
+        TextView deleteText = deleteButton.findViewById(R.id.button_text);
+        deleteIcon.setImageResource(R.drawable.ic_delete);
+        deleteIcon.setLayoutParams(new LinearLayout.LayoutParams(dpToPx(17), dpToPx(17)));
+        deleteIcon.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        deleteText.setText("  Delete");
+
+        // Set click listeners for edit and delete buttons
+        editButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Handle edit action
+                showToast("Edit...");
+                popupWindow.dismiss();
+            }
+        });
+
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Handle delete action
+                showToast("Delete...");
+                popupWindow.dismiss();
+            }
+        });
+
+        // Show the popup window
+        popupWindow.showAsDropDown(anchorView, 0, 0);
     }
 
     private void showToast(String message) {
@@ -124,5 +194,10 @@ public class VideoPlayActivity extends AppCompatActivity {
         // Set the video URI and start the video
         videoView.setVideoURI(videoUri);
         videoView.start();
+    }
+
+    private int dpToPx(int dp) {
+        float density = getResources().getDisplayMetrics().density;
+        return Math.round(dp * density);
     }
 }
