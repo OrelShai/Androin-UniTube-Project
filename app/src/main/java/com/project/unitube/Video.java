@@ -160,4 +160,13 @@ public class Video implements Serializable {
     private String getCurrentDate() {
         return new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
     }
+
+
+    public boolean isLikedBy(String userName) {
+        return likesList.contains(userName);
+    }
+
+    public boolean isDislikedBy(String userName) {
+        return dislikesList.contains(userName);
+    }
 }

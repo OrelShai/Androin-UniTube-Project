@@ -23,6 +23,8 @@ public class VideoPlayActivity extends AppCompatActivity {
     private TextView uploaderNameTextView;
     private LinearLayout likeButton;
     private LinearLayout dislikeButton;
+    private TextView likeCountTextView;
+    private TextView dislikeCountTextView;
     private Video currentVideo;
 
     @Override
@@ -36,10 +38,10 @@ public class VideoPlayActivity extends AppCompatActivity {
         descriptionTextView = findViewById(R.id.video_description);
         uploaderProfileImageView = findViewById(R.id.uploaderProfileImage);
         uploaderNameTextView = findViewById(R.id.uploaderName);
-
-        // Initialize like and dislike buttons
         likeButton = findViewById(R.id.button_like);
         dislikeButton = findViewById(R.id.button_dislike);
+        likeCountTextView = findViewById(R.id.like_count);
+        dislikeCountTextView = findViewById(R.id.dislike_count);
 
         // Load video if intent contains video ID
         Intent intent = getIntent();
@@ -51,6 +53,26 @@ public class VideoPlayActivity extends AppCompatActivity {
                 updateLikeDislikeCounts();
             }
         }
+
+        // Set up like button listener
+        likeButton.setOnClickListener(v -> {
+            if (RegisterScreen.currentUser == null) {
+                showToast("You cannot like a video if you are not logged in.");
+            } else if (currentVideo != null) {
+                currentVideo.addLike(RegisterScreen.currentUser.getUserName());
+                updateLikeDislikeCounts();
+            }
+        });
+
+        // Set up dislike button listener
+        dislikeButton.setOnClickListener(v -> {
+            if (RegisterScreen.currentUser == null) {
+                showToast("You cannot dislike a video if you are not logged in.");
+            } else if (currentVideo != null) {
+                currentVideo.addDislike(RegisterScreen.currentUser.getUserName());
+                updateLikeDislikeCounts();
+            }
+        });
 
         // Initialize download button
         View downloadButton = findViewById(R.id.button_download);
@@ -108,11 +130,11 @@ public class VideoPlayActivity extends AppCompatActivity {
 
     private void updateLikeDislikeCounts() {
         // Update like and dislike counts
-        TextView likeCount = likeButton.findViewById(R.id.like_count);
-        TextView dislikeCount = dislikeButton.findViewById(R.id.dislike_count);
+        likeCountTextView = likeButton.findViewById(R.id.like_count);
+        dislikeCountTextView = dislikeButton.findViewById(R.id.dislike_count);
 
-        likeCount.setText(String.valueOf(currentVideo.getLikes()));
-        dislikeCount.setText(String.valueOf(currentVideo.getDislikes()));
+        likeCountTextView.setText(String.valueOf(currentVideo.getLikes()));
+        dislikeCountTextView.setText(String.valueOf(currentVideo.getDislikes()));
     }
 
     private void showPopupMenu(View anchorView) {
