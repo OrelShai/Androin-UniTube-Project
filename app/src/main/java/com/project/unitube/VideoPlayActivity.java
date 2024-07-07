@@ -41,13 +41,13 @@ public class VideoPlayActivity extends AppCompatActivity {
         likeButton = findViewById(R.id.button_like);
         dislikeButton = findViewById(R.id.button_dislike);
 
-        // Load video if intent contains video data
+        // Load video if intent contains video ID
         Intent intent = getIntent();
-        if (intent != null && intent.hasExtra("VIDEO")) {
-            Video video = (Video) intent.getSerializableExtra("VIDEO");
-            if (video != null) {
-                currentVideo = video;
-                loadVideo(video);
+        if (intent != null && intent.hasExtra("VIDEO_ID")) {
+            int videoId = intent.getIntExtra("VIDEO_ID", -1);
+            currentVideo = getVideoById(videoId);
+            if (currentVideo != null) {
+                loadVideo(currentVideo);
                 updateLikeDislikeCounts();
             }
         }
@@ -203,17 +203,27 @@ public class VideoPlayActivity extends AppCompatActivity {
         } else {
             uploaderProfileImageView.setImageResource(R.drawable.placeholder_profile); // Fallback profile image
         }
-            // Construct the Uri for the video in the raw folder
-            int videoResourceId = getResources().getIdentifier(video.getUrl(), "raw", getPackageName());
-            Uri videoUri = Uri.parse("android.resource://" + getPackageName() + "/" + videoResourceId);
 
-            // Set the video URI and start the video
-            videoView.setVideoURI(videoUri);
-            videoView.start();
-        }
+        // Construct the Uri for the video in the raw folder
+        int videoResourceId = getResources().getIdentifier(video.getUrl(), "raw", getPackageName());
+        Uri videoUri = Uri.parse("android.resource://" + getPackageName() + "/" + videoResourceId);
 
-        private int dpToPx(int dp) {
-            float density = getResources().getDisplayMetrics().density;
-            return Math.round(dp * density);
-        }
+        // Set the video URI and start the video
+        videoView.setVideoURI(videoUri);
+        videoView.start();
     }
+
+    private int dpToPx(int dp) {
+        float density = getResources().getDisplayMetrics().density;
+        return Math.round(dp * density);
+    }
+
+    private Video getVideoById(int videoId) {
+        for (Video video : Videos.videosList) {
+            if (video.getId() == videoId) {
+                return video;
+            }
+        }
+        return null; // or handle the case when video is not found
+    }
+}

@@ -2,9 +2,6 @@ package com.project.unitube;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,15 +10,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
 import java.util.List;
 
 public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHolder> {
     private Context context;
-    private List<Video> videoList;
 
-    public VideoAdapter(Context context, List<Video> videoList) {
+    public VideoAdapter(Context context) {
         this.context = context;
-        this.videoList = videoList;
     }
 
     @NonNull
@@ -33,7 +29,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
 
     @Override
     public void onBindViewHolder(@NonNull VideoViewHolder holder, int position) {
-        Video video = videoList.get(position);
+        Video video = Videos.videosList.get(position); // Using the global videos list
         holder.videoTitle.setText(video.getTitle());
         holder.videoUploader.setText(video.getUser().getUserName());
         holder.videoUploadDate.setText(video.getUploadDate());
@@ -66,18 +62,17 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
             public void onClick(View v) {
                 // Create an Intent to start VideoPlayActivity
                 Intent intent = new Intent(context, VideoPlayActivity.class);
-                // Pass the video object to the activity
-                intent.putExtra("VIDEO", video);
+                // Pass the video ID to the activity
+                intent.putExtra("VIDEO_ID", video.getId());
                 // Start the activity
                 context.startActivity(intent);
             }
         });
     }
 
-
     @Override
     public int getItemCount() {
-        return videoList.size();
+        return Videos.videosList.size(); // Using the global videos list size
     }
 
     public static class VideoViewHolder extends RecyclerView.ViewHolder {

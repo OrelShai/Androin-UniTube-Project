@@ -14,11 +14,10 @@ import java.util.Scanner;
 
 public class DataManager {
     private List<User> userList;
-    private List<Video> videoList;
 
     public DataManager(Context context) {
         userList = new ArrayList<>();
-        videoList = new ArrayList<>();
+        Videos.videosList = new ArrayList<>();
         parseUsers(context);
         parseVideos(context);
     }
@@ -28,7 +27,7 @@ public class DataManager {
     }
 
     public List<Video> getVideoList() {
-        return videoList;
+        return Videos.videosList;
     }
 
     private void parseUsers(Context context) {
@@ -75,7 +74,7 @@ public class DataManager {
 
                 Video video = new Video(title, description, url, thumbnailUrl, videoUploader, duration);
 
-                videoList.add(video);
+                Videos.videosList.add(video);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -113,7 +112,7 @@ public class DataManager {
     }
 
     public Video getVideoById(int videoId) {
-        for (Video video : videoList) {
+        for (Video video : Videos.videosList) {
             if (video.getId() == videoId) {
                 return video;
             }

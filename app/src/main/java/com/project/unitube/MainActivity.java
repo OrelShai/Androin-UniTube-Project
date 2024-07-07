@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.navigation.NavigationView;
 
@@ -22,16 +23,20 @@ public class MainActivity extends AppCompatActivity {
     private NavigationHelper navigationHelper;
     private DarkModeHelper darkModeHelper;
     private static final String TAG = "MainActivity";
+    private DataManager dataManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //Initializes the UI components. Binds the XML views to the corresponding Java objects.
+        // Initialize DataManager
+        dataManager = new DataManager(this);
+
+        // Initialize the UI components. Binds the XML views to the corresponding Java objects.
         initializeUIComponents();
 
-        //Sets up listeners for the buttons in the activity.
+        // Set up listeners for the buttons in the activity.
         setUpListeners();
     }
 
@@ -46,6 +51,11 @@ public class MainActivity extends AppCompatActivity {
 
         // Initialize RecyclerView
         RecyclerView videoRecyclerView = findViewById(R.id.videoRecyclerView);
+        videoRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        // Set the adapter for the RecyclerView using the global videos list
+        VideoAdapter videoAdapter = new VideoAdapter(this);
+        videoRecyclerView.setAdapter(videoAdapter);
 
         // Initialize NavigationHelper
         navigationHelper = new NavigationHelper(this, drawerLayout, videoRecyclerView);
@@ -72,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
         TextView authText = findViewById(R.id.text_auth);
         ImageView authIcon = findViewById(R.id.icon_auth);
 
-        // Check if there is a logged in user
+        // Check if there is a logged-in user
         if (RegisterScreen.currentUser == null) {
             // No user logged in, set to "Sign In"
             authText.setText("Sign In");
@@ -117,9 +127,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-
-
-        @Override
+    @Override
     public void onBackPressed() {
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START);

@@ -42,7 +42,7 @@ public class NavigationHelper implements NavigationView.OnNavigationItemSelected
         } else {
             Log.d(TAG, "Videos found: " + videoList.size());
         }
-        videoAdapter = new VideoAdapter(context, videoList);
+        videoAdapter = new VideoAdapter(context);
         videoRecyclerView.setAdapter(videoAdapter);
     }
 
