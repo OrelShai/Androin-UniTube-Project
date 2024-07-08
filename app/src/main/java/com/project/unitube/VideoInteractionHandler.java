@@ -17,6 +17,8 @@ public class VideoInteractionHandler {
     private LinearLayout dislikeButton;
     private TextView likeCountTextView;
     private TextView dislikeCountTextView;
+    private ImageView likeIcon;
+    private ImageView dislikeIcon;
 
     public VideoInteractionHandler(Context context, int videoId, LinearLayout likeButton, LinearLayout dislikeButton,
                                    TextView likeCountTextView, TextView dislikeCountTextView) {
@@ -26,9 +28,12 @@ public class VideoInteractionHandler {
         this.dislikeButton = dislikeButton;
         this.likeCountTextView = likeCountTextView;
         this.dislikeCountTextView = dislikeCountTextView;
+        this.likeIcon = likeButton.findViewById(R.id.icon_like);
+        this.dislikeIcon = dislikeButton.findViewById(R.id.icon_dislike);
 
         setupInteractionListeners();
         setupOtherButtons();
+        updateButtonIcons();
     }
 
     private Video getVideoById(int videoId) {
@@ -108,9 +113,25 @@ public class VideoInteractionHandler {
         moreButton.setOnClickListener(v -> showPopupMenu(v));
     }
 
+    private void updateButtonIcons() {
+        Video currentVideo = getVideoById(videoId);
+        if (currentVideo != null && RegisterScreen.currentUser != null) {
+            boolean isLiked = currentVideo.getLikesList().contains(RegisterScreen.currentUser.getUserName());
+            boolean isDisliked = currentVideo.getDislikesList().contains(RegisterScreen.currentUser.getUserName());
+
+            // Assuming you have appropriate icons for liked, unliked, disliked, and undisliked states
+            int likeIconRes = isLiked ? R.drawable.ic_liked : R.drawable.ic_like;
+            int dislikeIconRes = isDisliked ? R.drawable.ic_disliked : R.drawable.ic_dislike;
+
+            likeIcon.setImageResource(likeIconRes);
+            dislikeIcon.setImageResource(dislikeIconRes);
+        }
+    }
+
     private void updateLikeDislikeCounts(Video currentVideo) {
         likeCountTextView.setText(String.valueOf(currentVideo.getLikesList().size()));
         dislikeCountTextView.setText(String.valueOf(currentVideo.getDislikesList().size()));
+        updateButtonIcons(); // Update button icons
     }
 
     private void showPopupMenu(View anchorView) {
