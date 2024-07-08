@@ -21,6 +21,7 @@ public class VideoPlayActivity extends AppCompatActivity {
     private TextView likeCountTextView;
     private TextView dislikeCountTextView;
     private Video currentVideo;
+    private VideoContentManager videoContentManager;
 
     @SuppressLint("WrongViewCast")
     @Override
@@ -30,6 +31,9 @@ public class VideoPlayActivity extends AppCompatActivity {
 
         // Initialize views
         initializeViews();
+
+        // Initialize VideoContentManager
+        videoContentManager = new VideoContentManager(this, this);
 
         // Load video if intent contains video ID
         Intent intent = getIntent();
