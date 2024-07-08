@@ -1,5 +1,7 @@
 package com.project.unitube;
 
+import org.w3c.dom.Comment;
+
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -21,6 +23,7 @@ public class Video implements Serializable {
     private String duration;
     private List<String> likesList;
     private List<String> dislikesList;
+    private List<Comment> comments;
 
     // Constructor with thumbnailUrl
     public Video(String title, String description, String url, String thumbnailUrl, User user, String duration) {
@@ -168,5 +171,13 @@ public class Video implements Serializable {
 
     public boolean isDislikedBy(String userName) {
         return dislikesList.contains(userName);
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void addComment(Comment comment) {
+        comments.add(comment);
     }
 }

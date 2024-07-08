@@ -37,4 +37,5 @@
     <string name="video_title">Video Title</string>
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
+    <string name="close">comments close</string>
 </resources>
