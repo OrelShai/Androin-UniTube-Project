@@ -45,8 +45,7 @@ public class LoginScreen extends Activity {
                 // Set the currentUser reference to the found user
                 RegisterScreen.currentUser = foundUser;
                 Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(this, MainActivity.class);
-                startActivity(intent);
+                // back to the main activity
                 finish();
             } else {
                 Toast.makeText(this, "Invalid username or password", Toast.LENGTH_SHORT).show();

@@ -268,9 +268,8 @@ public class AddVideoScreen extends Activity {
             videosList.add(newVideoObject); // Add the video to the list
             Toast.makeText(this, "Video uploaded successfully", Toast.LENGTH_SHORT).show();
 
-            // Navigate to the main activity
-            Intent intent = new Intent(AddVideoScreen.this, MainActivity.class);
-            startActivity(intent);
+            // back to the main activity
+            finish();
         } catch (IOException e) {
             e.printStackTrace();
             Toast.makeText(this, "Error uploading video", Toast.LENGTH_SHORT).show();

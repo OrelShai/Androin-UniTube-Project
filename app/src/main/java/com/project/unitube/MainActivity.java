@@ -1,5 +1,7 @@
 package com.project.unitube;
 
+import static com.project.unitube.RegisterScreen.usersList;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -33,6 +35,13 @@ public class MainActivity extends AppCompatActivity {
 
         //Sets up listeners for the buttons in the activity.
         setUpListeners();
+
+        createAdminUser();
+    }
+
+    private void createAdminUser() {
+        // create admin user
+        usersList.add(new User("o", "s", "1", "os", null));
     }
 
     private void initializeUIComponents() {
@@ -99,6 +108,9 @@ public class MainActivity extends AppCompatActivity {
             });
         }
     }
+
+
+
 
 
     private void setUpListeners() {

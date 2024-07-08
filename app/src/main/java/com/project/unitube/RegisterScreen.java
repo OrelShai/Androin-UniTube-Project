@@ -123,8 +123,7 @@ public class RegisterScreen extends Activity {
 
                 // Show "Sign up successful" toast and move to sign-in page
                 Toast.makeText(this, "Sign up successful", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(this, LoginScreen.class);
-                startActivity(intent);
+                // back to the LoginScreen
                 finish();
             }
         });
