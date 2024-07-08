@@ -47,6 +47,7 @@ public class LoginScreen extends Activity {
                 Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(this, MainActivity.class);
                 startActivity(intent);
+                finish();
             } else {
                 Toast.makeText(this, "Invalid username or password", Toast.LENGTH_SHORT).show();
             }

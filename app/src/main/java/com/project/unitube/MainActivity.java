@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        DataManager.setData(this);
         //Initializes the UI components. Binds the XML views to the corresponding Java objects.
         initializeUIComponents();
 
@@ -101,9 +101,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
-
-
     private void setUpListeners() {
         // Set up action_menu button to open the drawer
         findViewById(R.id.action_menu).setOnClickListener(view -> {
@@ -114,10 +111,19 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
         // Initialize Bottom Navigation
         findViewById(R.id.button_add_video).setOnClickListener(view -> {
-            Log.d(TAG, "Add Video selected");
-            // Handle add video action
+            if (RegisterScreen.currentUser != null){
+                Log.d(TAG, "Add Video selected");
+                // Navigate to add video screen
+                Intent intent = new Intent(MainActivity.this, AddVideoScreen.class);
+                startActivity(intent);
+            } else {
+                Toast.makeText(this, "log in first", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(MainActivity.this, LoginScreen.class);
+                startActivity(intent);
+            }
         });
     }
 

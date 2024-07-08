@@ -1,5 +1,7 @@
 package com.project.unitube;
 
+import static com.project.unitube.Videos.videosList;
+
 import android.content.Context;
 import android.util.Log;
 import android.view.MenuItem;
@@ -18,14 +20,12 @@ public class NavigationHelper implements NavigationView.OnNavigationItemSelected
     private DrawerLayout drawerLayout;
     private RecyclerView videoRecyclerView;
     private VideoAdapter videoAdapter;
-    private DataManager dataManager;
     private static final String TAG = "NavigationHelper";
 
     public NavigationHelper(Context context, DrawerLayout drawerLayout, RecyclerView videoRecyclerView) {
         this.context = context;
         this.drawerLayout = drawerLayout;
         this.videoRecyclerView = videoRecyclerView;
-        this.dataManager = new DataManager(context);
     }
 
     public void initializeNavigation(NavigationView navigationView) {
@@ -36,13 +36,12 @@ public class NavigationHelper implements NavigationView.OnNavigationItemSelected
 
     private void setupRecyclerView() {
         videoRecyclerView.setLayoutManager(new LinearLayoutManager(context));
-        List<Video> videoList = dataManager.getVideoList();
-        if (videoList.isEmpty()) {
+        if (videosList.isEmpty()) {
             Log.d(TAG, "No videos found.");
         } else {
-            Log.d(TAG, "Videos found: " + videoList.size());
+            Log.d(TAG, "Videos found: " + videosList.size());
         }
-        videoAdapter = new VideoAdapter(context, videoList);
+        videoAdapter = new VideoAdapter(context);
         videoRecyclerView.setAdapter(videoAdapter);
     }
 
