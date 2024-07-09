@@ -3,6 +3,7 @@ package com.project.unitube;
 import android.app.Activity;
 import android.content.Context;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 public class VideoContentManager {
@@ -29,9 +30,9 @@ public class VideoContentManager {
         View commentLayout = activity.findViewById(R.id.comment_layout);
         commentLayout.setOnClickListener(v -> showExpandedComments());
 
-        // Click listener for expanded comments layout to go back to video content
-        View expandedCommentsView = expandedCommentsLayout.findViewById(R.id.expanded_comment_text);
-        expandedCommentsView.setOnClickListener(v -> showVideoContent());
+        // Click listener for close button in expanded comments layout
+        ImageView closeButton = expandedCommentsLayout.findViewById(R.id.close_button);
+        closeButton.setOnClickListener(v -> showVideoContent());
     }
 
     private void showExpandedComments() {
@@ -44,3 +45,4 @@ public class VideoContentManager {
         videoContentLayout.setVisibility(View.VISIBLE);
     }
 }
+

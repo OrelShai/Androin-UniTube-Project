@@ -1,13 +1,13 @@
 package com.project.unitube;
 
-import org.w3c.dom.Comment;
-
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+// Ensure this import is correct
+import com.project.unitube.Comment;
 
 public class Video implements Serializable {
     private static int nextId = 1;
@@ -39,6 +39,7 @@ public class Video implements Serializable {
         this.duration = duration;
         this.likesList = new ArrayList<>();
         this.dislikesList = new ArrayList<>();
+        this.comments = new ArrayList<>(); // Initialize the comments list
     }
 
     // Getters and Setters

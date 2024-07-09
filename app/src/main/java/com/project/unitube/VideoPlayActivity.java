@@ -22,6 +22,7 @@ public class VideoPlayActivity extends AppCompatActivity {
     private TextView dislikeCountTextView;
     private Video currentVideo;
     private VideoContentManager videoContentManager;
+    private TextView commentCountTextView;
 
     @SuppressLint("WrongViewCast")
     @Override
@@ -46,9 +47,8 @@ public class VideoPlayActivity extends AppCompatActivity {
                         uploaderNameTextView, uploaderProfileImageView);
                 videoLoader.loadVideo(currentVideo);
 
-                // Set initial like and dislike counts
-                likeCountTextView.setText(String.valueOf(currentVideo.getLikesList().size()));
-                dislikeCountTextView.setText(String.valueOf(currentVideo.getDislikesList().size()));
+                // Update the changed data display
+                videoDataUpdate(currentVideo);
 
                 // Handle user interactions using VideoInteractionHandler
                 new VideoInteractionHandler(this, videoId, likeButton, dislikeButton, likeCountTextView, dislikeCountTextView);
@@ -66,15 +66,35 @@ public class VideoPlayActivity extends AppCompatActivity {
         dislikeButton = findViewById(R.id.button_dislike);
         likeCountTextView = findViewById(R.id.like_count);
         dislikeCountTextView = findViewById(R.id.dislike_count);
+        commentCountTextView = findViewById(R.id.comment_count);
     }
 
-    // Implement getVideoById method
+    /**
+     * Retrieves the Video object with the specified ID from the list of videos.
+     *
+     * @param videoId The ID of the video to retrieve.
+     * @return The Video object with the matching ID, or null if not found.
+     */
     private Video getVideoById(int videoId) {
         for (Video video : Videos.videosList) {
             if (video.getId() == videoId) {
                 return video;
             }
         }
-        return null; // or handle the case when video is not found
+        return null; // Handle the case when video is not found
+    }
+
+    /**
+     * Updates the UI with the current video's dynamic data such as likes, dislikes, and comments count.
+     *
+     * @param currentVideo The video object containing the data to be displayed.
+     */
+    private void videoDataUpdate(Video currentVideo) {
+        // Set initial like and dislike counts
+        likeCountTextView.setText(String.valueOf(currentVideo.getLikesList().size()));
+        dislikeCountTextView.setText(String.valueOf(currentVideo.getDislikesList().size()));
+
+        // Set the text of the TextView to display the count in parentheses
+        commentCountTextView.setText("(" + currentVideo.getComments().size() + ")");
     }
 }
