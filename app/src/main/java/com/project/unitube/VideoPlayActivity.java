@@ -8,6 +8,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.VideoView;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 public class VideoPlayActivity extends AppCompatActivity {
 
@@ -23,6 +25,7 @@ public class VideoPlayActivity extends AppCompatActivity {
     private Video currentVideo;
     private VideoContentManager videoContentManager;
     private TextView commentCountTextView;
+    private RecyclerView commentsRecyclerView;
 
     @SuppressLint("WrongViewCast")
     @Override
@@ -67,6 +70,7 @@ public class VideoPlayActivity extends AppCompatActivity {
         likeCountTextView = findViewById(R.id.like_count);
         dislikeCountTextView = findViewById(R.id.dislike_count);
         commentCountTextView = findViewById(R.id.comment_count);
+        commentsRecyclerView = findViewById(R.id.comments_recycler_view);
     }
 
     /**
@@ -96,5 +100,10 @@ public class VideoPlayActivity extends AppCompatActivity {
 
         // Set the text of the TextView to display the count in parentheses
         commentCountTextView.setText("(" + currentVideo.getComments().size() + ")");
+
+        // Set up the RecyclerView for comments
+        commentsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        CommentAdapter commentAdapter = new CommentAdapter(this, currentVideo.getComments());
+        commentsRecyclerView.setAdapter(commentAdapter);
     }
 }
