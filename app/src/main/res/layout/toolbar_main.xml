@@ -22,7 +22,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             android:layout_marginEnd="8dp"
-            android:background="@drawable/icon_menu_background"
+            android:background="@drawable/rounded_background"
             android:padding="4dp">
 
             <ImageButton
