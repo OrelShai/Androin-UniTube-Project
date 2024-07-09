@@ -11,7 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class VideoPlayActivity extends AppCompatActivity {
+public class VideoPlayActivity extends AppCompatActivity implements CommentAdapter.CommentAdapterListener {
 
     private VideoView videoView;
     private TextView titleTextView;
@@ -103,7 +103,13 @@ public class VideoPlayActivity extends AppCompatActivity {
 
         // Set up the RecyclerView for comments
         commentsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        CommentAdapter commentAdapter = new CommentAdapter(this, currentVideo.getComments());
+        CommentAdapter commentAdapter = new CommentAdapter(this, currentVideo.getComments(), this);
         commentsRecyclerView.setAdapter(commentAdapter);
+    }
+
+    @Override
+    public void onCommentDeleted(int newCommentCount) {
+        // Update the comment count text view
+        commentCountTextView.setText("(" + newCommentCount + ")");
     }
 }
