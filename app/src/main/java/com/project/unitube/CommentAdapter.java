@@ -50,7 +50,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
         if (profileImageResourceId != 0) {
             holder.commentUserProfileImage.setImageResource(profileImageResourceId);
         } else {
-            holder.commentUserProfileImage.setImageResource(R.drawable.placeholder_profile); // Fallback profile image
+            holder.commentUserProfileImage.setImageResource(R.drawable.ic_profile_placeholder); // Fallback profile image
         }
 
         // Set up more options button logic

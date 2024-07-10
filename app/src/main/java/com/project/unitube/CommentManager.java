@@ -41,10 +41,10 @@ public class CommentManager {
             if (profileImageResourceId != 0) {
                 userProfileImageView.setImageResource(profileImageResourceId);
             } else {
-                userProfileImageView.setImageResource(R.drawable.placeholder_profile); // Fallback profile image
+                userProfileImageView.setImageResource(R.drawable.ic_profile_placeholder); // Fallback profile image
             }
         } else {
-            userProfileImageView.setImageResource(R.drawable.placeholder_profile); // Default image when not logged in
+            userProfileImageView.setImageResource(R.drawable.ic_profile_placeholder); // Default image when not logged in
         }
 
         uploadCommentButton.setOnClickListener(v -> {

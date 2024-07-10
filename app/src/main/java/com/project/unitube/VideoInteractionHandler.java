@@ -106,7 +106,7 @@ public class VideoInteractionHandler {
         TextView moreText = moreButton.findViewById(R.id.button_text);
 
         // Set icon and text for more button
-        moreIcon.setImageResource(R.drawable.ic_more); // Ensure you have an appropriate icon in the drawable folder
+        moreIcon.setImageResource(R.drawable.ic_more_vertical); // Ensure you have an appropriate icon in the drawable folder
         moreText.setText("More");
 
         // Set click listener for the more button to show the popup menu
@@ -150,16 +150,12 @@ public class VideoInteractionHandler {
         ImageView editIcon = editButton.findViewById(R.id.button_icon);
         TextView editText = editButton.findViewById(R.id.button_text);
         editIcon.setImageResource(R.drawable.ic_edit);
-        editIcon.setLayoutParams(new LinearLayout.LayoutParams(dpToPx(17), dpToPx(17)));
-        editIcon.setScaleType(ImageView.ScaleType.FIT_CENTER);
         editText.setText("    Edit");
 
         View deleteButton = popupView.findViewById(R.id.button_delete);
         ImageView deleteIcon = deleteButton.findViewById(R.id.button_icon);
         TextView deleteText = deleteButton.findViewById(R.id.button_text);
         deleteIcon.setImageResource(R.drawable.ic_delete);
-        deleteIcon.setLayoutParams(new LinearLayout.LayoutParams(dpToPx(17), dpToPx(17)));
-        deleteIcon.setScaleType(ImageView.ScaleType.FIT_CENTER);
         deleteText.setText("  Delete");
 
         // Set click listeners for edit and delete buttons
@@ -177,11 +173,6 @@ public class VideoInteractionHandler {
 
         // Show the popup window
         popupWindow.showAsDropDown(anchorView, 0, 0);
-    }
-
-    private int dpToPx(int dp) {
-        float density = context.getResources().getDisplayMetrics().density;
-        return Math.round(dp * density);
     }
 
     private void showToast(String message) {

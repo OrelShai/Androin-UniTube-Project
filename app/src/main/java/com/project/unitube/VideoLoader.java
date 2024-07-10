@@ -38,7 +38,7 @@ public class VideoLoader {
         if (profileImageResourceId != 0) {
             uploaderProfileImageView.setImageResource(profileImageResourceId);
         } else {
-            uploaderProfileImageView.setImageResource(R.drawable.placeholder_profile); // Fallback profile image
+            uploaderProfileImageView.setImageResource(R.drawable.ic_profile_placeholder); // Fallback profile image
         }
 
         // Construct the Uri for the video in the raw folder

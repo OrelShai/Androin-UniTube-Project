@@ -73,11 +73,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Initialize dark mode buttons
         darkModeHelper.initializeDarkModeButtons(
-                findViewById(R.id.button_toggle_mode),
-                findViewById(R.id.button_add_video),
-                findViewById(R.id.button_home),
-                navigationView
-        );
+                findViewById(R.id.button_toggle_mode));
 
         // Initialize the auth button (Sign In/Sign Out)
         initializeAuthButton();
@@ -88,15 +84,15 @@ public class MainActivity extends AppCompatActivity {
 
     private void initializeAuthButton() {
         // Find the LinearLayout and its components
-        LinearLayout authLinearLayout = findViewById(R.id.authLinearLayout);
-        TextView authText = findViewById(R.id.text_auth);
-        ImageView authIcon = findViewById(R.id.icon_auth);
+        LinearLayout authLinearLayout = findViewById(R.id.log_in_out_button_layout);
+        TextView authText = findViewById(R.id.text_log_in_out);
+        ImageView authIcon = findViewById(R.id.icon_log_in_out);
 
         // Check if there is a logged-in user
         if (RegisterScreen.currentUser == null) {
             // No user logged in, set to "Sign In"
             authText.setText("Sign In");
-            authIcon.setImageResource(R.drawable.icon_sign_in); // Change icon if needed
+            authIcon.setImageResource(R.drawable.ic_login); // Change icon if needed
 
             authLinearLayout.setOnClickListener(view -> {
                 // Go to LoginScreen activity
@@ -106,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
             // User is logged in, set to "Sign Out"
             authText.setText("Sign Out");
-            authIcon.setImageResource(R.drawable.icon_sign_out); // Change icon if needed
+            authIcon.setImageResource(R.drawable.ic_logout); // Change icon if needed
 
             authLinearLayout.setOnClickListener(view -> {
                 // Handle sign out and go to LoginScreen

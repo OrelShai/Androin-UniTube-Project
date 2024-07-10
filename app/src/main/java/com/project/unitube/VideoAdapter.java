@@ -38,7 +38,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
         if (thumbnailResourceId != 0) {
             holder.videoThumbnail.setImageResource(thumbnailResourceId);
         } else {
-            holder.videoThumbnail.setImageResource(R.drawable.placeholder_image); // Fallback image
+            holder.videoThumbnail.setImageResource(R.drawable.ic_video_placeholder); // Fallback image
         }
 
         // Load uploader profile image
@@ -46,7 +46,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
         if (profileImageResourceId != 0) {
             holder.uploaderProfileImage.setImageResource(profileImageResourceId);
         } else {
-            holder.uploaderProfileImage.setImageResource(R.drawable.placeholder_profile); // Fallback profile image
+            holder.uploaderProfileImage.setImageResource(R.drawable.ic_profile_placeholder); // Fallback profile image
         }
 
         // Handle more options button logic

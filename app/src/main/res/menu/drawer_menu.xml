@@ -6,22 +6,22 @@
         android:title="Your Account" />
     <item
         android:id="@+id/nav_home"
-        android:icon="@drawable/icon_home_dark"
+        android:icon="@drawable/ic_home"
         android:title="Home" />
     <item
         android:id="@+id/nav_history"
-        android:icon="@drawable/icon_history"
+        android:icon="@drawable/ic_history"
         android:title="History" />
     <item
         android:id="@+id/nav_playlists"
-        android:icon="@drawable/icon_playlists"
+        android:icon="@drawable/ic_playlist"
         android:title="Playlists" />
     <item
         android:id="@+id/nav_switch_account"
-        android:icon="@drawable/icon_switch_account"
+        android:icon="@drawable/ic_switch_account"
         android:title="Switch Account" />
     <item
         android:id="@+id/nav_setting"
-        android:icon="@drawable/icon_setting"
+        android:icon="@drawable/ic_setting"
         android:title="Setting" />
 </menu>
