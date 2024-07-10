@@ -167,10 +167,11 @@ public class MainActivity extends AppCompatActivity {
         if (query.isEmpty()) {
             Videos.videosToShow.addAll(Videos.videosList);
         } else {
+            String lowerCaseQuery = query.toLowerCase();
             for (Video video : Videos.videosList) {
-                if (video.getTitle().toLowerCase().contains(query.toLowerCase()) ||
-                        video.getDescription().toLowerCase().contains(query.toLowerCase()) ||
-                        video.getUser().getUserName().toLowerCase().contains(query.toLowerCase())) {
+                if (video.getTitle().toLowerCase().contains(lowerCaseQuery) ||
+                        video.getDescription().toLowerCase().contains(lowerCaseQuery) ||
+                        video.getUser().getUserName().toLowerCase().contains(lowerCaseQuery)) {
                     Videos.videosToShow.add(video);
                 }
             }
