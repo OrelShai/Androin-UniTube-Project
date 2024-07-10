@@ -3,6 +3,8 @@ package com.project.unitube;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -26,6 +28,11 @@ public class VideoPlayActivity extends AppCompatActivity implements CommentAdapt
     private VideoContentManager videoContentManager;
     private TextView commentCountTextView;
     private RecyclerView commentsRecyclerView;
+    private EditText commentEditText;
+    private ImageButton uploadCommentButton;
+    private ImageView userProfileImageView;
+    private CommentManager commentManager;
+    private RecyclerView recommendedVideosRecyclerView;
 
     @SuppressLint("WrongViewCast")
     @Override
@@ -55,6 +62,13 @@ public class VideoPlayActivity extends AppCompatActivity implements CommentAdapt
 
                 // Handle user interactions using VideoInteractionHandler
                 new VideoInteractionHandler(this, videoId, likeButton, dislikeButton, likeCountTextView, dislikeCountTextView);
+
+                // Initialize CommentManager
+                commentManager = new CommentManager(this, currentVideo, commentEditText, uploadCommentButton,
+                        (CommentAdapter) commentsRecyclerView.getAdapter(), currentVideo.getComments(), commentCountTextView, userProfileImageView);
+
+                // Initialize the recommended videos RecyclerView
+                initializeRecommendedVideos();
             }
         }
     }
@@ -71,6 +85,16 @@ public class VideoPlayActivity extends AppCompatActivity implements CommentAdapt
         dislikeCountTextView = findViewById(R.id.dislike_count);
         commentCountTextView = findViewById(R.id.comment_count);
         commentsRecyclerView = findViewById(R.id.comments_recycler_view);
+        commentEditText = findViewById(R.id.comment_edit_text);
+        uploadCommentButton = findViewById(R.id.upload_comment_button);
+        userProfileImageView = findViewById(R.id.comment_user_profile_image);
+        recommendedVideosRecyclerView = findViewById(R.id.recommended_videos_recycler_view);
+    }
+
+    private void initializeRecommendedVideos() {
+        recommendedVideosRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        VideoAdapter videoAdapter = new VideoAdapter(this);
+        recommendedVideosRecyclerView.setAdapter(videoAdapter);
     }
 
     /**

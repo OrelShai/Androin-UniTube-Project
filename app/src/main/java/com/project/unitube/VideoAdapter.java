@@ -57,16 +57,13 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
         });
 
         // Set click listener on the whole item view to open VideoPlayActivity
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Create an Intent to start VideoPlayActivity
-                Intent intent = new Intent(context, VideoPlayActivity.class);
-                // Pass the video ID to the activity
-                intent.putExtra("VIDEO_ID", video.getId());
-                // Start the activity
-                context.startActivity(intent);
-            }
+        holder.itemView.setOnClickListener(v -> {
+            // Create an Intent to start VideoPlayActivity
+            Intent intent = new Intent(context, VideoPlayActivity.class);
+            // Pass the video ID to the activity
+            intent.putExtra("VIDEO_ID", video.getId());
+            // Start the activity
+            context.startActivity(intent);
         });
     }
 

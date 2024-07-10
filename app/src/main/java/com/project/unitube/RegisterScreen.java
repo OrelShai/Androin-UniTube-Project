@@ -75,6 +75,9 @@ public class RegisterScreen extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register_screen);
 
+        // Initialize default users
+        initializeDefaultUsers();
+
         // Initialize UI components
         initializeUIComponents();
 
@@ -401,6 +404,20 @@ public class RegisterScreen extends Activity {
      */
     public static boolean isUserLoggedIn() {
         return currentUser != null;
+    }
+
+    // Initialize default users
+    private void initializeDefaultUsers() {
+        if (usersList.isEmpty()) {
+            User defaultUser = new User(
+                    "Michal", // First Name
+                    "Bledi",  // Last Name
+                    "325572303mb",  // Password
+                    "michalbledi", // Username
+                    "profile_pic_michal_bledi" // Profile Picture
+            );
+            usersList.add(defaultUser);
+        }
     }
 
 
