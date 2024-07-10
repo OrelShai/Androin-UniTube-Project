@@ -92,6 +92,12 @@ public class VideoPlayActivity extends AppCompatActivity implements CommentAdapt
     }
 
     private void initializeRecommendedVideos() {
+        Videos.videosToShow.clear();
+        for (Video video : Videos.videosList) {
+            if (video.getId() != currentVideo.getId()) {
+                Videos.videosToShow.add(video);
+            }
+        }
         recommendedVideosRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         VideoAdapter videoAdapter = new VideoAdapter(this);
         recommendedVideosRecyclerView.setAdapter(videoAdapter);

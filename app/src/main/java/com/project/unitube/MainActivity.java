@@ -38,6 +38,9 @@ public class MainActivity extends AppCompatActivity {
 
         // Set up listeners for the buttons in the activity.
         setUpListeners();
+
+        // Initialize VideosToShow with all videos
+        initializeVideosToShow();
     }
 
     private void initializeUIComponents() {
@@ -125,6 +128,11 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, "Add Video selected");
             // Handle add video action
         });
+    }
+
+    private void initializeVideosToShow() {
+        Videos.videosToShow.clear();
+        Videos.videosToShow.addAll(Videos.videosList);
     }
 
     @Override

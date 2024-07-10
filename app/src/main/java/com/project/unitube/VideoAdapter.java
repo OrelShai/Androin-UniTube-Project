@@ -11,8 +11,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.List;
-
 public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHolder> {
     private Context context;
 
@@ -29,7 +27,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
 
     @Override
     public void onBindViewHolder(@NonNull VideoViewHolder holder, int position) {
-        Video video = Videos.videosList.get(position); // Using the global videos list
+        Video video = Videos.videosToShow.get(position); // Using the filtered list
         holder.videoTitle.setText(video.getTitle());
         holder.videoUploader.setText(video.getUser().getUserName());
         holder.videoUploadDate.setText(video.getUploadDate());
@@ -69,7 +67,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
 
     @Override
     public int getItemCount() {
-        return Videos.videosList.size(); // Using the global videos list size
+        return Videos.videosToShow.size(); // Using the filtered list size
     }
 
     public static class VideoViewHolder extends RecyclerView.ViewHolder {
