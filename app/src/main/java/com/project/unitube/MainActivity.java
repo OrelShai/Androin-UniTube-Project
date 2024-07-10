@@ -2,7 +2,10 @@ package com.project.unitube;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -24,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
     private DarkModeHelper darkModeHelper;
     private static final String TAG = "MainActivity";
     private DataManager dataManager;
+    private VideoAdapter videoAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
         videoRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         // Set the adapter for the RecyclerView using the global videos list
-        VideoAdapter videoAdapter = new VideoAdapter(this);
+        videoAdapter = new VideoAdapter(this);
         videoRecyclerView.setAdapter(videoAdapter);
 
         // Initialize NavigationHelper
@@ -77,6 +81,9 @@ public class MainActivity extends AppCompatActivity {
 
         // Initialize the auth button (Sign In/Sign Out)
         initializeAuthButton();
+
+        // Initialize search functionality
+        initializeSearchFunctionality();
     }
 
     private void initializeAuthButton() {
@@ -133,6 +140,42 @@ public class MainActivity extends AppCompatActivity {
     private void initializeVideosToShow() {
         Videos.videosToShow.clear();
         Videos.videosToShow.addAll(Videos.videosList);
+    }
+
+    private void initializeSearchFunctionality() {
+        EditText searchBox = findViewById(R.id.search_box);
+        searchBox.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // Do nothing
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                filterVideos(s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                // Do nothing
+            }
+        });
+    }
+
+    private void filterVideos(String query) {
+        Videos.videosToShow.clear();
+        if (query.isEmpty()) {
+            Videos.videosToShow.addAll(Videos.videosList);
+        } else {
+            for (Video video : Videos.videosList) {
+                if (video.getTitle().toLowerCase().contains(query.toLowerCase()) ||
+                        video.getDescription().toLowerCase().contains(query.toLowerCase()) ||
+                        video.getUser().getUserName().toLowerCase().contains(query.toLowerCase())) {
+                    Videos.videosToShow.add(video);
+                }
+            }
+        }
+        videoAdapter.notifyDataSetChanged();
     }
 
     @Override
