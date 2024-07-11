@@ -1,5 +1,7 @@
 package com.project.unitube;
 
+import static com.project.unitube.Videos.videosList;
+
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -13,7 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHolder> {
     private Context context;
-
+  
     public VideoAdapter(Context context) {
         this.context = context;
     }
@@ -28,6 +30,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
     @Override
     public void onBindViewHolder(@NonNull VideoViewHolder holder, int position) {
         Video video = Videos.videosToShow.get(position); // Using the filtered list
+
         holder.videoTitle.setText(video.getTitle());
         holder.videoUploader.setText(video.getUser().getUserName());
         holder.videoUploadDate.setText(video.getUploadDate());

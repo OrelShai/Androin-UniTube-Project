@@ -3,7 +3,6 @@ package com.project.unitube;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.text.TextUtils;
 import android.widget.Button;
 import android.widget.EditText;
@@ -11,36 +10,24 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import android.Manifest;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.MediaStore;
-
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-
-import com.project.unitube.LoginScreen;
-import com.project.unitube.R;
 
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- * MainActivity handles the registration process for new users.
+ * RegisterScreen handles the registration process for new users.
  * It includes fields for first name, last name, username, and password,
  * and allows the user to upload a profile photo either by selecting from
  * the gallery or taking a new photo using the camera.
- * This activity also manages permission requests for camera and storage.
  */
 public class RegisterScreen extends Activity {
     private static final int PICK_IMAGE_REQUEST = 1;
     private static final int CAPTURE_IMAGE_REQUEST = 2;
-    private static final int CAMERA_PERMISSION_REQUEST = 100;
-
 
     private ImageView profileImageView;
     private EditText firstNameEditText;
@@ -84,6 +71,7 @@ public class RegisterScreen extends Activity {
         // Set up listeners for buttons
         setUpListeners();
     }
+
 
     /**
      * Initializes the UI components.
@@ -134,8 +122,8 @@ public class RegisterScreen extends Activity {
 
                 // Show "Sign up successful" toast and move to sign-in page
                 Toast.makeText(this, "Sign up successful", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(this, LoginScreen.class);
-                startActivity(intent);
+                // back to the LoginScreen
+                finish();
             }
         });
     }
@@ -154,9 +142,9 @@ public class RegisterScreen extends Activity {
                             pickImageFromGallery();
                             break;
                         case 1:
-                            if (checkCameraPermission()) {
-                                captureImageFromCamera();
-                            }
+                            //if (checkCameraPermission()) {
+                            captureImageFromCamera();
+                            //}
                             break;
                     }
                 });
@@ -174,30 +162,6 @@ public class RegisterScreen extends Activity {
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
     }
 
-    /**
-     * Checks if the app has the necessary permissions to use the camera and storage.
-     * If not, requests these permissions.
-     *
-     * @return true if the permissions are granted, false otherwise.
-     */
-    private boolean checkCameraPermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED ||
-                ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-
-            // Show an explanation to the user why you need the permission
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA) ||
-                    ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-
-                showPermissionExplanationDialog();
-            } else {
-                // Request the permissions
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, CAMERA_PERMISSION_REQUEST);
-            }
-            return false;
-        } else {
-            return true; // Permission already granted
-        }
-    }
 
     /**
      * Initiates an intent to capture an image using the camera.
@@ -207,21 +171,6 @@ public class RegisterScreen extends Activity {
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
             startActivityForResult(takePictureIntent, CAPTURE_IMAGE_REQUEST);
         }
-    }
-
-    /**
-     * Displays a dialog explaining why camera and storage permissions are needed.
-     * Provides an option to request these permissions again.
-     */
-    private void showPermissionExplanationDialog() {
-        new AlertDialog.Builder(this)
-                .setTitle("Camera Permission Needed")
-                .setMessage("This app needs the Camera and Storage permissions to take and save photos. Please grant them.")
-                .setPositiveButton("OK", (dialog, which) -> ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, CAMERA_PERMISSION_REQUEST))
-                .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
-                .create()
-                .show();
     }
 
     /**
@@ -337,7 +286,6 @@ public class RegisterScreen extends Activity {
         }
         return false; // User not found
     }
-
     /**
      * Handles the result of permission requests.
      * If camera permission is granted, allows capturing an image.
@@ -419,6 +367,4 @@ public class RegisterScreen extends Activity {
             usersList.add(defaultUser);
         }
     }
-
-
 }

@@ -29,7 +29,7 @@
             android:id="@+id/user_greeting"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="hello, user!"
+            android:text="@string/welcome_to_unitube"
             android:textColor="?attr/colorOnPrimary"
             android:textSize="24sp"
             android:layout_marginLeft="16dp"
