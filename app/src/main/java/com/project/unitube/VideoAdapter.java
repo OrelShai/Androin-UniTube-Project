@@ -3,9 +3,7 @@ package com.project.unitube;
 import static com.project.unitube.Videos.videosList;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,15 +12,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-import java.util.List;
 
 public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHolder> {
     private Context context;
-    //private List<Video> videoList;
-
+  
     public VideoAdapter(Context context) {
         this.context = context;
-        //this.videoList = videoList;
     }
 
     @NonNull
@@ -34,7 +29,8 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
 
     @Override
     public void onBindViewHolder(@NonNull VideoViewHolder holder, int position) {
-        Video video = videosList.get(position);
+        Video video = Videos.videosToShow.get(position); // Using the filtered list
+
         holder.videoTitle.setText(video.getTitle());
         holder.videoUploader.setText(video.getUser().getUserName());
         holder.videoUploadDate.setText(video.getUploadDate());
@@ -45,7 +41,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
         if (thumbnailResourceId != 0) {
             holder.videoThumbnail.setImageResource(thumbnailResourceId);
         } else {
-            holder.videoThumbnail.setImageResource(R.drawable.placeholder_image); // Fallback image
+            holder.videoThumbnail.setImageResource(R.drawable.ic_video_placeholder); // Fallback image
         }
 
         // Load uploader profile image
@@ -53,17 +49,28 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
         if (profileImageResourceId != 0) {
             holder.uploaderProfileImage.setImageResource(profileImageResourceId);
         } else {
-            holder.uploaderProfileImage.setImageResource(R.drawable.placeholder_profile); // Fallback profile image
+            holder.uploaderProfileImage.setImageResource(R.drawable.ic_profile_placeholder); // Fallback profile image
         }
 
+        // Handle more options button logic
         holder.moreOptionsButton.setOnClickListener(v -> {
             // Handle more options logic here
+        });
+
+        // Set click listener on the whole item view to open VideoPlayActivity
+        holder.itemView.setOnClickListener(v -> {
+            // Create an Intent to start VideoPlayActivity
+            Intent intent = new Intent(context, VideoPlayActivity.class);
+            // Pass the video ID to the activity
+            intent.putExtra("VIDEO_ID", video.getId());
+            // Start the activity
+            context.startActivity(intent);
         });
     }
 
     @Override
     public int getItemCount() {
-        return videosList.size();
+        return Videos.videosToShow.size(); // Using the filtered list size
     }
 
     public static class VideoViewHolder extends RecyclerView.ViewHolder {

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/log_in_out_button_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:background="@drawable/log_in_out_button"
+    android:padding="8dp"
+    android:layout_marginBottom="16dp"
+    android:clickable="true"
+    android:focusable="true">
+
+    <ImageView
+        android:id="@+id/icon_log_in_out"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:contentDescription="@string/sign_out_icon"
+        android:src="@drawable/ic_logout"
+        app:tint="@android:color/white"
+        android:layout_marginEnd="8dp"/>
+
+    <TextView
+        android:id="@+id/text_log_in_out"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/sign_out"
+        android:textColor="@android:color/white"
+        android:textSize="16sp"/>
+</LinearLayout>

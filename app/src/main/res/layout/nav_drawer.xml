@@ -23,7 +23,7 @@
             android:layout_height="0dp"
             android:layout_weight="1" />
 
-        <include layout="@layout/sign_out_item_layout" />
+        <include layout="@layout/log_in_out_button_layout" />
 
     </LinearLayout>
 

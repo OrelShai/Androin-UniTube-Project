@@ -37,6 +37,14 @@ dependencies {
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
 
-    // Picasso dependency
-    //implementation("com.squareup.picasso:picasso:2.71828")
+    // Room dependencies
+    implementation("androidx.room:room-runtime:2.3.0")
+    annotationProcessor("androidx.room:room-compiler:2.3.0")
+    // For Kotlin use kapt instead of annotationProcessor
+    // kapt("androidx.room:room-compiler:2.3.0")
+
+    // optional - Kotlin Extensions and Coroutines support for Room
+    implementation("androidx.room:room-ktx:2.3.0")
+    implementation("com.google.android.material:material:1.3.0")
+
 }

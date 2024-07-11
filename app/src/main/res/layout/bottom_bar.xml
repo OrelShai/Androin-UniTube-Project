@@ -1,4 +1,5 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/bottom_bar"
     android:layout_width="match_parent"
     android:layout_height="56dp"
@@ -17,10 +18,11 @@
             android:id="@+id/button_add_video"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:src="@drawable/icon_add_video_light"
+            android:src="@drawable/ic_add_video"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/add_video"
-            android:scaleType="fitCenter"/>
+            android:scaleType="fitCenter"
+            app:tint="?attr/colorOnPrimary"/>
     </FrameLayout>
 
     <FrameLayout
@@ -36,10 +38,11 @@
             android:id="@+id/button_home"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:src="@drawable/icon_home_light"
+            android:src="@drawable/ic_home"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/home"
-            android:scaleType="fitCenter"/>
+            android:scaleType="fitCenter"
+            app:tint="?attr/colorOnPrimary" />
     </FrameLayout>
 
     <FrameLayout
@@ -54,10 +57,11 @@
             android:id="@+id/button_toggle_mode"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:src="@drawable/icon_dark_mode"
+            android:src="@drawable/ic_dark_mode"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/toggle_mode"
-            android:scaleType="fitCenter"/>
+            android:scaleType="fitCenter"
+            app:tint="?attr/colorOnPrimary" />
     </FrameLayout>
 
 </LinearLayout>

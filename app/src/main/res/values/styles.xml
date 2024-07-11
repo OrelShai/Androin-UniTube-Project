@@ -43,7 +43,7 @@
     <style name="logoImage">
         <item name="android:layout_width">200dp</item>
         <item name="android:layout_height">60dp</item>
-        <item name="android:src">@drawable/uni_tube_logo</item>
+        <item name="android:src">@drawable/unitube_logo</item>
     </style>
 
     <style name="textBoxInstructions">
@@ -52,5 +52,4 @@
         <item name="android:textSize">11sp</item>
         <item name="android:textColor">@android:color/darker_gray</item>
     </style>
-
 </resources>

@@ -2,7 +2,7 @@
 <project version="4">
   <component name="deploymentTargetSelector">
     <selectionStates>
-      <SelectionState runConfigName="app">
+      <SelectionState runConfigName="YouTube">
         <option name="selectionMode" value="DROPDOWN" />
         <DropdownSelection timestamp="2024-07-10T17:58:52.439006300Z">
           <Target type="DEFAULT_BOOT">

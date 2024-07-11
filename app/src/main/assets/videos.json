@@ -1,17 +1,10 @@
 [
   {
-    "title": "Noa Kirel - Unicorn",
-    "description": "Official music video for 'Unicorn' by Noa Kirel.",
-    "url": "unicorn",
-    "thumbnailUrl": "unicorn",
-    "uploader": "Noa Kirel"
-  },
-  {
-    "title": "Noa Kirel - Pouch",
-    "description": "Official music video for 'Pouch' by Noa Kirel.",
-    "url": "pouch",
-    "thumbnailUrl": "pouch",
-    "uploader": "Noa Kirel"
+    "title": "Olivia Rodrigo - good 4 u",
+    "description": "Official music video for 'good 4 u' by Olivia Rodrigo.",
+    "url": "good_4_u",
+    "thumbnailUrl": "good_4_u",
+    "uploader": "Olivia Rodrigo"
   },
   {
     "title": "Noa Kirel - Please Don't Suck",
@@ -21,17 +14,52 @@
     "uploader": "Noa Kirel"
   },
   {
-    "title": "Noa Kirel - Million Dollar",
-    "description": "Official music video for 'Million Dollar' by Noa Kirel.",
-    "url": "million_dollar",
-    "thumbnailUrl": "million_dollar",
-    "uploader": "Noa Kirel"
+    "title": "Lizzy McAlpine - ceilings",
+    "description": "Official music video for 'ceilings' by Lizzy McAlpine.",
+    "url": "ceilings",
+    "thumbnailUrl": "ceilings",
+    "uploader": "Lizzy McAlpine"
+  },
+  {
+    "title": "Tate McRae - she's all i wanna be",
+    "description": "Official music video for 'she's all i wanna be' by Tate McRae.",
+    "url": "shes_all_i_wanna_be",
+    "thumbnailUrl": "shes_all_i_wanna_be",
+    "uploader": "Tate McRae"
   },
   {
     "title": "Noa Kirel - Drum",
     "description": "Official music video for 'Drum' by Noa Kirel.",
     "url": "drum",
     "thumbnailUrl": "drum",
+    "uploader": "Noa Kirel"
+  },
+  {
+    "title": "Noa Kirel - Provocativit",
+    "description": "Official music video for 'Provocativit' by Noa Kirel.",
+    "url": "provocativit",
+    "thumbnailUrl": "provocativit",
+    "uploader": "Noa Kirel"
+  },
+  {
+    "title": "Benson Boone - Beautiful Things",
+    "description": "Official music video for 'Beautiful Things' by Benson Boone.",
+    "url": "beautiful_things",
+    "thumbnailUrl": "beautiful_things",
+    "uploader": "Benson Boone"
+  },
+  {
+    "title": "Miley Cyrus - Angels Like You",
+    "description": "Official music video for 'Angels Like You' by Miley Cyrus.",
+    "url": "angels_like_you",
+    "thumbnailUrl": "angels_like_you",
+    "uploader": "Miley Cyrus"
+  },
+  {
+    "title": "Noa Kirel - Paamon",
+    "description": "Official music video for 'Paamon' by Noa Kirel.",
+    "url": "paamon",
+    "thumbnailUrl": "paamon",
     "uploader": "Noa Kirel"
   },
   {
@@ -42,10 +70,38 @@
     "uploader": "Noa Kirel"
   },
   {
-    "title": "Noa Kirel - Provocativit",
-    "description": "Official music video for 'Provocativit' by Noa Kirel.",
-    "url": "provocativit",
-    "thumbnailUrl": "provocativit",
+    "title": "Lionel Richie - All Night Long (All Night)",
+    "description": "Official music video for 'All Night Long (All Night)' by Lionel Richie.",
+    "url": "all_night_long",
+    "thumbnailUrl": "all_night_long",
+    "uploader": "Lionel Richie"
+  },
+  {
+    "title": "Noa Kirel - Unicorn",
+    "description": "Official music video for 'Unicorn' by Noa Kirel.",
+    "url": "unicorn",
+    "thumbnailUrl": "unicorn",
+    "uploader": "Noa Kirel"
+  },
+  {
+    "title": "The Cranberries - Linger",
+    "description": "Official music video for 'Linger' by The Cranberries.",
+    "url": "linger",
+    "thumbnailUrl": "linger",
+    "uploader": "The Cranberries"
+  },
+  {
+    "title": "Noa Kirel - Pouch",
+    "description": "Official music video for 'Pouch' by Noa Kirel.",
+    "url": "pouch",
+    "thumbnailUrl": "pouch",
+    "uploader": "Noa Kirel"
+  },
+  {
+    "title": "Noa Kirel - Million Dollar",
+    "description": "Official music video for 'Million Dollar' by Noa Kirel.",
+    "url": "million_dollar",
+    "thumbnailUrl": "million_dollar",
     "uploader": "Noa Kirel"
   },
   {
@@ -63,10 +119,10 @@
     "uploader": "Noa Kirel"
   },
   {
-    "title": "Noa Kirel - Paamon",
-    "description": "Official music video for 'Paamon' by Noa Kirel.",
-    "url": "paamon",
-    "thumbnailUrl": "paamon",
-    "uploader": "Noa Kirel"
+    "title": "The Neighbourhood - Sweater Weather",
+    "description": "Official music video for 'Sweater Weather' by The Neighbourhood.",
+    "url": "sweater_weather",
+    "thumbnailUrl": "sweater_weather",
+    "uploader": "The Neighbourhood"
   }
 ]

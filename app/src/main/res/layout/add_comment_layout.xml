@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:padding="4dp">
+
+    <!-- Profile Picture -->
+    <include
+        layout="@layout/round_comment_profile_image"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginEnd="8dp" />
+
+    <!-- Comment Box -->
+    <EditText
+        android:id="@+id/comment_edit_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:hint="Write a comment..."
+        android:background="@android:drawable/edit_text"
+        android:padding="2dp"
+        android:textColor="@android:color/black"
+        android:textSize="14sp"
+        android:layout_marginEnd="8dp"/>
+
+    <!-- Upload Button -->
+    <ImageButton
+        android:id="@+id/upload_comment_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_upload_comment"
+        android:contentDescription="Upload Comment" />
+</LinearLayout>

@@ -1,12 +1,15 @@
 package com.project.unitube;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+// Ensure this import is correct
+import com.project.unitube.Comment;
 
-public class Video {
+public class Video implements Serializable {
     private static int nextId = 1;
     private int id;
     private String title;
@@ -20,6 +23,7 @@ public class Video {
     private String duration;
     private List<String> likesList;
     private List<String> dislikesList;
+    private List<Comment> comments;
 
     // Constructor with thumbnailUrl
     public Video(String title, String description, String url, String thumbnailUrl, User user, String duration) {
@@ -35,6 +39,7 @@ public class Video {
         this.duration = duration;
         this.likesList = new ArrayList<>();
         this.dislikesList = new ArrayList<>();
+        this.comments = new ArrayList<>(); // Initialize the comments list
     }
 
     // Getters and Setters
@@ -158,5 +163,22 @@ public class Video {
 
     private String getCurrentDate() {
         return new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+    }
+
+
+    public boolean isLikedBy(String userName) {
+        return likesList.contains(userName);
+    }
+
+    public boolean isDislikedBy(String userName) {
+        return dislikesList.contains(userName);
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void addComment(Comment comment) {
+        comments.add(comment);
     }
 }

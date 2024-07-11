@@ -1,0 +1,21 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <VideoView
+        android:id="@+id/video_view"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:layout_gravity="center"
+        android:layout_marginBottom="0dp" />
+
+    <include
+        android:id="@+id/video_content_layout"
+        layout="@layout/video_content_layout" />
+
+    <include
+        android:id="@+id/expanded_comments_layout"
+        layout="@layout/expanded_comments_layout"
+        android:visibility="gone" />
+</LinearLayout>

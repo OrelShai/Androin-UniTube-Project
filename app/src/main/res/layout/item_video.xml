@@ -14,7 +14,11 @@
             android:id="@+id/videoThumbnail"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scaleType="centerCrop" />
+            android:scaleType="centerCrop"
+            android:background="@drawable/rounded_background"
+            android:clipToOutline="true" />
+
+
 
         <TextView
             android:id="@+id/videoDuration"
@@ -34,7 +38,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:paddingTop="8dp">
+        android:paddingTop="8dp"
+        android:gravity="center_vertical">
 
         <include
             layout="@layout/round_image" />
@@ -53,7 +58,7 @@
             android:layout_height="wrap_content"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="More options"
-            android:src="@drawable/ic_more_vert" />
+            android:src="@drawable/ic_more_vertical" />
     </LinearLayout>
 
     <LinearLayout

@@ -1,4 +1,4 @@
-<!-- res/drawable/button_background.xml -->
+<!-- res/drawable/button_video_background.xml -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!-- Button background -->

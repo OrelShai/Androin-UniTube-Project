@@ -3,11 +3,11 @@
     <color name="colorPrimary">#E1F5FE</color>
     <color name="colorPrimaryVariant">#0288D1</color>
     <color name="colorOnPrimary">#000000</color>
-    <color name="colorSecondary">#01579B</color>
+    <color name="colorSecondary">#858282</color>
     <color name="colorSecondaryVariant">#01579B</color>
     <color name="colorOnSecondary">#FFFFFF</color>
     <color name="colorBackground">#FFFFFF</color>
-    <color name="colorSurface">#E2E3F8</color>
+    <color name="colorSurface">#f2f2f2</color>
     <color name="colorOnSurface">#64728F</color>
 
     <!-- Dark Mode Colors -->
@@ -17,7 +17,7 @@
     <color name="colorSecondaryDark">#01579B</color>
     <color name="colorSecondaryVariantDark">#01579B</color>
     <color name="colorOnSecondaryDark">#CDCEE1</color>
-    <color name="colorBackgroundDark">#0A1F44</color>
+    <color name="colorBackgroundDark">#262626</color>
     <color name="colorSurfaceDark">#060F1C</color>
     <color name="colorOnSurfaceDark">#E2E3F8</color>
 
