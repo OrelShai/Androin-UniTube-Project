@@ -54,16 +54,13 @@ public class RegisterScreen extends Activity {
      * Initializes the UI components and sets up event listeners.
      *
      * @param savedInstanceState If the activity is being re-initialized after
-     * previously being shut down then this Bundle contains the data it most
-     * recently supplied in onSaveInstanceState(Bundle).
+     *                           previously being shut down then this Bundle contains the data it most
+     *                           recently supplied in onSaveInstanceState(Bundle).
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register_screen);
-
-        // Initialize default users
-        initializeDefaultUsers();
 
         // Initialize UI components
         initializeUIComponents();
@@ -178,8 +175,8 @@ public class RegisterScreen extends Activity {
      * Sets the selected or captured image as the profile photo.
      *
      * @param requestCode The request code identifying the intent
-     * @param resultCode The result code indicating success or failure
-     * @param data The data returned from the intent
+     * @param resultCode  The result code indicating success or failure
+     * @param data        The data returned from the intent
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -250,7 +247,7 @@ public class RegisterScreen extends Activity {
         if (TextUtils.isEmpty(reEnterPassword)) {
             reEnterPasswordEditText.setError("Re-entering password is required");
             isValid = false;
-        }   else if (!reEnterPassword.equals(password)) {
+        } else if (!reEnterPassword.equals(password)) {
             reEnterPasswordEditText.setError("Passwords do not match");
             isValid = false;
         }
@@ -285,86 +282,5 @@ public class RegisterScreen extends Activity {
             }
         }
         return false; // User not found
-    }
-    /**
-     * Handles the result of permission requests.
-     * If camera permission is granted, allows capturing an image.
-     * If denied, shows a dialog to navigate to app settings.
-     *
-     * @param requestCode The request code identifying the permission request
-     * @param permissions The requested permissions
-     * @param grantResults The grant results for the corresponding permissions
-     */
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        if (requestCode == CAMERA_PERMISSION_REQUEST) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Permission granted, proceed with capturing image
-                captureImageFromCamera();
-            } else {
-                // Permission denied
-                boolean showRationale = ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA);
-                if (!showRationale) {
-                    // User selected "Don't ask again"
-                    showSettingsDialog();
-                } else {
-                    // Permission denied without "Don't ask again"
-                    Toast.makeText(this, "Camera and storage permissions are required to take a photo", Toast.LENGTH_SHORT).show();
-                }
-            }
-        }
-    }
-
-
-    /**
-     * Displays a dialog to inform the user that permissions are needed and
-     * provides an option to navigate to the app's settings page.
-     */
-    private void showSettingsDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Need Permissions");
-        builder.setMessage("This app needs camera and storage permissions. You can grant them in app settings.");
-        builder.setPositiveButton("Go to Settings", (dialog, which) -> {
-            dialog.cancel();
-            openAppSettings();
-        });
-        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
-        builder.show();
-    }
-
-
-    /**
-     * Opens the app's settings page to allow the user to grant the required permissions.
-     */
-    private void openAppSettings() {
-        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-        Uri uri = Uri.fromParts("package", getPackageName(), null);
-        intent.setData(uri);
-        startActivity(intent);
-    }
-
-    /**
-     * Checks if a user is currently logged in.
-     *
-     * @return true if a user is logged in, false otherwise.
-     */
-    public static boolean isUserLoggedIn() {
-        return currentUser != null;
-    }
-
-    // Initialize default users
-    private void initializeDefaultUsers() {
-        if (usersList.isEmpty()) {
-            User defaultUser = new User(
-                    "Michal", // First Name
-                    "Bledi",  // Last Name
-                    "325572303mb",  // Password
-                    "michalbledi", // Username
-                    "profile_pic_michal_bledi" // Profile Picture
-            );
-            usersList.add(defaultUser);
-        }
     }
 }
