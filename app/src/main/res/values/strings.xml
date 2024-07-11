@@ -32,4 +32,12 @@
     <string name="dark_mode_button">dark mode bottun</string>
     <string name="sign_out_icon">Sign out icon</string>
     <string name="sign_out">Sign Out</string>
+    <string name="video_title">video title:</string>
+    <string name="video_description">video description:</string>
+    <string name="upload_video_cover">upload video\ncover</string>
+    <string name="upload_video">upload video</string>
+    <string name="add_video_button">Add Video</string>
+    <string name="video_uri">Video URI</string>
+    <string name="welcome_to_unitube">welcome to UniTube</string>
+    <string name="welcome">welcome</string>
 </resources>

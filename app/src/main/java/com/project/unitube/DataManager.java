@@ -1,5 +1,7 @@
 package com.project.unitube;
 
+import static com.project.unitube.Videos.videosList;
+
 import android.content.Context;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
@@ -11,14 +13,15 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import  com.project.unitube.Videos;
 
-public class DataManager {
-    private List<User> userList;
-    private List<Video> videoList;
+public abstract class DataManager {
+    private static List<User> userList;
+    //private List<Video> videoList;
 
-    public DataManager(Context context) {
+    public static void setData(Context context) {
         userList = new ArrayList<>();
-        videoList = new ArrayList<>();
+        //videosList = new ArrayList<>();
         parseUsers(context);
         parseVideos(context);
     }
@@ -28,10 +31,10 @@ public class DataManager {
     }
 
     public List<Video> getVideoList() {
-        return videoList;
+        return videosList;
     }
 
-    private void parseUsers(Context context) {
+    private static void parseUsers(Context context) {
         try {
             InputStream is = context.getAssets().open("profiles.json");
             Scanner scanner = new Scanner(is).useDelimiter("\\A");
@@ -55,7 +58,7 @@ public class DataManager {
         }
     }
 
-    private void parseVideos(Context context) {
+    private static void parseVideos(Context context) {
         try {
             InputStream is = context.getAssets().open("videos.json");
             Scanner scanner = new Scanner(is).useDelimiter("\\A");
@@ -75,14 +78,14 @@ public class DataManager {
 
                 Video video = new Video(title, description, url, thumbnailUrl, videoUploader, duration);
 
-                videoList.add(video);
+                videosList.add(video);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private String getVideoDuration(Context context, String url) {
+    private static String getVideoDuration(Context context, String url) {
         MediaMetadataRetriever retriever = new MediaMetadataRetriever();
         try {
             // Set the data source to the video file in the raw resource directory
@@ -103,7 +106,7 @@ public class DataManager {
         }
     }
 
-    private User getUserByUserName(String userName) {
+    private static User getUserByUserName(String userName) {
         for (User user : userList) {
             if (user.getUserName().equals(userName)) {
                 return user;

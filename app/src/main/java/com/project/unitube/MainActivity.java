@@ -1,9 +1,15 @@
 package com.project.unitube;
 
+import static com.project.unitube.RegisterScreen.currentUser;
+import static com.project.unitube.RegisterScreen.usersList;
+
 import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -16,6 +22,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.navigation.NavigationView;
 
+
 public class MainActivity extends AppCompatActivity {
 
     private DrawerLayout drawerLayout;
@@ -27,12 +34,19 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        DataManager.setData(this);
         //Initializes the UI components. Binds the XML views to the corresponding Java objects.
         initializeUIComponents();
 
         //Sets up listeners for the buttons in the activity.
         setUpListeners();
+
+        createAdminUser();
+    }
+
+    private void createAdminUser() {
+        // create admin user
+        usersList.add(new User("o", "s", "1", "os", null));
     }
 
     private void initializeUIComponents() {
@@ -63,23 +77,22 @@ public class MainActivity extends AppCompatActivity {
         );
 
         // Initialize the auth button (Sign In/Sign Out)
-        initializeAuthButton();
+        initLoginSignOutButton();
     }
 
-    private void initializeAuthButton() {
+    private void initLoginSignOutButton() {
         // Find the LinearLayout and its components
         LinearLayout authLinearLayout = findViewById(R.id.authLinearLayout);
         TextView authText = findViewById(R.id.text_auth);
         ImageView authIcon = findViewById(R.id.icon_auth);
 
         // Check if there is a logged in user
-        if (RegisterScreen.currentUser == null) {
+        if (currentUser == null) {
             // No user logged in, set to "Sign In"
             authText.setText("Sign In");
             authIcon.setImageResource(R.drawable.icon_sign_in); // Change icon if needed
 
             authLinearLayout.setOnClickListener(view -> {
-                // Go to LoginScreen activity
                 Intent intent = new Intent(MainActivity.this, LoginScreen.class);
                 startActivity(intent);
             });
@@ -91,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
             authLinearLayout.setOnClickListener(view -> {
                 // Handle sign out and go to LoginScreen
                 Toast.makeText(this, "User signed out", Toast.LENGTH_SHORT).show();
-                RegisterScreen.currentUser = null;
+                currentUser = null;
 
                 // Navigate to LoginScreen after sign out
                 Intent intent = new Intent(MainActivity.this, LoginScreen.class);
@@ -99,9 +112,6 @@ public class MainActivity extends AppCompatActivity {
             });
         }
     }
-
-
-
 
 
     private void setUpListeners() {
@@ -114,16 +124,43 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
         // Initialize Bottom Navigation
         findViewById(R.id.button_add_video).setOnClickListener(view -> {
-            Log.d(TAG, "Add Video selected");
-            // Handle add video action
+            if (currentUser != null) {
+                Log.d(TAG, "Add Video selected");
+                // Navigate to add video screen
+                Intent intent = new Intent(MainActivity.this, AddVideoScreen.class);
+                startActivity(intent);
+            } else {
+                Toast.makeText(this, "log in first", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(MainActivity.this, LoginScreen.class);
+                startActivity(intent);
+            }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        initLoginSignOutButton();
+        updateGreetingText();
+    }
+
+    private void updateGreetingText() {
+        TextView greetingText = findViewById(R.id.user_greeting);
+        ImageView greetingImage = findViewById(R.id.logo_image);
+
+        if (currentUser != null) {
+            // No user logged in, set to "Sign In"
+            String welcome = getString(R.string.welcome);
+            greetingText.setText(welcome + " " + currentUser.getFirstName().toString());
+        }
     }
 
 
 
-        @Override
+    @Override
     public void onBackPressed() {
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START);
@@ -131,4 +168,7 @@ public class MainActivity extends AppCompatActivity {
             super.onBackPressed();
         }
     }
+
+
+
 }

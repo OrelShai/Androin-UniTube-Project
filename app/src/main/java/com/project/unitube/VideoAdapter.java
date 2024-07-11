@@ -1,5 +1,7 @@
 package com.project.unitube;
 
+import static com.project.unitube.Videos.videosList;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -16,11 +18,11 @@ import java.util.List;
 
 public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHolder> {
     private Context context;
-    private List<Video> videoList;
+    //private List<Video> videoList;
 
-    public VideoAdapter(Context context, List<Video> videoList) {
+    public VideoAdapter(Context context) {
         this.context = context;
-        this.videoList = videoList;
+        //this.videoList = videoList;
     }
 
     @NonNull
@@ -32,7 +34,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
 
     @Override
     public void onBindViewHolder(@NonNull VideoViewHolder holder, int position) {
-        Video video = videoList.get(position);
+        Video video = videosList.get(position);
         holder.videoTitle.setText(video.getTitle());
         holder.videoUploader.setText(video.getUser().getUserName());
         holder.videoUploadDate.setText(video.getUploadDate());
@@ -61,7 +63,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
 
     @Override
     public int getItemCount() {
-        return videoList.size();
+        return videosList.size();
     }
 
     public static class VideoViewHolder extends RecyclerView.ViewHolder {
