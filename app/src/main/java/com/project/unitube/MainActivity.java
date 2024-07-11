@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
                 findViewById(R.id.button_toggle_mode));
 
         // Initialize the auth button (Sign In/Sign Out)
-        initializeAuthButton();
+        initLoginSignOutButton();
 
         // Initialize search functionality
         initializeSearchFunctionality();
