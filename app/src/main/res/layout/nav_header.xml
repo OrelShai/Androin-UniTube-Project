@@ -1,6 +1,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:paddingTop="16dp"
     android:paddingBottom="16dp"
@@ -20,7 +21,8 @@
             android:layout_height="48dp"
             android:src="@drawable/logo_image_light_mode"
             android:contentDescription="@string/app_name"
-            android:layout_gravity="center_vertical"/>
+            android:layout_gravity="center_vertical"
+            app:tint="?attr/colorOnPrimary"/>
 
         <!-- Text -->
         <TextView
@@ -38,6 +40,6 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@android:color/darker_gray"
+        android:tint="?attr/colorOnPrimary"
         android:layout_marginTop="16dp"/>
 </LinearLayout>
