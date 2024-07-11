@@ -19,6 +19,7 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.core.content.FileProvider;
@@ -34,6 +35,8 @@ import java.util.concurrent.TimeUnit;
 public class AddVideoScreen extends Activity {
     private EditText videoTitle;
     private EditText videoDescription;
+    private TextView videoUri;
+
     private Button uploadVideoCoverButton;
     private Button uploadVideoButton;
     private Button addVideoButton;
@@ -65,6 +68,7 @@ public class AddVideoScreen extends Activity {
         // Initialize EditTexts
         videoTitle = findViewById(R.id.videoTitle);
         videoDescription = findViewById(R.id.videoDescription);
+        videoUri = findViewById(R.id.videoUri);
 
         // Initialize Buttons
         uploadVideoCoverButton = findViewById(R.id.uploadVideoCoverButton);
@@ -73,19 +77,14 @@ public class AddVideoScreen extends Activity {
 
         // Initialize ImageViews
         uploadVideoCoverImage = findViewById(R.id.uploadVideoCoverImage);
-        ImageView uploadVideoImage = findViewById(R.id.uploadVideoImage);
     }
 
     private void setUpListeners() {
         // Set click listener for uploadVideoButton
-        uploadVideoButton.setOnClickListener(view -> {
-            showVideoPickerOptions();
-        });
+        uploadVideoButton.setOnClickListener(view -> showVideoPickerOptions());
 
         // Set click listener for uploadVideoCoverButton
-        uploadVideoCoverButton.setOnClickListener(view -> {
-            showImagePickerOptions();
-        });
+        uploadVideoCoverButton.setOnClickListener(view -> showImagePickerOptions());
 
         // Initialize Bottom Navigation
         addVideoButton.setOnClickListener(view -> {
@@ -224,10 +223,14 @@ public class AddVideoScreen extends Activity {
                 // Handle picked video from gallery
                 Toast.makeText(this, "Video picked from gallery", Toast.LENGTH_SHORT).show();
                 selectedVideoUri = data.getData(); // Store the video URI
+                videoUri.setText(selectedVideoUri.toString()); // Set video URI to EditText
+
             } else if (requestCode == CAPTURE_VIDEO_REQUEST && data != null && data.getData() != null) {
                 // Handle captured video from camera
                 Toast.makeText(this, "Video captured from camera", Toast.LENGTH_SHORT).show();
                 selectedVideoUri = data.getData(); // Store the video URI
+                videoUri.setText(selectedVideoUri.toString()); // Set video URI to EditText
+
             }
 
             if (requestCode == PICK_IMAGE_REQUEST && data != null && data.getData() != null) {
@@ -279,14 +282,14 @@ public class AddVideoScreen extends Activity {
     private boolean validateFields() {
         boolean isValid = true;
 
-        String Title = videoTitle.getText().toString();
-        if (TextUtils.isEmpty(Title)) {
-            videoTitle.setError("video title is required");
+        String title = videoTitle.getText().toString();
+        if (TextUtils.isEmpty(title)) {
+            videoTitle.setError("Video title is required");
             isValid = false;
         }
         String description = videoDescription.getText().toString();
         if (TextUtils.isEmpty(description)) {
-            videoDescription.setError("video description is required");
+            videoDescription.setError("Video description is required");
             isValid = false;
         }
         if (selectedVideoUri == null) {
@@ -345,7 +348,6 @@ public class AddVideoScreen extends Activity {
 
 
 }
-
 
 
 

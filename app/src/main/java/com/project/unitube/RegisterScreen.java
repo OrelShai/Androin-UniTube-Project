@@ -20,18 +20,14 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * MainActivity handles the registration process for new users.
+ * RegisterScreen handles the registration process for new users.
  * It includes fields for first name, last name, username, and password,
  * and allows the user to upload a profile photo either by selecting from
  * the gallery or taking a new photo using the camera.
- * This activity also manages permission requests for camera and storage.
  */
 public class RegisterScreen extends Activity {
     private static final int PICK_IMAGE_REQUEST = 1;
     private static final int CAPTURE_IMAGE_REQUEST = 2;
-
-    //private static final int CAMERA_PERMISSION_REQUEST = 100;
-
 
     private ImageView profileImageView;
     private EditText firstNameEditText;
@@ -144,7 +140,7 @@ public class RegisterScreen extends Activity {
                             break;
                         case 1:
                             //if (checkCameraPermission()) {
-                                captureImageFromCamera();
+                            captureImageFromCamera();
                             //}
                             break;
                     }
