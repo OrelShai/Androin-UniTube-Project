@@ -2,26 +2,26 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/nav_your_account"
-        android:icon="@drawable/icon_your_account"
-        android:title="Your Account" />
+        android:icon="@drawable/ic_profile_placeholder"
+        android:title="@string/your_account" />
     <item
         android:id="@+id/nav_home"
         android:icon="@drawable/ic_home"
-        android:title="Home" />
+        android:title="@string/home" />
     <item
         android:id="@+id/nav_history"
         android:icon="@drawable/ic_history"
-        android:title="History" />
+        android:title="@string/history" />
     <item
         android:id="@+id/nav_playlists"
         android:icon="@drawable/ic_playlist"
-        android:title="Playlists" />
+        android:title="@string/playlists" />
     <item
         android:id="@+id/nav_switch_account"
         android:icon="@drawable/ic_switch_account"
-        android:title="Switch Account" />
+        android:title="@string/switch_account" />
     <item
         android:id="@+id/nav_setting"
         android:icon="@drawable/ic_setting"
-        android:title="Setting" />
+        android:title="@string/setting" />
 </menu>

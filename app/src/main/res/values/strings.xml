@@ -38,4 +38,9 @@
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
     <string name="close">comments close</string>
+    <string name="your_account">Your Account</string>
+    <string name="history">History</string>
+    <string name="playlists">Playlists</string>
+    <string name="switch_account">Switch Account</string>
+    <string name="setting">Setting</string>
 </resources>
