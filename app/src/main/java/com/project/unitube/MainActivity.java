@@ -4,15 +4,11 @@ import static com.project.unitube.RegisterScreen.currentUser;
 import static com.project.unitube.RegisterScreen.usersList;
 
 import android.content.Intent;
-import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -26,8 +22,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.navigation.NavigationView;
 
-
 public class MainActivity extends AppCompatActivity {
+
+    private static final int ADD_VIDEO_REQUEST = 1; // Request code for adding a video
 
     private DrawerLayout drawerLayout;
     private NavigationHelper navigationHelper;
@@ -40,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         // Initialize DataManager
         dataManager = new DataManager(this);
 
@@ -51,11 +49,13 @@ public class MainActivity extends AppCompatActivity {
 
         // Initialize VideosToShow with all videos
         initializeVideosToShow();
+
+        // Add an admin user for testing
         createAdminUser();
     }
 
     private void createAdminUser() {
-        // create admin user
+        // Create admin user
         usersList.add(new User("o", "s", "1", "os", null));
     }
 
@@ -85,14 +85,14 @@ public class MainActivity extends AppCompatActivity {
 
         // Initialize dark mode buttons
         darkModeHelper.initializeDarkModeButtons(
-                findViewById(R.id.button_toggle_mode));
+                findViewById(R.id.button_toggle_mode)
+        );
 
         // Initialize the auth button (Sign In/Sign Out)
         initLoginSignOutButton();
 
         // Initialize search functionality
         initializeSearchFunctionality();
-        initLoginSignOutButton();
     }
 
     private void initLoginSignOutButton() {
@@ -138,16 +138,15 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
         // Initialize Bottom Navigation
         findViewById(R.id.button_add_video).setOnClickListener(view -> {
             if (currentUser != null) {
                 Log.d(TAG, "Add Video selected");
                 // Navigate to add video screen
                 Intent intent = new Intent(MainActivity.this, AddVideoScreen.class);
-                startActivity(intent);
+                startActivityForResult(intent, ADD_VIDEO_REQUEST); // Start AddVideoScreen with request code
             } else {
-                Toast.makeText(this, "log in first", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Log in first", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(MainActivity.this, LoginScreen.class);
                 startActivity(intent);
             }
@@ -195,11 +194,14 @@ public class MainActivity extends AppCompatActivity {
         }
         videoAdapter.notifyDataSetChanged();
     }
+
     @Override
     protected void onResume() {
         super.onResume();
         initLoginSignOutButton();
         updateGreetingText();
+        initializeVideosToShow(); // Ensure the videos list is updated
+        videoAdapter.notifyDataSetChanged(); // Refresh the adapter
     }
 
     private void updateGreetingText() {
@@ -212,6 +214,7 @@ public class MainActivity extends AppCompatActivity {
             greetingText.setText(welcome + " " + currentUser.getFirstName().toString());
         }
     }
+
     @Override
     public void onBackPressed() {
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
@@ -221,6 +224,13 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
-
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == ADD_VIDEO_REQUEST && resultCode == RESULT_OK) {
+            // Refresh the video list when a new video is added
+            initializeVideosToShow();
+            videoAdapter.notifyDataSetChanged();
+        }
+    }
 }
