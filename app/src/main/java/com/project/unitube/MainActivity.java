@@ -2,7 +2,9 @@ package com.project.unitube;
 
 import static com.project.unitube.RegisterScreen.currentUser;
 import static com.project.unitube.RegisterScreen.usersList;
+import static com.project.unitube.VideoInteractionHandler.updateDate;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -60,6 +62,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initializeUIComponents() {
+
+        if (updateDate) {
+            updateDate = false;
+            onResume();
+        }
         // Initialize Toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);

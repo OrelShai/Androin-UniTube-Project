@@ -238,10 +238,15 @@ public class VideoPlayActivity extends AppCompatActivity implements CommentAdapt
         }
     }
 
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
         handler.removeCallbacks(updateProgressAction);
     }
+
+    public void updateVideoDetails(Video video) {
+        titleTextView.setText(video.getTitle());
+        descriptionTextView.setText(video.getDescription());
+    }
+
 }
