@@ -26,27 +26,34 @@ public class VideoLoader {
     }
 
     public void loadVideo(Video video) {
-        // Set the video title and description
         titleTextView.setText(video.getTitle());
         descriptionTextView.setText(video.getDescription());
-
-        // Set the uploader name and last name
         uploaderNameTextView.setText(video.getUser().getFirstName() + " " + video.getUser().getLastName());
-
-        // Load uploader profile image
         int profileImageResourceId = context.getResources().getIdentifier(video.getUser().getProfilePicture(), "drawable", context.getPackageName());
         if (profileImageResourceId != 0) {
             uploaderProfileImageView.setImageResource(profileImageResourceId);
         } else {
-            uploaderProfileImageView.setImageResource(R.drawable.ic_profile_placeholder); // Fallback profile image
+            uploaderProfileImageView.setImageResource(R.drawable.ic_profile_placeholder);
         }
-
-        // Construct the Uri for the video in the raw folder
         int videoResourceId = context.getResources().getIdentifier(video.getUrl(), "raw", context.getPackageName());
         Uri videoUri = Uri.parse("android.resource://" + context.getPackageName() + "/" + videoResourceId);
-
-        // Set the video URI and start the video
         videoView.setVideoURI(videoUri);
-        videoView.start();
+
+        videoView.setOnPreparedListener(mp -> {
+            int videoWidth = mp.getVideoWidth();
+            int videoHeight = mp.getVideoHeight();
+            adjustVideoViewDimensions(videoWidth, videoHeight);
+            videoView.start();
+        });
+    }
+
+    private void adjustVideoViewDimensions(int videoWidth, int videoHeight) {
+        float videoProportion = (float) videoWidth / (float) videoHeight;
+        int screenWidth = context.getResources().getDisplayMetrics().widthPixels;
+        int videoViewHeight = (int) (screenWidth / videoProportion);
+
+        videoView.getLayoutParams().width = screenWidth;
+        videoView.getLayoutParams().height = videoViewHeight;
+        videoView.requestLayout();
     }
 }

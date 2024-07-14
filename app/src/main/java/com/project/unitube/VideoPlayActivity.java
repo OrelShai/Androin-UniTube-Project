@@ -3,7 +3,14 @@ package com.project.unitube;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.util.Log;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -12,6 +19,7 @@ import android.widget.VideoView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import android.view.ViewGroup.LayoutParams;
 
 public class VideoPlayActivity extends AppCompatActivity implements CommentAdapter.CommentAdapterListener {
 
@@ -33,6 +41,16 @@ public class VideoPlayActivity extends AppCompatActivity implements CommentAdapt
     private ImageView userProfileImageView;
     private CommentManager commentManager;
     private RecyclerView recommendedVideosRecyclerView;
+    private VideoController videoController;
+    private ImageButton playPauseButton;
+    private TextView timeIndicator;
+    private View progressPlayed;
+    private View progressIndicator;
+
+    private static final String TAG = "VideoPlayActivity";
+
+    private Handler handler = new Handler();
+    private Runnable updateProgressAction;
 
     @SuppressLint("WrongViewCast")
     @Override
@@ -45,6 +63,9 @@ public class VideoPlayActivity extends AppCompatActivity implements CommentAdapt
 
         // Initialize VideoContentManager
         videoContentManager = new VideoContentManager(this, this);
+
+        // Initialize VideoController
+        videoController = new VideoController(this, videoView, playPauseButton);
 
         // Load video if intent contains video ID
         Intent intent = getIntent();
@@ -69,6 +90,16 @@ public class VideoPlayActivity extends AppCompatActivity implements CommentAdapt
 
                 // Initialize the recommended videos RecyclerView
                 initializeRecommendedVideos();
+
+                // Update progress bar and time indicator
+                updateProgressAction = new Runnable() {
+                    @Override
+                    public void run() {
+                        updateProgress();
+                        handler.postDelayed(this, 1000);
+                    }
+                };
+                handler.post(updateProgressAction);
             }
         }
     }
@@ -89,6 +120,10 @@ public class VideoPlayActivity extends AppCompatActivity implements CommentAdapt
         uploadCommentButton = findViewById(R.id.upload_comment_button);
         userProfileImageView = findViewById(R.id.comment_user_profile_image);
         recommendedVideosRecyclerView = findViewById(R.id.recommended_videos_recycler_view);
+        playPauseButton = findViewById(R.id.play_pause_button);
+        timeIndicator = findViewById(R.id.time_indicator);
+        progressPlayed = findViewById(R.id.progress_played);
+        progressIndicator = findViewById(R.id.progress_indicator);
     }
 
     private void initializeRecommendedVideos() {
@@ -142,4 +177,76 @@ public class VideoPlayActivity extends AppCompatActivity implements CommentAdapt
         // Update the comment count text view
         commentCountTextView.setText("(" + newCommentCount + ")");
     }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        videoController.onTouchEvent(event);
+        return super.onTouchEvent(event);
+    }
+
+    @SuppressLint("SetTextI18n")
+    private void updateProgress() {
+        int currentPosition = videoView.getCurrentPosition();
+        int duration = videoView.getDuration();
+
+        if (duration > 0) {
+            // Update time indicator
+            timeIndicator.setText(formatTime(currentPosition) + " / " + formatTime(duration));
+
+            // Calculate progress as a fraction
+            float progress = (float) currentPosition / duration;
+
+            // Log the calculated progress for debugging
+            Log.d(TAG, "Current position: " + currentPosition);
+            Log.d(TAG, "Duration: " + duration);
+            Log.d(TAG, "Calculated progress: " + progress);
+
+            // Ensure progressPlayed has a valid width
+            progressPlayed.post(new Runnable() {
+                @Override
+                public void run() {
+                    // Calculate the new width of the progress bar based on the progress fraction
+                    int totalWidth = ((View) progressPlayed.getParent()).getWidth();
+                    int progressWidth = (int) (progress * totalWidth);
+
+                    // Log the calculated progress width for debugging
+                    Log.d(TAG, "Total width: " + totalWidth);
+                    Log.d(TAG, "Progress width: " + progressWidth);
+
+                    // Update progress bar width
+                    ViewGroup.LayoutParams params = progressPlayed.getLayoutParams();
+                    params.width = progressWidth;
+                    progressPlayed.setLayoutParams(params);
+
+                    // Update progress indicator position
+                    progressIndicator.setTranslationX(progressWidth - ((float) progressIndicator.getWidth() / 2));
+                }
+            });
+        }
+    }
+
+    @SuppressLint("DefaultLocale")
+    private String formatTime(int millis) {
+        int seconds = (millis / 1000) % 60;
+        int minutes = (millis / (1000 * 60)) % 60;
+        int hours = millis / (1000 * 60 * 60);
+
+        if (hours > 0) {
+            return String.format("%02d:%02d:%02d", hours, minutes, seconds);
+        } else {
+            return String.format("%02d:%02d", minutes, seconds);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        handler.removeCallbacks(updateProgressAction);
+    }
+
+    public void updateVideoDetails(Video video) {
+        titleTextView.setText(video.getTitle());
+        descriptionTextView.setText(video.getDescription());
+    }
+
 }

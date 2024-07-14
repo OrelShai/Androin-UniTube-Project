@@ -45,4 +45,3 @@ public class VideoContentManager {
         videoContentLayout.setVisibility(View.VISIBLE);
     }
 }
-

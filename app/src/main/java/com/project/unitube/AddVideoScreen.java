@@ -1,7 +1,5 @@
 package com.project.unitube;
 
-import static android.content.ContentValues.TAG;
-
 import static com.project.unitube.Videos.videosList;
 
 import android.app.Activity;
@@ -31,12 +29,10 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
-
 public class AddVideoScreen extends Activity {
     private EditText videoTitle;
     private EditText videoDescription;
     private TextView videoUri;
-
     private Button uploadVideoCoverButton;
     private Button uploadVideoButton;
     private Button addVideoButton;
@@ -46,10 +42,8 @@ public class AddVideoScreen extends Activity {
 
     private static final int PICK_IMAGE_REQUEST = 1;
     private static final int CAPTURE_IMAGE_REQUEST = 2;
-
     private static final int PICK_VIDEO_REQUEST = 101;
     private static final int CAPTURE_VIDEO_REQUEST = 102;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +58,6 @@ public class AddVideoScreen extends Activity {
     }
 
     private void initializeUIComponents() {
-
         // Initialize EditTexts
         videoTitle = findViewById(R.id.videoTitle);
         videoDescription = findViewById(R.id.videoDescription);
@@ -206,7 +199,6 @@ public class AddVideoScreen extends Activity {
         }
     }
 
-
     /**
      * Handles the result of video picking or capturing process.
      *
@@ -268,16 +260,33 @@ public class AddVideoScreen extends Activity {
                     RegisterScreen.currentUser,
                     getVideoDuration(selectedVideoUri.toString())
             );
-            videosList.add(newVideoObject); // Add the video to the list
+            Videos.videosList.add(newVideoObject); // Add the video to the list
             Toast.makeText(this, "Video uploaded successfully", Toast.LENGTH_SHORT).show();
 
-            // back to the main activity
+            // Log all videos in the list
+            logAllVideos();
+
+            // Set result to OK and finish the activity
+            setResult(RESULT_OK);
             finish();
         } catch (IOException e) {
             e.printStackTrace();
             Toast.makeText(this, "Error uploading video", Toast.LENGTH_SHORT).show();
         }
     }
+
+    /**
+     * Logs all the videos currently in the list to Logcat.
+     */
+    private void logAllVideos() {
+        for (Video video : Videos.videosList) {
+            Log.d("VideoList", "ID: " + video.getId() + ", Title: " + video.getTitle() +
+                    ", Description: " + video.getDescription() + ", URL: " + video.getUrl() +
+                    ", Thumbnail: " + video.getThumbnailUrl() + ", User: " + video.getUser().getUserName() +
+                    ", Duration: " + video.getDuration());
+        }
+    }
+
 
     private boolean validateFields() {
         boolean isValid = true;
@@ -318,9 +327,7 @@ public class AddVideoScreen extends Activity {
             long durationInMillis = Long.parseLong(time);
 
             // Convert duration to a formatted string (HH:MM:SS or MM:SS)
-            String formattedDuration = formatDuration(durationInMillis);
-
-            return formattedDuration;
+            return formatDuration(durationInMillis);
         } catch (Exception e) {
             e.printStackTrace();
             Log.e("VideoDurationError", "Error retrieving video duration", e);
@@ -342,12 +349,4 @@ public class AddVideoScreen extends Activity {
             return String.format("%02d:%02d", minutes, seconds);
         }
     }
-
-
-
-
-
 }
-
-
-

@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHolder> {
     private Context context;
-  
+
     public VideoAdapter(Context context) {
         this.context = context;
     }

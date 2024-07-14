@@ -1,8 +1,10 @@
 package com.project.unitube;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
@@ -19,6 +21,8 @@ public class VideoInteractionHandler {
     private TextView dislikeCountTextView;
     private ImageView likeIcon;
     private ImageView dislikeIcon;
+    private Video currentVideo;
+    public static boolean updateDate = false;
 
     public VideoInteractionHandler(Context context, int videoId, LinearLayout likeButton, LinearLayout dislikeButton,
                                    TextView likeCountTextView, TextView dislikeCountTextView) {
@@ -30,6 +34,7 @@ public class VideoInteractionHandler {
         this.dislikeCountTextView = dislikeCountTextView;
         this.likeIcon = likeButton.findViewById(R.id.icon_like);
         this.dislikeIcon = dislikeButton.findViewById(R.id.icon_dislike);
+        this.currentVideo = getVideoById(videoId);
 
         setupInteractionListeners();
         setupOtherButtons();
@@ -45,9 +50,9 @@ public class VideoInteractionHandler {
         return null;
     }
 
+
     private void setupInteractionListeners() {
         likeButton.setOnClickListener(v -> {
-            Video currentVideo = getVideoById(videoId);
             if (RegisterScreen.currentUser == null) {
                 showToast("You cannot like a video if you are not logged in.");
             } else if (currentVideo != null) {
@@ -58,7 +63,6 @@ public class VideoInteractionHandler {
         });
 
         dislikeButton.setOnClickListener(v -> {
-            Video currentVideo = getVideoById(videoId);
             if (RegisterScreen.currentUser == null) {
                 showToast("You cannot dislike a video if you are not logged in.");
             } else if (currentVideo != null) {
@@ -114,7 +118,6 @@ public class VideoInteractionHandler {
     }
 
     private void updateButtonIcons() {
-        Video currentVideo = getVideoById(videoId);
         if (currentVideo != null && RegisterScreen.currentUser != null) {
             boolean isLiked = currentVideo.getLikesList().contains(RegisterScreen.currentUser.getUserName());
             boolean isDisliked = currentVideo.getDislikesList().contains(RegisterScreen.currentUser.getUserName());
@@ -160,19 +163,77 @@ public class VideoInteractionHandler {
 
         // Set click listeners for edit and delete buttons
         editButton.setOnClickListener(v -> {
-            // Handle edit action
-            showToast("Edit.");
-            popupWindow.dismiss();
+            if (isUserLoggedIn()) {
+                showEditDialog();
+                popupWindow.dismiss();
+            } else {
+                showLoginErrorMessage();
+            }
         });
 
         deleteButton.setOnClickListener(v -> {
-            // Handle delete action
-            showToast("Delete.");
-            popupWindow.dismiss();
+            if (isUserLoggedIn()) {
+                showDeleteDialog();
+                popupWindow.dismiss();
+            } else {
+                showLoginErrorMessage();
+            }
         });
 
         // Show the popup window
         popupWindow.showAsDropDown(anchorView, 0, 0);
+    }
+
+    private void showEditDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle("Edit Video");
+
+        // Set up the input views
+        View dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_edit_video, null);
+        EditText editTitle = dialogView.findViewById(R.id.edit_video_title);
+        EditText editDescription = dialogView.findViewById(R.id.edit_video_description);
+        editTitle.setText(currentVideo.getTitle());
+        editDescription.setText(currentVideo.getDescription());
+        builder.setView(dialogView);
+
+        // Set up the buttons
+        builder.setPositiveButton("Save", (dialog, which) -> {
+            String newTitle = editTitle.getText().toString().trim();
+            String newDescription = editDescription.getText().toString().trim();
+            if (!newTitle.isEmpty() && !newDescription.isEmpty()) {
+                currentVideo.setTitle(newTitle);
+                currentVideo.setDescription(newDescription);
+                saveVideoState(currentVideo); // Save updated state
+
+                // Refresh UI elements if needed
+                if (context instanceof VideoPlayActivity) {
+                    ((VideoPlayActivity) context).updateVideoDetails(currentVideo);
+                }
+            } else {
+                Toast.makeText(context, "Title and description cannot be empty.", Toast.LENGTH_SHORT).show();
+            }
+        });
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
+
+        builder.show();
+    }
+
+    private void showDeleteDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle("Delete Video");
+        builder.setMessage("Are you sure you want to delete this video?");
+        builder.setPositiveButton("Delete", (dialog, which) -> {
+            Videos.videosList.remove(currentVideo);
+            saveVideoState(currentVideo); // Update the state
+
+            // Optionally, refresh the UI or navigate away from the current activity
+            if (context instanceof VideoPlayActivity) {
+                ((VideoPlayActivity) context).finish(); // Close the activity
+            }
+        });
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
+
+        builder.show();
     }
 
     private void showToast(String message) {
@@ -187,6 +248,16 @@ public class VideoInteractionHandler {
                 break;
             }
         }
+        updateDate = true;
         // Optionally save to persistent storage if needed (e.g., database, shared preferences)
     }
+
+    private boolean isUserLoggedIn() {
+        return RegisterScreen.currentUser != null;
+    }
+
+    private void showLoginErrorMessage() {
+        showToast("You must be logged in to perform this action.");
+    }
+
 }
