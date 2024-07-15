@@ -15,7 +15,7 @@ public class User implements Serializable {
         this.lastName = lastName;
         this.password = password;
         this.userName = userName;
-        this.profilePicture = (profilePicture != null && !profilePicture.isEmpty()) ? profilePicture : "placeholder_profile";
+        this.profilePicture = profilePicture;
     }
 
     // Getters and Setters

@@ -222,7 +222,14 @@ public class MainActivity extends AppCompatActivity {
             // User is signed in
             String welcome = getString(R.string.welcome);
             greetingText.setText(welcome + " " + currentUser.getFirstName());
-            Glide.with(this).load(currentUser.getProfilePicture()).into(greetingImage);
+
+            // Convert profilePicture string to URI and set image
+            if (currentUser.getProfilePicture() != null) {
+                Uri profileUri = Uri.parse(currentUser.getProfilePicture());
+                greetingImage.setImageURI(profileUri);
+            } else {
+                greetingImage.setImageResource(R.drawable.default_profile_image);
+            }
         } else {
             if (greetingText != null && greetingImage != null) {
                 greetingText.setText(R.string.welcome_to_unitube);

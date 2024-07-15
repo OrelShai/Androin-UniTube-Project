@@ -29,6 +29,8 @@ public class RegisterScreen extends Activity {
     private EditText passwordEditText;
     private EditText reEnterPasswordEditText;
     private EditText userNameEditText;
+    private Button uploadPhotoButton;
+    private Button signUpButton;
 
     // List of users and the current logged-in user
     public static List<User> usersList = new LinkedList<>();
@@ -72,8 +74,8 @@ public class RegisterScreen extends Activity {
         userNameEditText = findViewById(R.id.SignUpUserNameEditText);
         profileImageView = findViewById(R.id.profileImageView);
 
-        Button uploadPhotoButton = findViewById(R.id.uploadPhotoButton);
-        Button signUpButton = findViewById(R.id.signUpButton);
+        uploadPhotoButton = findViewById(R.id.uploadPhotoButton);
+        signUpButton = findViewById(R.id.signUpButton);
 
         // Set default profile image
         profileImageView.setImageResource(R.drawable.default_profile_image);
@@ -90,10 +92,8 @@ public class RegisterScreen extends Activity {
             startActivity(intent);
         });
 
-        Button uploadPhotoButton = findViewById(R.id.uploadPhotoButton);
         uploadPhotoButton.setOnClickListener(v -> uploadPhotoHandler.showImagePickerOptions());
 
-        Button signUpButton = findViewById(R.id.signUpButton);
         signUpButton.setOnClickListener(v -> {
             if (validateFields()) {
                 User user = new User(
