@@ -1,15 +1,15 @@
 package com.project.unitube;
 
 import static com.project.unitube.RegisterScreen.currentUser;
-import static com.project.unitube.RegisterScreen.usersList;
-import static com.project.unitube.VideoInteractionHandler.updateDate;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
+import android.util.Base64;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -18,12 +18,14 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.core.view.GravityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import com.google.android.material.navigation.NavigationView;
 
+import com.bumptech.glide.Glide;
+import com.google.android.material.navigation.NavigationView;
+import static com.project.unitube.VideoInteractionHandler.updateDate;
 public class MainActivity extends AppCompatActivity {
 
     private static final int ADD_VIDEO_REQUEST = 1; // Request code for adding a video
@@ -58,11 +60,10 @@ public class MainActivity extends AppCompatActivity {
 
     private void createAdminUser() {
         // Create admin user
-        usersList.add(new User("o", "s", "1", "os", null));
+        RegisterScreen.usersList.add(new User("o", "s", "1", "os", null));
     }
 
     private void initializeUIComponents() {
-
         if (updateDate) {
             updateDate = false;
             onResume();
@@ -109,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
         ImageView authIcon = findViewById(R.id.icon_log_in_out);
 
         // Check if there is a logged-in user
-        if (RegisterScreen.currentUser == null) {
+        if (currentUser == null) {
             // No user logged in, set to "Sign In"
             authText.setText("Sign In");
             authIcon.setImageResource(R.drawable.ic_login); // Change icon if needed
@@ -132,6 +133,9 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(MainActivity.this, LoginScreen.class);
                 startActivity(intent);
             });
+
+            // Update user greeting and profile picture
+            updateGreetingUser();
         }
     }
 
@@ -148,7 +152,6 @@ public class MainActivity extends AppCompatActivity {
         // Initialize Bottom Navigation
         findViewById(R.id.button_add_video).setOnClickListener(view -> {
             if (currentUser != null) {
-                Log.d(TAG, "Add Video selected");
                 // Navigate to add video screen
                 Intent intent = new Intent(MainActivity.this, AddVideoScreen.class);
                 startActivityForResult(intent, ADD_VIDEO_REQUEST); // Start AddVideoScreen with request code
@@ -205,22 +208,31 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        updateGreetingUser();
         initLoginSignOutButton();
-        updateGreetingText();
         initializeVideosToShow(); // Ensure the videos list is updated
         videoAdapter.notifyDataSetChanged(); // Refresh the adapter
     }
 
-    private void updateGreetingText() {
+    private void updateGreetingUser() {
         TextView greetingText = findViewById(R.id.user_greeting);
         ImageView greetingImage = findViewById(R.id.logo_image);
 
         if (currentUser != null) {
-            // No user logged in, set to "Sign In"
+            // User is signed in
             String welcome = getString(R.string.welcome);
-            greetingText.setText(welcome + " " + currentUser.getFirstName().toString());
+            greetingText.setText(welcome + " " + currentUser.getFirstName());
+            Glide.with(this).load(currentUser.getProfilePicture()).into(greetingImage);
+        } else {
+            if (greetingText != null && greetingImage != null) {
+                greetingText.setText(R.string.welcome_to_unitube);
+                // No user signed in, revert to initial state
+                greetingImage.setImageResource(R.drawable.logo_image_light_mode);
+            }
         }
     }
+
+
 
     @Override
     public void onBackPressed() {

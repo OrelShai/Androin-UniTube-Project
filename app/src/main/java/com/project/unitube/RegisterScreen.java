@@ -2,6 +2,7 @@ package com.project.unitube;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.widget.Button;
@@ -9,13 +10,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import android.graphics.Bitmap;
-import android.net.Uri;
-import android.provider.MediaStore;
-import androidx.appcompat.app.AlertDialog;
-
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -40,15 +34,8 @@ public class RegisterScreen extends Activity {
     public static List<User> usersList = new LinkedList<>();
     public static User currentUser;
 
+    private UploadPhotoHandler uploadPhotoHandler;
 
-    /**
-     * Called when the activity is first created.
-     * Initializes the UI components and sets up event listeners.
-     *
-     * @param savedInstanceState If the activity is being re-initialized after
-     * previously being shut down then this Bundle contains the data it most
-     * recently supplied in onSaveInstanceState(Bundle).
-     */
     /**
      * Called when the activity is first created.
      * Initializes the UI components and sets up event listeners.
@@ -65,10 +52,12 @@ public class RegisterScreen extends Activity {
         // Initialize UI components
         initializeUIComponents();
 
+        // Initialize UploadPhotoHandler
+        uploadPhotoHandler = new UploadPhotoHandler(this);
+
         // Set up listeners for buttons
         setUpListeners();
     }
-
 
     /**
      * Initializes the UI components.
@@ -102,7 +91,7 @@ public class RegisterScreen extends Activity {
         });
 
         Button uploadPhotoButton = findViewById(R.id.uploadPhotoButton);
-        uploadPhotoButton.setOnClickListener(v -> showImagePickerOptions());
+        uploadPhotoButton.setOnClickListener(v -> uploadPhotoHandler.showImagePickerOptions());
 
         Button signUpButton = findViewById(R.id.signUpButton);
         signUpButton.setOnClickListener(v -> {
@@ -123,82 +112,6 @@ public class RegisterScreen extends Activity {
                 finish();
             }
         });
-    }
-
-    /**
-     * Displays an AlertDialog to allow the user to choose between picking
-     * an image from the gallery or taking a new photo with the camera.
-     */
-    private void showImagePickerOptions() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Select Image Source");
-        builder.setItems(new CharSequence[]{"Choose from Gallery", "Take a Photo"},
-                (dialog, which) -> {
-                    switch (which) {
-                        case 0:
-                            pickImageFromGallery();
-                            break;
-                        case 1:
-                            //if (checkCameraPermission()) {
-                            captureImageFromCamera();
-                            //}
-                            break;
-                    }
-                });
-        builder.show();
-    }
-
-
-    /**
-     * Initiates an intent to pick an image from the gallery.
-     */
-    private void pickImageFromGallery() {
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
-    }
-
-
-    /**
-     * Initiates an intent to capture an image using the camera.
-     */
-    private void captureImageFromCamera() {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            startActivityForResult(takePictureIntent, CAPTURE_IMAGE_REQUEST);
-        }
-    }
-
-    /**
-     * Handles the result of the image picking or capturing process.
-     * Sets the selected or captured image as the profile photo.
-     *
-     * @param requestCode The request code identifying the intent
-     * @param resultCode  The result code indicating success or failure
-     * @param data        The data returned from the intent
-     */
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (resultCode == RESULT_OK) {
-            if (requestCode == PICK_IMAGE_REQUEST && data != null && data.getData() != null) {
-                Uri imageUri = data.getData();
-                try {
-                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
-                    profileImageView.setImageBitmap(bitmap);
-                    profileImageView.setTag(imageUri.toString()); // Save the URI of the selected image
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            } else if (requestCode == CAPTURE_IMAGE_REQUEST && data != null) {
-                Bundle extras = data.getExtras();
-                Bitmap imageBitmap = (Bitmap) extras.get("data");
-                profileImageView.setImageBitmap(imageBitmap);
-                // Save the URI or file path of the captured image if needed
-            }
-        }
     }
 
     /**
@@ -282,5 +195,33 @@ public class RegisterScreen extends Activity {
             }
         }
         return false; // User not found
+    }
+
+    /**
+     * Handles the result of the image picking or capturing process.
+     * Sets the selected or captured image as the profile photo.
+     *
+     * @param requestCode The request code identifying the intent
+     * @param resultCode  The result code indicating success or failure
+     * @param data        The data returned from the intent
+     */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        uploadPhotoHandler.handleActivityResult(requestCode, resultCode, data);
+
+        // Update profileImageView with the selected/captured photo
+        if (resultCode == RESULT_OK) {
+            Uri photoUri = uploadPhotoHandler.getSelectedPhotoUri();
+            if (photoUri != null) {
+                try {
+                    profileImageView.setImageURI(photoUri);
+                    profileImageView.setTag(photoUri.toString()); // Set tag to store URI
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Toast.makeText(this, "Failed to set image", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
     }
 }
