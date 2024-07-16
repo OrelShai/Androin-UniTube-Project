@@ -10,6 +10,8 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Base64;
+import android.util.Log;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -215,13 +217,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateGreetingUser() {
-        TextView greetingText = findViewById(R.id.user_greeting);
-        ImageView greetingImage = findViewById(R.id.logo_image);
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        View headerView = navigationView.getHeaderView(0);
+        TextView greetingText = headerView.findViewById(R.id.user_greeting);
+        ImageView greetingImage = headerView.findViewById(R.id.logo_image);
 
         if (currentUser != null) {
             // User is signed in
             String welcome = getString(R.string.welcome);
             greetingText.setText(welcome + " " + currentUser.getFirstName());
+            Log.d(TAG, "profile uri:" + currentUser.getProfilePictureUri());
 
             // Convert profilePicture string to URI and set image
             if (currentUser.getProfilePicture() != null) {

@@ -1,5 +1,7 @@
 package com.project.unitube;
 
+import android.net.Uri;
+
 import java.io.Serializable;
 
 public class User implements Serializable {
@@ -8,6 +10,7 @@ public class User implements Serializable {
     private String password;
     private String userName;
     private String profilePicture;
+    private Uri profilePictureUri;
 
     // Constructor
     public User(String firstName, String lastName, String password, String userName, String profilePicture) {
@@ -16,6 +19,14 @@ public class User implements Serializable {
         this.password = password;
         this.userName = userName;
         this.profilePicture = profilePicture;
+    }
+
+    public void setProfilePictureUri(Uri profilePictureUri) {
+        this.profilePictureUri = profilePictureUri;
+    }
+
+    public Uri getProfilePictureUri() {
+        return profilePictureUri;
     }
 
     // Getters and Setters
