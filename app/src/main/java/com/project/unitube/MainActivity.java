@@ -211,35 +211,39 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         updateGreetingUser();
+        updateProfilePhotoPresent();
         initLoginSignOutButton();
         initializeVideosToShow(); // Ensure the videos list is updated
         videoAdapter.notifyDataSetChanged(); // Refresh the adapter
+    }
+
+    private void updateProfilePhotoPresent() {
+        ImageView currentUserProfilePic = findViewById(R.id.logo);
+        if (currentUser != null) {
+            if (currentUser.getProfilePictureUri() != null) {
+                Uri profilePhotoUri = currentUser.getProfilePictureUri();
+                currentUserProfilePic.setImageURI(profilePhotoUri);
+            } else {
+                currentUserProfilePic.setImageResource(R.drawable.default_profile_image);
+            }
+        } else {
+            currentUserProfilePic.setImageResource(R.drawable.unitube_logo);
+        }
     }
 
     private void updateGreetingUser() {
         NavigationView navigationView = findViewById(R.id.nav_view);
         View headerView = navigationView.getHeaderView(0);
         TextView greetingText = headerView.findViewById(R.id.user_greeting);
-        ImageView greetingImage = headerView.findViewById(R.id.logo_image);
 
         if (currentUser != null) {
             // User is signed in
             String welcome = getString(R.string.welcome);
             greetingText.setText(welcome + " " + currentUser.getFirstName());
-            Log.d(TAG, "profile uri:" + currentUser.getProfilePictureUri());
 
-            // Convert profilePicture string to URI and set image
-            if (currentUser.getProfilePicture() != null) {
-                Uri profileUri = Uri.parse(currentUser.getProfilePicture());
-                greetingImage.setImageURI(profileUri);
-            } else {
-                greetingImage.setImageResource(R.drawable.default_profile_image);
-            }
         } else {
-            if (greetingText != null && greetingImage != null) {
+            if (greetingText != null) {
                 greetingText.setText(R.string.welcome_to_unitube);
-                // No user signed in, revert to initial state
-                greetingImage.setImageResource(R.drawable.logo_image_light_mode);
             }
         }
     }
