@@ -1,6 +1,9 @@
 package com.project.unitube;
 
+import static android.content.ContentValues.TAG;
+
 import android.content.Context;
+import android.util.Log;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -41,7 +44,7 @@ public class CommentManager {
             if (profileImageResourceId != 0) {
                 userProfileImageView.setImageResource(profileImageResourceId);
             } else {
-                userProfileImageView.setImageResource(R.drawable.ic_profile_placeholder); // Fallback profile image
+                userProfileImageView.setImageURI(RegisterScreen.currentUser.getProfilePictureUri()); // Fallback profile image
             }
         } else {
             userProfileImageView.setImageResource(R.drawable.ic_profile_placeholder); // Default image when not logged in
@@ -60,12 +63,18 @@ public class CommentManager {
 
     private void addComment() {
         String commentText = commentEditText.getText().toString().trim();
+        Log.d(TAG, "currentUser.getProfilePictureUri(): " + RegisterScreen.currentUser.getProfilePictureUri());
+
         if (!commentText.isEmpty()) {
             Comment newComment = new Comment(
                     RegisterScreen.currentUser.getUserName(),
-                    RegisterScreen.currentUser.getProfilePicture(),
+                    RegisterScreen.currentUser.getProfilePictureUri(),
                     commentText
             );
+            Log.d(TAG, "user name: " + newComment.getUserName());
+            Log.d(TAG, "user ProfilePictureUri: " + newComment.getProfilePicture());
+            Log.d(TAG, "user CommentText: " + newComment.getCommentText());
+
             comments.add(newComment);
             commentAdapter.notifyItemInserted(comments.size() - 1);
             commentAdapter.notifyItemRangeChanged(comments.size() - 1, comments.size());

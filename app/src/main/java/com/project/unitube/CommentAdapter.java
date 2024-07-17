@@ -1,6 +1,9 @@
 package com.project.unitube;
 
+import static android.content.ContentValues.TAG;
+
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -46,7 +49,9 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
         holder.commentContent.setText(comment.getCommentText());
 
         // Load user profile image
-        int profileImageResourceId = context.getResources().getIdentifier(comment.getProfilePicture(), "drawable", context.getPackageName());
+        Log.d(TAG, "commentAdapter : username = " + comment.getUserName());
+        Log.d(TAG, "commentAdapter : user ProfilePictureUri = " + comment.getProfilePicture());
+        int profileImageResourceId = context.getResources().getIdentifier(comment.getProfilePicture().getLastPathSegment(), "drawable", context.getPackageName());
         if (profileImageResourceId != 0) {
             holder.commentUserProfileImage.setImageResource(profileImageResourceId);
         } else {
