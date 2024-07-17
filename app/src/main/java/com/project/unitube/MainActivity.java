@@ -220,14 +220,27 @@ public class MainActivity extends AppCompatActivity {
     private void updateProfilePhotoPresent() {
         ImageView currentUserProfilePic = findViewById(R.id.logo);
         if (currentUser != null) {
-            if (currentUser.getProfilePictureUri() != null) {
-                Uri profilePhotoUri = currentUser.getProfilePictureUri();
+            Uri profilePhotoUri = currentUser.getProfilePictureUri();
+            if (profilePhotoUri != null) {
                 currentUserProfilePic.setImageURI(profilePhotoUri);
-            } else {
+                Glide.with(this)
+                        .load(profilePhotoUri)
+                        .circleCrop()
+                        .placeholder(R.drawable.default_profile_image) // Placeholder in case of loading issues
+                        .into(currentUserProfilePic);
+            }
+            else {
                 currentUserProfilePic.setImageResource(R.drawable.default_profile_image);
+                Glide.with(this)
+                        .load(profilePhotoUri)
+                        .circleCrop()
+                        .placeholder(R.drawable.default_profile_image) // Placeholder in case of loading issues
+                        .into(currentUserProfilePic);
             }
         } else {
             currentUserProfilePic.setImageResource(R.drawable.unitube_logo);
+            currentUserProfilePic.setBackground(null); // Remove background for default logo
+            currentUserProfilePic.setScaleType(ImageView.ScaleType.FIT_XY); // Reverting scale type for logo
         }
     }
 
