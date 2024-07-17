@@ -4,6 +4,7 @@ import static com.project.unitube.Videos.videosList;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,7 +42,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
         if (thumbnailResourceId != 0) {
             holder.videoThumbnail.setImageResource(thumbnailResourceId);
         } else {
-            holder.videoThumbnail.setImageResource(R.drawable.ic_video_placeholder); // Fallback image
+            holder.videoThumbnail.setImageURI(Uri.parse(video.getThumbnailUrl()));
         }
 
         // Load uploader profile image
@@ -49,7 +50,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
         if (profileImageResourceId != 0) {
             holder.uploaderProfileImage.setImageResource(profileImageResourceId);
         } else {
-            holder.uploaderProfileImage.setImageResource(R.drawable.ic_profile_placeholder); // Fallback profile image
+            holder.uploaderProfileImage.setImageURI(video.getUser().getProfilePictureUri()); // Fallback profile image
         }
 
         // Handle more options button logic

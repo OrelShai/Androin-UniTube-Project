@@ -63,7 +63,6 @@ public class CommentManager {
 
     private void addComment() {
         String commentText = commentEditText.getText().toString().trim();
-        Log.d(TAG, "currentUser.getProfilePictureUri(): " + RegisterScreen.currentUser.getProfilePictureUri());
 
         if (!commentText.isEmpty()) {
             Comment newComment = new Comment(
@@ -71,9 +70,6 @@ public class CommentManager {
                     RegisterScreen.currentUser.getProfilePictureUri(),
                     commentText
             );
-            Log.d(TAG, "user name: " + newComment.getUserName());
-            Log.d(TAG, "user ProfilePictureUri: " + newComment.getProfilePicture());
-            Log.d(TAG, "user CommentText: " + newComment.getCommentText());
 
             comments.add(newComment);
             commentAdapter.notifyItemInserted(comments.size() - 1);

@@ -53,8 +53,6 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
         holder.commentContent.setText(comment.getCommentText());
 
         // Load user profile image
-        Log.d(TAG, "commentAdapter : username = " + comment.getUserName());
-        Log.d(TAG, "commentAdapter : user ProfilePictureUri = " + comment.getProfilePicture());
         int profileImageResourceId = context.getResources().getIdentifier(comment.getProfilePicture().toString(), "drawable", context.getPackageName());
         if (profileImageResourceId != 0) {
             // Profile picture is a drawable resource
