@@ -139,7 +139,7 @@ public class DataManager {
                         String name = commentObject.getString("name");
                         String text = commentObject.getString("text");
 
-                        String profilePicture = getProfilePictureByName(name);
+                        Uri profilePicture = Uri.parse(getProfilePictureByName(name));
                         Comment comment = new Comment(name, profilePicture, text);
                         video.addComment(comment);
                     }

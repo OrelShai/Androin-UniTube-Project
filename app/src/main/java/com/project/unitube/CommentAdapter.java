@@ -1,6 +1,10 @@
 package com.project.unitube;
 
+import static android.content.ContentValues.TAG;
+
 import android.content.Context;
+import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -14,6 +18,9 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide;
+
 import java.util.List;
 
 public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentViewHolder> {
@@ -46,11 +53,13 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
         holder.commentContent.setText(comment.getCommentText());
 
         // Load user profile image
-        int profileImageResourceId = context.getResources().getIdentifier(comment.getProfilePicture(), "drawable", context.getPackageName());
+        int profileImageResourceId = context.getResources().getIdentifier(comment.getProfilePicture().toString(), "drawable", context.getPackageName());
         if (profileImageResourceId != 0) {
+            // Profile picture is a drawable resource
             holder.commentUserProfileImage.setImageResource(profileImageResourceId);
         } else {
-            holder.commentUserProfileImage.setImageResource(R.drawable.ic_profile_placeholder); // Fallback profile image
+            // Profile picture is a uri
+            holder.commentUserProfileImage.setImageURI(comment.getProfilePicture());
         }
 
         // Set up more options button logic

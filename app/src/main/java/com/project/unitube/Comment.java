@@ -1,14 +1,16 @@
 package com.project.unitube;
 
+import android.net.Uri;
+
 public class Comment {
     private static int nextId = 1;
 
     private int id;
     private String userName;
-    private String profilePicture;
+    private Uri profilePicture;
     private String commentText;
 
-    public Comment(String userName, String profilePicture, String commentText) {
+    public Comment(String userName, Uri profilePicture, String commentText) {
         this.id = nextId++;
         this.userName = userName;
         this.profilePicture = profilePicture;
@@ -27,11 +29,11 @@ public class Comment {
         this.userName = userName;
     }
 
-    public String getProfilePicture() {
+    public Uri getProfilePicture() {
         return profilePicture;
     }
 
-    public void setProfilePicture(String profilePicture) {
+    public void setProfilePicture(Uri profilePicture) {
         this.profilePicture = profilePicture;
     }
 
