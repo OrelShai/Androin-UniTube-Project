@@ -20,8 +20,6 @@ import java.util.List;
  * the gallery or taking a new photo using the camera.
  */
 public class RegisterScreen extends Activity {
-    private static final int PICK_IMAGE_REQUEST = 1;
-    private static final int CAPTURE_IMAGE_REQUEST = 2;
 
     private ImageView profileImageView;
     private EditText firstNameEditText;

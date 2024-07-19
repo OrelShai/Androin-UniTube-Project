@@ -52,7 +52,9 @@ public class UploadVideoHandler {
     }
 
     private void pickVideoFromGallery() {
-        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Video.Media.EXTERNAL_CONTENT_URI);
+        Intent intent = new Intent();
+        intent.setType("video/*");
+        intent = new Intent(Intent.ACTION_PICK, MediaStore.Video.Media.EXTERNAL_CONTENT_URI);
         activity.startActivityForResult(intent, PICK_VIDEO_REQUEST);
     }
 

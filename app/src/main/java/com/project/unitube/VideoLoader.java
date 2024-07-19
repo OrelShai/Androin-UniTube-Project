@@ -35,25 +35,19 @@ public class VideoLoader {
         } else {
             uploaderProfileImageView.setImageResource(R.drawable.ic_profile_placeholder);
         }
+        Uri videoUri;
         int videoResourceId = context.getResources().getIdentifier(video.getUrl(), "raw", context.getPackageName());
-        Uri videoUri = Uri.parse("android.resource://" + context.getPackageName() + "/" + videoResourceId);
+        if (videoResourceId != 0) {
+            videoUri = Uri.parse("android.resource://" + context.getPackageName() + "/" + videoResourceId);
+        } else {
+            videoUri = Uri.parse(video.getUrl());
+        }
         videoView.setVideoURI(videoUri);
 
+
         videoView.setOnPreparedListener(mp -> {
-            int videoWidth = mp.getVideoWidth();
-            int videoHeight = mp.getVideoHeight();
-            adjustVideoViewDimensions(videoWidth, videoHeight);
             videoView.start();
         });
     }
 
-    private void adjustVideoViewDimensions(int videoWidth, int videoHeight) {
-        float videoProportion = (float) videoWidth / (float) videoHeight;
-        int screenWidth = context.getResources().getDisplayMetrics().widthPixels;
-        int videoViewHeight = (int) (screenWidth / videoProportion);
-
-        videoView.getLayoutParams().width = screenWidth;
-        videoView.getLayoutParams().height = videoViewHeight;
-        videoView.requestLayout();
-    }
 }

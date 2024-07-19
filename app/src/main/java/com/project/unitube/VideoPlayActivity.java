@@ -2,6 +2,7 @@ package com.project.unitube;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -17,9 +18,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.VideoView;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.view.ViewGroup.LayoutParams;
+import android.Manifest;
+
 
 public class VideoPlayActivity extends AppCompatActivity implements CommentAdapter.CommentAdapterListener {
 
@@ -47,6 +52,8 @@ public class VideoPlayActivity extends AppCompatActivity implements CommentAdapt
     private View progressPlayed;
     private View progressIndicator;
 
+    public static final int REQUEST_CODE_READ_EXTERNAL_STORAGE = 1;
+
     private static final String TAG = "VideoPlayActivity";
 
     private Handler handler = new Handler();
@@ -66,6 +73,14 @@ public class VideoPlayActivity extends AppCompatActivity implements CommentAdapt
 
         // Initialize VideoController
         videoController = new VideoController(this, videoView, playPauseButton);
+
+        // Request permission to read external storage
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                    REQUEST_CODE_READ_EXTERNAL_STORAGE);
+        }
 
         // Load video if intent contains video ID
         Intent intent = getIntent();
