@@ -23,7 +23,7 @@ The name "UniTube" is a fusion of two key concepts: "University" and "YouTube", 
 - ### Sign up
 - All fields must be filled. all validation conditions displayed under the fields must be met.
   Allows users to create a new account with username, password, password confirmation, display name, and upload profile picture.
-
+![sign up screen.png](app%2Fsrc%2Fmain%2Fassets%2FREADME_pictures%2Fsign%20up%20screen.png)
   ![sign up screen.png](app/src/main/assets/README_pictures/sign up screen.png)
   ![sign up screen - validation check.png](app/src/main/assets/README_pictures/sign up screen-validation check.png)
 
