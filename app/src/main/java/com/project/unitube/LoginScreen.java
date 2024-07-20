@@ -41,7 +41,6 @@ public class LoginScreen extends Activity {
         loginButton.setOnClickListener(v -> {
             String username = UserNameLoginTextBox.getText().toString();
             String password = passwordLoginTextBox.getText().toString();
-            TextView greetingText = findViewById(R.id.user_greeting);
 
 
             // Search for the user in the UserLinkedList

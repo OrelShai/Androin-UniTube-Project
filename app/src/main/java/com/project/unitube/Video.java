@@ -11,7 +11,7 @@ import com.project.unitube.Comment;
 
 public class Video implements Serializable {
     private static int nextId = 1;
-    private int id;
+    private final int id;
 
 
     private String title;
@@ -22,7 +22,7 @@ public class Video implements Serializable {
     private int likes;
     private int dislikes;
     private String uploadDate;
-    private String duration;
+    private final String duration;
     private List<String> likesList;
     private List<String> dislikesList;
     private List<Comment> comments;

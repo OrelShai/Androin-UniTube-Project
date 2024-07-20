@@ -14,11 +14,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import java.io.IOException;
 
-public class AddVideoScreen extends AppCompatActivity {
+public class AddVideoScreen extends Activity {
     private EditText videoTitle;
     private EditText videoDescription;
     private TextView videoUri;

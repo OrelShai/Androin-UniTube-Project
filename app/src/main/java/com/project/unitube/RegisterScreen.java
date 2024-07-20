@@ -64,7 +64,6 @@ public class RegisterScreen extends Activity {
      * Binds the XML views to the corresponding Java objects.
      */
     private void initializeUIComponents() {
-        TextView alreadyHaveAccount = findViewById(R.id.alreadyHaveAccount);
         firstNameEditText = findViewById(R.id.SignUpFirstNameEditText);
         lastNameEditText = findViewById(R.id.SignUpLastNameEditText);
         passwordEditText = findViewById(R.id.SignUpPasswordEditText);
