@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void createAdminUser() {
         // Create admin user
-        RegisterScreen.usersList.add(new User("o", "s", "1", "os", null));
+        RegisterScreen.usersList.add(new User("o", "s", "1", "os", "default_profile_image"));
     }
 
     private void initializeUIComponents() {

@@ -6,18 +6,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.widget.Toast;
-
-import androidx.core.content.FileProvider;
-
-import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 public class UploadVideoHandler {
@@ -52,7 +44,9 @@ public class UploadVideoHandler {
     }
 
     private void pickVideoFromGallery() {
-        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Video.Media.EXTERNAL_CONTENT_URI);
+        Intent intent = new Intent();
+        intent.setType("video/*");
+        intent = new Intent(Intent.ACTION_PICK, MediaStore.Video.Media.EXTERNAL_CONTENT_URI);
         activity.startActivityForResult(intent, PICK_VIDEO_REQUEST);
     }
 

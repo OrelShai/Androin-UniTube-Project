@@ -5,7 +5,7 @@ import android.net.Uri;
 public class Comment {
     private static int nextId = 1;
 
-    private int id;
+    private final int id;
     private String userName;
     private Uri profilePicture;
     private String commentText;

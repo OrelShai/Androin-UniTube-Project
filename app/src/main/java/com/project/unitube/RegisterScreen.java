@@ -20,8 +20,6 @@ import java.util.List;
  * the gallery or taking a new photo using the camera.
  */
 public class RegisterScreen extends Activity {
-    private static final int PICK_IMAGE_REQUEST = 1;
-    private static final int CAPTURE_IMAGE_REQUEST = 2;
 
     private ImageView profileImageView;
     private EditText firstNameEditText;
@@ -66,7 +64,6 @@ public class RegisterScreen extends Activity {
      * Binds the XML views to the corresponding Java objects.
      */
     private void initializeUIComponents() {
-        TextView alreadyHaveAccount = findViewById(R.id.alreadyHaveAccount);
         firstNameEditText = findViewById(R.id.SignUpFirstNameEditText);
         lastNameEditText = findViewById(R.id.SignUpLastNameEditText);
         passwordEditText = findViewById(R.id.SignUpPasswordEditText);
@@ -96,12 +93,16 @@ public class RegisterScreen extends Activity {
 
         signUpButton.setOnClickListener(v -> {
             if (validateFields()) {
+                String profileImageUrl = profileImageView.getTag() != null ?
+                        profileImageView.getTag().toString() :
+                        "default_profile_image";
+
                 User user = new User(
                         firstNameEditText.getText().toString(),
                         lastNameEditText.getText().toString(),
                         passwordEditText.getText().toString(),
                         userNameEditText.getText().toString(),
-                        profileImageView.getTag() != null ? profileImageView.getTag().toString() : null);
+                        profileImageUrl);
 
                 user.setProfilePictureUri(uploadPhotoHandler.getSelectedPhotoUri());
                 // Add the user to the list and set as current user
