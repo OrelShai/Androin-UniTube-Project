@@ -94,16 +94,12 @@ public class RegisterScreen extends Activity {
 
         signUpButton.setOnClickListener(v -> {
             if (validateFields()) {
-                String profileImageUrl = profileImageView.getTag() != null ?
-                        profileImageView.getTag().toString() :
-                        "default_profile_image";
-
                 User user = new User(
                         firstNameEditText.getText().toString(),
                         lastNameEditText.getText().toString(),
                         passwordEditText.getText().toString(),
                         userNameEditText.getText().toString(),
-                        profileImageUrl);
+                        profileImageView.getTag() != null ? profileImageView.getTag().toString() : "default_profile_image");
 
                 user.setProfilePictureUri(uploadPhotoHandler.getSelectedPhotoUri());
                 // Add the user to the list and set as current user
