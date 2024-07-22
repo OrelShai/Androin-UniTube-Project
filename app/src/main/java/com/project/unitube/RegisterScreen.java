@@ -1,5 +1,6 @@
 package com.project.unitube;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -18,6 +19,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
 import java.io.File;
@@ -47,14 +49,11 @@ public class RegisterScreen extends Activity {
 
     private Uri selectedPhotoUri;
 
-
-    // List of users and the current logged-in user
-    public static List<User> usersList = new LinkedList<>();
-    public static User currentUser;
-
     private static final int PICK_IMAGE_REQUEST = 1;
     private static final int CAPTURE_IMAGE_REQUEST = 2;
     private static final int REQUEST_CODE = 100;
+    private static final int REQUEST_CODE_READ_MEDIA = 101;
+
 
     /**
      * Called when the activity is first created.
@@ -122,7 +121,7 @@ public class RegisterScreen extends Activity {
                         getSelectedPhotoUri());
 
                 // Add the user to the list and set as current user
-                usersList.add(user);
+                UserManager.getInstance().addUser(user);
 
                 // Show "Sign up successful" toast and move to sign-in page
                 Toast.makeText(this, "Sign up successful", Toast.LENGTH_SHORT).show();
@@ -207,7 +206,7 @@ public class RegisterScreen extends Activity {
      */
     private Boolean isUsernameTaken(String username) {
         // Iterate through the usersList and find the user
-        for (User user : usersList) {
+        for (User user : UserManager.getInstance().getUsers()) {
             if (user.getUserName().equals(username)) {
                 return true;
             }
@@ -307,16 +306,22 @@ public class RegisterScreen extends Activity {
     }
 
 
-    public void requestPermissions() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+    public void requestMediaPermissions() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) { // Android 13 and above
             ActivityCompat.requestPermissions(this,
-                    new String[]{"android.permission.READ_MEDIA_IMAGES", "android.permission.READ_MEDIA_VIDEO"}, REQUEST_CODE);
+                    new String[]{Manifest.permission.READ_MEDIA_IMAGES, Manifest.permission.READ_MEDIA_VIDEO}, REQUEST_CODE_READ_MEDIA);
         } else {
             ActivityCompat.requestPermissions(this,
-                    new String[]{"android.permission.READ_EXTERNAL_STORAGE", "android.permission.WRITE_EXTERNAL_STORAGE"}, REQUEST_CODE);
+                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_CODE_READ_MEDIA);
         }
     }
 
+
+    public void requestPermissions() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, REQUEST_CODE);
+        }
+    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {

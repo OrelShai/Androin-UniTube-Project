@@ -37,21 +37,23 @@ public class CommentManager {
     }
 
     private void initialize() {
+        User currentUser = UserManager.getInstance().getCurrentUser();
+
         // Set the user's profile image if logged in, otherwise set a placeholder image
-        if (RegisterScreen.currentUser != null) {
-            String profilePictureName = RegisterScreen.currentUser.getProfilePicture();
+        if (currentUser != null) {
+            String profilePictureName = currentUser.getProfilePicture();
             int profileImageResourceId = context.getResources().getIdentifier(profilePictureName, "drawable", context.getPackageName());
             if (profileImageResourceId != 0) {
                 userProfileImageView.setImageResource(profileImageResourceId);
             } else {
-                userProfileImageView.setImageURI(RegisterScreen.currentUser.getProfilePictureUri()); // Fallback profile image
+                userProfileImageView.setImageURI(currentUser.getProfilePictureUri()); // Fallback profile image
             }
         } else {
             userProfileImageView.setImageResource(R.drawable.ic_profile_placeholder); // Default image when not logged in
         }
 
         uploadCommentButton.setOnClickListener(v -> {
-            if (RegisterScreen.currentUser == null) {
+            if (currentUser == null) {
                 // User is not logged in, show notification
                 Toast.makeText(context, "You must be logged in to add a comment.", Toast.LENGTH_SHORT).show();
             } else {
@@ -63,11 +65,12 @@ public class CommentManager {
 
     private void addComment() {
         String commentText = commentEditText.getText().toString().trim();
+        User currentUser = UserManager.getInstance().getCurrentUser();
 
         if (!commentText.isEmpty()) {
             Comment newComment = new Comment(
-                    RegisterScreen.currentUser.getUserName(),
-                    RegisterScreen.currentUser.getProfilePictureUri(),
+                    currentUser.getUserName(),
+                    currentUser.getProfilePictureUri(),
                     commentText
             );
 

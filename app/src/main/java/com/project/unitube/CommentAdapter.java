@@ -69,7 +69,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
             popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                 @Override
                 public boolean onMenuItemClick(MenuItem item) {
-                    if (RegisterScreen.currentUser == null) {
+                    if (UserManager.getInstance().getCurrentUser() == null) {
                         // User is not logged in, show notification
                         Toast.makeText(context, "You must be logged in to perform this action.", Toast.LENGTH_SHORT).show();
                         return true;

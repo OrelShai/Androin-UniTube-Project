@@ -1,16 +1,10 @@
 package com.project.unitube;
 
-import static com.project.unitube.RegisterScreen.currentUser;
-
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Base64;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -62,7 +56,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void createAdminUser() {
         // Create admin user
-        RegisterScreen.usersList.add(new User("o", "s", "1", "os", "default_profile_image", Uri.parse("default_profile_image")));
+        User admin = new User("o", "s", "1", "os", "default_profile_image", Uri.parse("default_profile_image"));
+        UserManager.getInstance().addUser(admin);
     }
 
     private void initializeUIComponents() {
@@ -110,9 +105,10 @@ public class MainActivity extends AppCompatActivity {
         LinearLayout authLinearLayout = findViewById(R.id.log_in_out_button_layout);
         TextView authText = findViewById(R.id.text_log_in_out);
         ImageView authIcon = findViewById(R.id.icon_log_in_out);
+        UserManager userManager = UserManager.getInstance();
 
         // Check if there is a logged-in user
-        if (currentUser == null) {
+        if (userManager.getCurrentUser() == null) {
             // No user logged in, set to "Sign In"
             authText.setText("Sign In");
             authIcon.setImageResource(R.drawable.ic_login); // Change icon if needed
@@ -129,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
             authLinearLayout.setOnClickListener(view -> {
                 // Handle sign out and go to LoginScreen
                 Toast.makeText(this, "User signed out", Toast.LENGTH_SHORT).show();
-                currentUser = null;
+                userManager.setCurrentUser(null);
 
                 // Navigate to LoginScreen after sign out
                 Intent intent = new Intent(MainActivity.this, LoginScreen.class);
@@ -153,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Initialize Bottom Navigation
         findViewById(R.id.button_add_video).setOnClickListener(view -> {
-            if (currentUser != null) {
+            if (UserManager.getInstance().getCurrentUser() != null) {
                 // Navigate to add video screen
                 Intent intent = new Intent(MainActivity.this, AddVideoScreen.class);
                 startActivityForResult(intent, ADD_VIDEO_REQUEST); // Start AddVideoScreen with request code
@@ -219,6 +215,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void updateProfilePhotoPresent() {
         ImageView currentUserProfilePic = findViewById(R.id.logo);
+        User currentUser = UserManager.getInstance().getCurrentUser();
         if (currentUser != null) {
             Uri profilePhotoUri = currentUser.getProfilePictureUri();
             if (profilePhotoUri != null) {
@@ -248,6 +245,8 @@ public class MainActivity extends AppCompatActivity {
         NavigationView navigationView = findViewById(R.id.nav_view);
         View headerView = navigationView.getHeaderView(0);
         TextView greetingText = headerView.findViewById(R.id.user_greeting);
+
+        User currentUser = UserManager.getInstance().getCurrentUser();
 
         if (currentUser != null) {
             // User is signed in

@@ -131,7 +131,7 @@ public class AddVideoScreen extends AppCompatActivity {
                     videoDescription.getText().toString(),
                     selectedVideoUri.toString(),
                     selectedCoverPhotoUri.toString(),
-                    RegisterScreen.currentUser,
+                    UserManager.getInstance().getCurrentUser(),
                     getVideoDuration(selectedVideoUri)
             );
             Videos.videosList.add(newVideoObject); // Add the video to the list
