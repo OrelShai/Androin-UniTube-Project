@@ -5,11 +5,11 @@ import android.net.Uri;
 import java.io.Serializable;
 
 public class User implements Serializable {
-    private String firstName;
-    private String lastName;
-    private String password;
-    private String userName;
-    private String profilePicture;
+    private final String firstName;
+    private final String lastName;
+    private final String password;
+    private final String userName;
+    private final String profilePicture;
     private Uri profilePictureUri;
 
     // Constructor
@@ -39,10 +39,6 @@ public class User implements Serializable {
         return lastName;
     }
 
-    public String getFullName() {
-        return firstName + " " + lastName;
-    }
-
     public String getPassword() {
         return password;
     }
@@ -55,7 +51,4 @@ public class User implements Serializable {
         return profilePicture;
     }
 
-    public void setProfilePicture(String profilePicture) {
-        this.profilePicture = (profilePicture != null && !profilePicture.isEmpty()) ? profilePicture : "placeholder_profile";
-    }
 }
