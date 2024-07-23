@@ -13,7 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHolder> {
-    private Context context;
+    private final Context context;
 
     public VideoAdapter(Context context) {
         this.context = context;
@@ -51,10 +51,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
             holder.uploaderProfileImage.setImageURI(video.getUser().getProfilePictureUri()); // Fallback profile image
         }
 
-        // Handle more options button logic
-        holder.moreOptionsButton.setOnClickListener(v -> {
-            // Handle more options logic here
-        });
+
 
         // Set click listener on the whole item view to open VideoPlayActivity
         holder.itemView.setOnClickListener(v -> {
@@ -79,7 +76,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
         TextView videoUploadDate;
         TextView videoDuration;
         ImageView uploaderProfileImage;
-        ImageButton moreOptionsButton;
+
 
         public VideoViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -89,7 +86,6 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
             videoUploadDate = itemView.findViewById(R.id.videoUploadDate);
             videoDuration = itemView.findViewById(R.id.videoDuration);
             uploaderProfileImage = itemView.findViewById(R.id.uploaderProfileImage);
-            moreOptionsButton = itemView.findViewById(R.id.moreOptionsButton);
         }
     }
 }

@@ -56,7 +56,7 @@ public class VideoPlayActivity extends AppCompatActivity implements CommentAdapt
 
     private static final String TAG = "VideoPlayActivity";
 
-    private Handler handler = new Handler();
+    private final Handler handler = new Handler();
     private Runnable updateProgressAction;
 
     /**

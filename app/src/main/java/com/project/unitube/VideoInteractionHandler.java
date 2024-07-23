@@ -1,5 +1,6 @@
 package com.project.unitube;
 
+
 import android.app.AlertDialog;
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -52,21 +53,23 @@ public class VideoInteractionHandler {
 
 
     private void setupInteractionListeners() {
+        User currentUser = UserManager.getInstance().getCurrentUser();
+
         likeButton.setOnClickListener(v -> {
-            if (RegisterScreen.currentUser == null) {
+            if (currentUser == null) {
                 showToast("You cannot like a video if you are not logged in.");
             } else if (currentVideo != null) {
-                currentVideo.addLike(RegisterScreen.currentUser.getUserName());
+                currentVideo.addLike(currentUser.getUserName());
                 updateLikeDislikeCounts(currentVideo);
                 saveVideoState(currentVideo); // Save state after updating
             }
         });
 
         dislikeButton.setOnClickListener(v -> {
-            if (RegisterScreen.currentUser == null) {
+            if (currentUser == null) {
                 showToast("You cannot dislike a video if you are not logged in.");
             } else if (currentVideo != null) {
-                currentVideo.addDislike(RegisterScreen.currentUser.getUserName());
+                currentVideo.addDislike(currentUser.getUserName());
                 updateLikeDislikeCounts(currentVideo);
                 saveVideoState(currentVideo); // Save state after updating
             }
@@ -118,9 +121,11 @@ public class VideoInteractionHandler {
     }
 
     private void updateButtonIcons() {
-        if (currentVideo != null && RegisterScreen.currentUser != null) {
-            boolean isLiked = currentVideo.getLikesList().contains(RegisterScreen.currentUser.getUserName());
-            boolean isDisliked = currentVideo.getDislikesList().contains(RegisterScreen.currentUser.getUserName());
+        User currentUser = UserManager.getInstance().getCurrentUser();
+
+        if (currentVideo != null && currentUser != null) {
+            boolean isLiked = currentVideo.getLikesList().contains(currentUser.getUserName());
+            boolean isDisliked = currentVideo.getDislikesList().contains(currentUser.getUserName());
 
             // Assuming you have appropriate icons for liked, unliked, disliked, and undisliked states
             int likeIconRes = isLiked ? R.drawable.ic_liked : R.drawable.ic_like;
@@ -253,7 +258,7 @@ public class VideoInteractionHandler {
     }
 
     private boolean isUserLoggedIn() {
-        return RegisterScreen.currentUser != null;
+        return UserManager.getInstance().getCurrentUser() != null;
     }
 
     private void showLoginErrorMessage() {

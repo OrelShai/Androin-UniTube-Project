@@ -13,12 +13,13 @@ public class User implements Serializable {
     private Uri profilePictureUri;
 
     // Constructor
-    public User(String firstName, String lastName, String password, String userName, String profilePicture) {
+    public User(String firstName, String lastName, String password, String userName, String profilePicture, Uri profilePictureUri) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.password = password;
         this.userName = userName;
         this.profilePicture = profilePicture;
+        this.profilePictureUri = profilePictureUri;
     }
 
     public void setProfilePictureUri(Uri profilePictureUri) {

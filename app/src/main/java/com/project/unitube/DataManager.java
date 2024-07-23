@@ -67,8 +67,9 @@ public class DataManager {
                 String password = jsonObject.getString("password");
                 String userName = jsonObject.getString("userName");
                 String profilePicture = jsonObject.optString("profilePicture", "placeholder_profile");
+                Uri profilePictureUri = Uri.parse(profilePicture);
 
-                User user = new User(firstName, lastName, password, userName, profilePicture);
+                User user = new User(firstName, lastName, password, userName, profilePicture, profilePictureUri);
                 userList.add(user);
             }
         } catch (Exception e) {

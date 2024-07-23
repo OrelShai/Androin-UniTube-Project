@@ -1,17 +1,28 @@
 package com.project.unitube;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import java.util.LinkedList;
-import java.util.List;
+
+import androidx.core.content.FileProvider;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 /**
  * RegisterScreen handles the registration process for new users.
@@ -30,11 +41,11 @@ public class RegisterScreen extends Activity {
     private Button uploadPhotoButton;
     private Button signUpButton;
 
-    // List of users and the current logged-in user
-    public static List<User> usersList = new LinkedList<>();
-    public static User currentUser;
+    private Uri selectedPhotoUri;
 
-    private UploadPhotoHandler uploadPhotoHandler;
+    private static final int PICK_IMAGE_REQUEST = 1;
+    private static final int CAPTURE_IMAGE_REQUEST = 2;
+
 
     /**
      * Called when the activity is first created.
@@ -52,8 +63,8 @@ public class RegisterScreen extends Activity {
         // Initialize UI components
         initializeUIComponents();
 
-        // Initialize UploadPhotoHandler
-        uploadPhotoHandler = new UploadPhotoHandler(this);
+        // Request permissions for accessing media files
+        //requestPermissions();
 
         // Set up listeners for buttons
         setUpListeners();
@@ -89,24 +100,20 @@ public class RegisterScreen extends Activity {
             startActivity(intent);
         });
 
-        uploadPhotoButton.setOnClickListener(v -> uploadPhotoHandler.showImagePickerOptions());
+        uploadPhotoButton.setOnClickListener(v -> showImagePickerOptions());
 
         signUpButton.setOnClickListener(v -> {
             if (validateFields()) {
-                String profileImageUrl = profileImageView.getTag() != null ?
-                        profileImageView.getTag().toString() :
-                        "default_profile_image";
-
                 User user = new User(
                         firstNameEditText.getText().toString(),
                         lastNameEditText.getText().toString(),
                         passwordEditText.getText().toString(),
                         userNameEditText.getText().toString(),
-                        profileImageUrl);
+                        profileImageView.getTag() != null ? profileImageView.getTag().toString() : "default_profile_image",
+                        getSelectedPhotoUri());
 
-                user.setProfilePictureUri(uploadPhotoHandler.getSelectedPhotoUri());
                 // Add the user to the list and set as current user
-                usersList.add(user);
+                UserManager.getInstance().addUser(user);
 
                 // Show "Sign up successful" toast and move to sign-in page
                 Toast.makeText(this, "Sign up successful", Toast.LENGTH_SHORT).show();
@@ -191,7 +198,7 @@ public class RegisterScreen extends Activity {
      */
     private Boolean isUsernameTaken(String username) {
         // Iterate through the usersList and find the user
-        for (User user : usersList) {
+        for (User user : UserManager.getInstance().getUsers()) {
             if (user.getUserName().equals(username)) {
                 return true;
             }
@@ -210,11 +217,11 @@ public class RegisterScreen extends Activity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        uploadPhotoHandler.handleActivityResult(requestCode, resultCode, data);
+        handleActivityResult(requestCode, resultCode, data);
 
         // Update profileImageView with the selected/captured photo
         if (resultCode == RESULT_OK) {
-            Uri photoUri = uploadPhotoHandler.getSelectedPhotoUri();
+            Uri photoUri = getSelectedPhotoUri();
             if (photoUri != null) {
                 try {
                     profileImageView.setImageURI(photoUri);
@@ -226,4 +233,91 @@ public class RegisterScreen extends Activity {
             }
         }
     }
+
+    public void handleActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == PICK_IMAGE_REQUEST && data != null && data.getData() != null) {
+                selectedPhotoUri = data.getData();
+                saveImageFromUri(selectedPhotoUri);
+                // Handle picking image from gallery
+            } else if (requestCode == CAPTURE_IMAGE_REQUEST) {
+                // Handle capturing image from camera
+                // The selected photo URI is already set in captureImageFromCamera()
+            }
+        }
+    }
+    public void showImagePickerOptions() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Select Image Source");
+        builder.setItems(new CharSequence[]{"Choose from Gallery", "Take a Photo"},
+                (dialog, which) -> {
+                    switch (which) {
+                        case 0:
+                            pickImageFromGallery();
+                            break;
+                        case 1:
+                            captureImageFromCamera();
+                            break;
+                    }
+                });
+        builder.show();
+    }
+
+
+    private void pickImageFromGallery() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
+    }
+
+
+    private void captureImageFromCamera() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            File photoFile = createImageFile();
+            if (photoFile != null) {
+                Uri photoUri = FileProvider.getUriForFile(this, "com.project.unitube.fileprovider", photoFile);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
+                selectedPhotoUri = photoUri; // Store the selected photo URI
+                startActivityForResult(takePictureIntent, CAPTURE_IMAGE_REQUEST);
+            }
+        }
+    }
+
+
+    private File createImageFile() {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        try {
+            return File.createTempFile(imageFileName, ".jpg", storageDir);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+
+    private void saveImageFromUri(Uri uri) {
+        try {
+            File imageFile = createImageFile();
+            try (InputStream inputStream = getContentResolver().openInputStream(uri);
+                 FileOutputStream outputStream = new FileOutputStream(imageFile)) {
+                byte[] buffer = new byte[1024];
+                int length;
+                while ((length = inputStream.read(buffer)) > 0) {
+                    outputStream.write(buffer, 0, length);
+                }
+            }
+            selectedPhotoUri = Uri.fromFile(imageFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Uri getSelectedPhotoUri() {
+        return selectedPhotoUri;
+    }
 }
+
+

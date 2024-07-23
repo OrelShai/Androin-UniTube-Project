@@ -1,16 +1,12 @@
 package com.project.unitube;
 
-import static com.project.unitube.RegisterScreen.currentUser;
-
+import android.Manifest;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Base64;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -20,6 +16,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.core.view.GravityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -28,6 +25,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.google.android.material.navigation.NavigationView;
 import static com.project.unitube.VideoInteractionHandler.updateDate;
+
 public class MainActivity extends AppCompatActivity {
 
     private static final int ADD_VIDEO_REQUEST = 1; // Request code for adding a video
@@ -38,6 +36,13 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     private DataManager dataManager;
     private VideoAdapter videoAdapter;
+
+    private static final String[] REQUIRED_PERMISSIONS = {
+            Manifest.permission.CAMERA,
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,9 +65,19 @@ public class MainActivity extends AppCompatActivity {
         createAdminUser();
     }
 
+    private boolean allPermissionsGranted() {
+        for (String permission : REQUIRED_PERMISSIONS) {
+            if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     private void createAdminUser() {
         // Create admin user
-        RegisterScreen.usersList.add(new User("o", "s", "1", "os", "default_profile_image"));
+        User admin = new User("o", "s", "1", "os", "default_profile_image", Uri.parse("default_profile_image"));
+        UserManager.getInstance().addUser(admin);
     }
 
     private void initializeUIComponents() {
@@ -110,11 +125,12 @@ public class MainActivity extends AppCompatActivity {
         LinearLayout authLinearLayout = findViewById(R.id.log_in_out_button_layout);
         TextView authText = findViewById(R.id.text_log_in_out);
         ImageView authIcon = findViewById(R.id.icon_log_in_out);
+        UserManager userManager = UserManager.getInstance();
 
         // Check if there is a logged-in user
-        if (currentUser == null) {
+        if (userManager.getCurrentUser() == null) {
             // No user logged in, set to "Sign In"
-            authText.setText("Sign In");
+            authText.setText(getString(R.string.sign_in));
             authIcon.setImageResource(R.drawable.ic_login); // Change icon if needed
 
             authLinearLayout.setOnClickListener(view -> {
@@ -123,13 +139,13 @@ public class MainActivity extends AppCompatActivity {
             });
         } else {
             // User is logged in, set to "Sign Out"
-            authText.setText("Sign Out");
+            authText.setText(getString(R.string.sign_out));
             authIcon.setImageResource(R.drawable.ic_logout); // Change icon if needed
 
             authLinearLayout.setOnClickListener(view -> {
                 // Handle sign out and go to LoginScreen
                 Toast.makeText(this, "User signed out", Toast.LENGTH_SHORT).show();
-                currentUser = null;
+                userManager.setCurrentUser(null);
 
                 // Navigate to LoginScreen after sign out
                 Intent intent = new Intent(MainActivity.this, LoginScreen.class);
@@ -153,7 +169,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Initialize Bottom Navigation
         findViewById(R.id.button_add_video).setOnClickListener(view -> {
-            if (currentUser != null) {
+            if (UserManager.getInstance().getCurrentUser() != null) {
                 // Navigate to add video screen
                 Intent intent = new Intent(MainActivity.this, AddVideoScreen.class);
                 startActivityForResult(intent, ADD_VIDEO_REQUEST); // Start AddVideoScreen with request code
@@ -219,20 +235,23 @@ public class MainActivity extends AppCompatActivity {
 
     private void updateProfilePhotoPresent() {
         ImageView currentUserProfilePic = findViewById(R.id.logo);
+        User currentUser = UserManager.getInstance().getCurrentUser();
+
         if (currentUser != null) {
             Uri profilePhotoUri = currentUser.getProfilePictureUri();
+
             if (profilePhotoUri != null) {
+
                 currentUserProfilePic.setImageURI(profilePhotoUri);
                 Glide.with(this)
                         .load(profilePhotoUri)
                         .circleCrop()
                         .placeholder(R.drawable.default_profile_image) // Placeholder in case of loading issues
                         .into(currentUserProfilePic);
-            }
-            else {
+            } else {
                 currentUserProfilePic.setImageResource(R.drawable.default_profile_image);
                 Glide.with(this)
-                        .load(profilePhotoUri)
+                        .load(profilePhotoUri)  // This line seems redundant as profilePhotoUri is null here.
                         .circleCrop()
                         .placeholder(R.drawable.default_profile_image) // Placeholder in case of loading issues
                         .into(currentUserProfilePic);
@@ -248,6 +267,8 @@ public class MainActivity extends AppCompatActivity {
         NavigationView navigationView = findViewById(R.id.nav_view);
         View headerView = navigationView.getHeaderView(0);
         TextView greetingText = headerView.findViewById(R.id.user_greeting);
+
+        User currentUser = UserManager.getInstance().getCurrentUser();
 
         if (currentUser != null) {
             // User is signed in

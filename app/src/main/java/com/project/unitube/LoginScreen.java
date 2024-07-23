@@ -1,8 +1,5 @@
 package com.project.unitube;
 
-import static com.project.unitube.RegisterScreen.currentUser;
-import static com.project.unitube.RegisterScreen.usersList;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -48,7 +45,7 @@ public class LoginScreen extends Activity {
 
             if (foundUser != null) {
                 // Set the currentUser reference to the found user
-                currentUser = foundUser;
+                UserManager.getInstance().setCurrentUser(foundUser);
                 Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show();
                 // back to the main activity
                 finish();
@@ -65,7 +62,7 @@ public class LoginScreen extends Activity {
 
     private User findUser(String username, String password) {
         // Iterate through the usersList and find the user
-        List<User> users = usersList;
+        List<User> users = UserManager.getInstance().getUsers();
         for (User user : users) {
             if (user.getUserName().equals(username) && user.getPassword().equals(password)) {
                 return user;
