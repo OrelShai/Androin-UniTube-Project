@@ -1,10 +1,14 @@
 package com.project.unitube;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -12,8 +16,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.core.view.GravityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -22,6 +29,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.google.android.material.navigation.NavigationView;
 import static com.project.unitube.VideoInteractionHandler.updateDate;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class MainActivity extends AppCompatActivity {
 
     private static final int ADD_VIDEO_REQUEST = 1; // Request code for adding a video
@@ -33,10 +46,27 @@ public class MainActivity extends AppCompatActivity {
     private DataManager dataManager;
     private VideoAdapter videoAdapter;
 
+    private static final int REQUEST_CODE_READ_MEDIA = 101;
+
+    private static final int REQUEST_CODE_PERMISSIONS = 101;
+
+    private static final String[] REQUIRED_PERMISSIONS = {
+            Manifest.permission.CAMERA,
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        if (!allPermissionsGranted()) {
+            requestPermissions();
+        } else {
+            updateProfilePhotoPresent();
+        }
 
         // Initialize DataManager
         dataManager = new DataManager(this);
@@ -52,6 +82,15 @@ public class MainActivity extends AppCompatActivity {
 
         // Add an admin user for testing
         createAdminUser();
+    }
+
+    private boolean allPermissionsGranted() {
+        for (String permission : REQUIRED_PERMISSIONS) {
+            if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private void createAdminUser() {
@@ -216,20 +255,35 @@ public class MainActivity extends AppCompatActivity {
     private void updateProfilePhotoPresent() {
         ImageView currentUserProfilePic = findViewById(R.id.logo);
         User currentUser = UserManager.getInstance().getCurrentUser();
+
         if (currentUser != null) {
             Uri profilePhotoUri = currentUser.getProfilePictureUri();
+
             if (profilePhotoUri != null) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) { // Android 13 and above
+                    if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_IMAGES) != PackageManager.PERMISSION_GRANTED ||
+                            ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_VIDEO) != PackageManager.PERMISSION_GRANTED) {
+                        requestPermissions();
+                        return;
+                    }
+                } else {
+                    if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
+                            ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                        requestPermissions();
+                        return;
+                    }
+                }
+
                 currentUserProfilePic.setImageURI(profilePhotoUri);
                 Glide.with(this)
                         .load(profilePhotoUri)
                         .circleCrop()
                         .placeholder(R.drawable.default_profile_image) // Placeholder in case of loading issues
                         .into(currentUserProfilePic);
-            }
-            else {
+            } else {
                 currentUserProfilePic.setImageResource(R.drawable.default_profile_image);
                 Glide.with(this)
-                        .load(profilePhotoUri)
+                        .load(profilePhotoUri)  // This line seems redundant as profilePhotoUri is null here.
                         .circleCrop()
                         .placeholder(R.drawable.default_profile_image) // Placeholder in case of loading issues
                         .into(currentUserProfilePic);
@@ -280,4 +334,83 @@ public class MainActivity extends AppCompatActivity {
             videoAdapter.notifyDataSetChanged();
         }
     }
+
+
+//    private void requestMediaPermissions() {
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) { // Android 13 and above
+//            ActivityCompat.requestPermissions(this,
+//                    new String[]{Manifest.permission.READ_MEDIA_IMAGES, Manifest.permission.READ_MEDIA_VIDEO}, REQUEST_CODE_READ_MEDIA);
+//        } else {
+//            ActivityCompat.requestPermissions(this,
+//                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_CODE_READ_MEDIA);
+//        }
+//    }
+
+
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+//        if (requestCode == REQUEST_CODE_READ_MEDIA) {
+//            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                // Permission granted, proceed with accessing media
+//                updateProfilePhotoPresent();
+//            } else {
+//                // Permission denied, handle the case
+//                Toast.makeText(this, "Permission denied to read media files", Toast.LENGTH_SHORT).show();
+//            }
+//        }
+//    }
+
+
+    public void requestPermissions() {
+        List<String> permissionsNeeded = new ArrayList<>();
+        for (String permission : REQUIRED_PERMISSIONS) {
+            if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
+                permissionsNeeded.add(permission);
+            }
+        }
+
+        if (!permissionsNeeded.isEmpty()) {
+            ActivityCompat.requestPermissions(this, permissionsNeeded.toArray(new String[0]), REQUEST_CODE_PERMISSIONS);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_CODE_PERMISSIONS) {
+            Map<String, Integer> perms = new HashMap<>();
+            // Initialize the map with all permissions as not granted
+            for (String permission : REQUIRED_PERMISSIONS) {
+                perms.put(permission, PackageManager.PERMISSION_DENIED);
+            }
+            // Update the map with the results
+            if (grantResults.length > 0) {
+                for (int i = 0; i < permissions.length; i++) {
+                    perms.put(permissions[i], grantResults[i]);
+                }
+                // Check if all permissions are granted
+                boolean allPermissionsGranted = true;
+                for (String permission : REQUIRED_PERMISSIONS) {
+                    if (perms.get(permission) != PackageManager.PERMISSION_GRANTED) {
+                        allPermissionsGranted = false;
+                        break;
+                    }
+                }
+                if (allPermissionsGranted) {
+                    // All permissions are granted, proceed with your operation
+                    //updateProfilePhotoPresent();
+                } else {
+                    // At least one permission is denied
+                    for (String permission : perms.keySet()) {
+                        if (perms.get(permission) != PackageManager.PERMISSION_GRANTED) {
+                            Log.d("PermissionsDenied", "Permission denied: " + permission);
+                        }
+                    }
+                    Toast.makeText(this, "All permissions are required to proceed", Toast.LENGTH_SHORT).show();                }
+            }
+        }
+    }
+
+
 }
