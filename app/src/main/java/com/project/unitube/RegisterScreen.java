@@ -1,12 +1,9 @@
 package com.project.unitube;
 
-import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -17,9 +14,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
 import java.io.File;
@@ -28,8 +22,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Locale;
 
 /**
@@ -53,8 +45,6 @@ public class RegisterScreen extends Activity {
 
     private static final int PICK_IMAGE_REQUEST = 1;
     private static final int CAPTURE_IMAGE_REQUEST = 2;
-    private static final int REQUEST_CODE = 100;
-    private static final int REQUEST_CODE_READ_MEDIA = 101;
 
 
     /**
@@ -324,42 +314,6 @@ public class RegisterScreen extends Activity {
             e.printStackTrace();
         }
     }
-
-
-//    private void requestPermissions() {
-//        List<String> permissionsNeeded = new LinkedList<>();
-//
-//        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-//            permissionsNeeded.add(Manifest.permission.READ_EXTERNAL_STORAGE);
-//        }
-//
-//        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-//            permissionsNeeded.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
-//        }
-//
-//        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-//            permissionsNeeded.add(Manifest.permission.CAMERA);
-//        }
-//
-//        if (!permissionsNeeded.isEmpty()) {
-//            ActivityCompat.requestPermissions(this, permissionsNeeded.toArray(new String[0]), REQUEST_CODE_READ_MEDIA);
-//        }
-//    }
-//
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-//        if (requestCode == REQUEST_CODE_READ_MEDIA) {
-//            if (grantResults.length > 0) {
-//                for (int result : grantResults) {
-//                    if (result != PackageManager.PERMISSION_GRANTED) {
-//                        Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
-//                        return;
-//                    }
-//                }
-//                // Permissions granted
-//            }
-//        }
-//    }
 
     public Uri getSelectedPhotoUri() {
         return selectedPhotoUri;

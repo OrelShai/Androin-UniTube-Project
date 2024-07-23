@@ -1,10 +1,8 @@
 package com.project.unitube;
 
-import static androidx.core.content.ContextCompat.startActivity;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;

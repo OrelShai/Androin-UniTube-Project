@@ -9,9 +9,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -22,7 +20,6 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import android.view.ViewGroup.LayoutParams;
 import android.Manifest;
 
 
@@ -56,7 +53,7 @@ public class VideoPlayActivity extends AppCompatActivity implements CommentAdapt
 
     private static final String TAG = "VideoPlayActivity";
 
-    private Handler handler = new Handler();
+    private final Handler handler = new Handler();
     private Runnable updateProgressAction;
 
     @SuppressLint("WrongViewCast")

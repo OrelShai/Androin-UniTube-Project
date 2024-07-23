@@ -8,12 +8,12 @@ import android.widget.VideoView;
 
 public class VideoLoader {
 
-    private Context context;
-    private VideoView videoView;
-    private TextView titleTextView;
-    private TextView descriptionTextView;
-    private TextView uploaderNameTextView;
-    private ImageView uploaderProfileImageView;
+    private final Context context;
+    private final VideoView videoView;
+    private final TextView titleTextView;
+    private final TextView descriptionTextView;
+    private final TextView uploaderNameTextView;
+    private final ImageView uploaderProfileImageView;
 
     public VideoLoader(Context context, VideoView videoView, TextView titleTextView, TextView descriptionTextView,
                        TextView uploaderNameTextView, ImageView uploaderProfileImageView) {
@@ -33,7 +33,7 @@ public class VideoLoader {
         if (profileImageResourceId != 0) {
             uploaderProfileImageView.setImageResource(profileImageResourceId);
         } else {
-            uploaderProfileImageView.setImageResource(R.drawable.ic_profile_placeholder);
+            uploaderProfileImageView.setImageURI(video.getUser().getProfilePictureUri());
         }
         Uri videoUri;
         int videoResourceId = context.getResources().getIdentifier(video.getUrl(), "raw", context.getPackageName());
@@ -45,9 +45,7 @@ public class VideoLoader {
         videoView.setVideoURI(videoUri);
 
 
-        videoView.setOnPreparedListener(mp -> {
-            videoView.start();
-        });
+        videoView.setOnPreparedListener(mp -> videoView.start());
     }
 
 }

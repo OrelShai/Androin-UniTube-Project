@@ -1,7 +1,5 @@
 package com.project.unitube;
 
-import static com.project.unitube.Videos.videosList;
-
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -15,7 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHolder> {
-    private Context context;
+    private final Context context;
 
     public VideoAdapter(Context context) {
         this.context = context;

@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-// Ensure this import is correct
-import com.project.unitube.Comment;
 
 public class Video implements Serializable {
     private static int nextId = 1;

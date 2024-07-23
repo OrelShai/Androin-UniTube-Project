@@ -4,11 +4,9 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -20,9 +18,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
 
 import java.io.File;
@@ -48,7 +44,6 @@ public class AddVideoScreen extends AppCompatActivity {
 
     private static final int PICK_IMAGE_REQUEST = 1;
     private static final int CAPTURE_IMAGE_REQUEST = 2;
-    private static final int REQUEST_CODE = 100;
     private static final int PICK_VIDEO_REQUEST = 101;
     private static final int CAPTURE_VIDEO_REQUEST = 102;
 
@@ -94,46 +89,6 @@ public class AddVideoScreen extends AppCompatActivity {
                 createAndAddVideo();
             }
         });
-    }
-
-//    @Override
-//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//        // Call handleActivityResult for both handlers with proper arguments
-//        handleVideoActivityResult(requestCode, resultCode, data);
-//        handlePhotoActivityResult(requestCode, resultCode, data);
-//
-//        if (resultCode == RESULT_OK) {
-//            Uri photoUri = getSelectedPhotoUri();
-//            if (photoUri != null) {
-//                try {
-//                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), photoUri);
-//                    uploadVideoCoverImage.setImageBitmap(bitmap);
-//                    uploadVideoCoverImage.setTag(photoUri.toString());
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//
-//            Uri videoUri = getSelectedVideoUri();
-//            if (videoUri != null) {
-//                this.videoUri.setText(videoUri.toString());
-//            }
-//        }
-//    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (resultCode == RESULT_OK) {
-            if (requestCode == PICK_IMAGE_REQUEST || requestCode == CAPTURE_IMAGE_REQUEST) {
-                handlePhotoActivityResult(requestCode, resultCode, data);
-            }
-            if (requestCode == PICK_VIDEO_REQUEST || requestCode == CAPTURE_VIDEO_REQUEST) {
-                handleVideoActivityResult(requestCode, resultCode, data);
-            }
-        }
     }
 
     private void createAndAddVideo() {
@@ -199,7 +154,6 @@ public class AddVideoScreen extends AppCompatActivity {
         return isValid;
     }
 
-
     public void showImagePickerOptions() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Select Image Source");
@@ -249,31 +203,20 @@ public class AddVideoScreen extends AppCompatActivity {
         }
     }
 
-//    public void handlePhotoActivityResult(int requestCode, int resultCode, Intent data) {
-//        if (resultCode == Activity.RESULT_OK) {
-//            if (requestCode == PICK_IMAGE_REQUEST && data != null && data.getData() != null) {
-//                // Handle picking image from gallery
-//                selectedPhotoUri = data.getData();
-//            } else if (requestCode == CAPTURE_IMAGE_REQUEST) {
-//                // Handle capturing image from camera
-//                // The selected photo URI is already set in captureImageFromCamera()
-//            }
-//        }
-//    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
-    //    public void handleVideoActivityResult(int requestCode, int resultCode, Intent data) {
-//        if (resultCode == Activity.RESULT_OK) {
-//            if (requestCode == PICK_VIDEO_REQUEST && data != null && data.getData() != null) {
-//                // Handle picked video from gallery
-//                Toast.makeText(this, "Video picked from gallery", Toast.LENGTH_SHORT).show();
-//                selectedVideoUri = data.getData(); // Store the video URI
-//            } else if (requestCode == CAPTURE_VIDEO_REQUEST && data != null && data.getData() != null) {
-//                // Handle captured video from camera
-//                Toast.makeText(this, "Video captured from camera", Toast.LENGTH_SHORT).show();
-//                selectedVideoUri = data.getData(); // Store the video URI
-//            }
-//        }
-//    }
+        if (resultCode == RESULT_OK) {
+            if (requestCode == PICK_IMAGE_REQUEST || requestCode == CAPTURE_IMAGE_REQUEST) {
+                handlePhotoActivityResult(requestCode, resultCode, data);
+            }
+            if (requestCode == PICK_VIDEO_REQUEST || requestCode == CAPTURE_VIDEO_REQUEST) {
+                handleVideoActivityResult(requestCode, resultCode, data);
+            }
+        }
+    }
+
     private void handlePhotoActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK) {
             try {
@@ -282,12 +225,14 @@ public class AddVideoScreen extends AppCompatActivity {
                     // Save the image to a file
                     File imageFile = saveUriToFile(selectedPhotoUri, "IMG_", ".jpg");
                     selectedPhotoUri = Uri.fromFile(imageFile);
+                    // show the selected image
                     Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), selectedPhotoUri);
                     uploadVideoCoverImage.setImageBitmap(bitmap);
                     uploadVideoCoverImage.setTag(selectedPhotoUri.toString());
                 } else if (requestCode == CAPTURE_IMAGE_REQUEST) {
                     // The selectedPhotoUri is already set in captureImageFromCamera()
                     if (selectedPhotoUri != null) {
+                        // show the selected image
                         Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), selectedPhotoUri);
                         uploadVideoCoverImage.setImageBitmap(bitmap);
                         uploadVideoCoverImage.setTag(selectedPhotoUri.toString());
@@ -319,29 +264,6 @@ public class AddVideoScreen extends AppCompatActivity {
             }
         }
     }
-
-
-//    public void requestPermissions() {
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-//            ActivityCompat.requestPermissions(this,
-//                    new String[]{"android.permission.READ_MEDIA_IMAGES", "android.permission.READ_MEDIA_VIDEO"}, REQUEST_CODE);
-//        } else {
-//            ActivityCompat.requestPermissions(this,
-//                    new String[]{"android.permission.READ_EXTERNAL_STORAGE", "android.permission.WRITE_EXTERNAL_STORAGE"}, REQUEST_CODE);
-//        }
-//    }
-//
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-//        if (requestCode == REQUEST_CODE) {
-//            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//                // Permission granted, proceed with your operation
-//            } else {
-//                Toast.makeText(this, "permission denied", Toast.LENGTH_SHORT).show();
-//            }
-//        }
-//    }
 
     public void showVideoPickerOptions() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -406,7 +328,6 @@ public class AddVideoScreen extends AppCompatActivity {
             return String.format("%02d:%02d", minutes, seconds);
         }
     }
-
 
     private File saveUriToFile(Uri uri, String filePrefix, String fileExtension) throws IOException {
         InputStream inputStream = getContentResolver().openInputStream(uri);
