@@ -1,4 +1,7 @@
-package com.project.unitube;
+package com.project.unitube.entities;
+
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
@@ -7,9 +10,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+@Entity
 public class Video implements Serializable {
-    private static int nextId = 1;
+    @PrimaryKey
     private final int id;
+    private static int nextId = 1;
 
 
     private String title;

@@ -1,10 +1,12 @@
-package com.project.unitube;
+package com.project.unitube.utils;
 
 import android.content.Context;
 import android.net.Uri;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.VideoView;
+
+import com.project.unitube.entities.Video;
 
 public class VideoLoader {
 

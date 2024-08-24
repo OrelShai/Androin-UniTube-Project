@@ -1,6 +1,4 @@
-package com.project.unitube;
-
-import static com.project.unitube.Videos.videosList;
+package com.project.unitube.utils.manager;
 
 import android.content.Context;
 import android.media.MediaMetadataRetriever;
@@ -15,10 +13,13 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import  com.project.unitube.Videos;
+
+import com.project.unitube.entities.User;
+import com.project.unitube.entities.Video;
+import com.project.unitube.entities.Videos;
 
 
-import com.project.unitube.Comment;
+import com.project.unitube.entities.Comment;
 
 public class DataManager {
     private List<User> userList;

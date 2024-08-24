@@ -1,4 +1,4 @@
-package com.project.unitube;
+package com.project.unitube.ui.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -14,6 +14,10 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.project.unitube.R;
+import com.project.unitube.utils.manager.UserManager;
+import com.project.unitube.entities.Comment;
 
 import java.util.List;
 

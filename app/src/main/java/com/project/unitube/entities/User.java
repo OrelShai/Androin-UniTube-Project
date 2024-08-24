@@ -1,13 +1,18 @@
-package com.project.unitube;
+package com.project.unitube.entities;
 
 import android.net.Uri;
 
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
 import java.io.Serializable;
 
+@Entity
 public class User implements Serializable {
     private final String firstName;
     private final String lastName;
     private final String password;
+    @PrimaryKey
     private final String userName;
     private final String profilePicture;
     private Uri profilePictureUri;

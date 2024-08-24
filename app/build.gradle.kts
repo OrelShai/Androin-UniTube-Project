@@ -40,11 +40,13 @@ dependencies {
     // Room dependencies
     implementation("androidx.room:room-runtime:2.3.0")
     annotationProcessor("androidx.room:room-compiler:2.3.0")
-    // For Kotlin use kapt instead of annotationProcessor
-    // kapt("androidx.room:room-compiler:2.3.0")
 
-    // optional - Kotlin Extensions and Coroutines support for Room
+    // RetroFit dependencies
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+
     implementation("androidx.room:room-ktx:2.3.0")
+    implementation("androidx.room:room-common:2.3.0")
     implementation("com.google.android.material:material:1.3.0")
     implementation("com.github.bumptech.glide:glide:4.12.0")
     annotationProcessor ("com.github.bumptech.glide:compiler:4.12.0")

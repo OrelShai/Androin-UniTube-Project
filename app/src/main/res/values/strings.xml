@@ -51,4 +51,5 @@
     <string name="welcome_to_unitube">welcome to UniTube</string>
     <string name="welcome">welcome</string>
     <string name="play_pause">Play/Pause the video</string>
+    <string name="BaseUrl">mongodb://10.0.2.2:27017/unitube</string>
 </resources>

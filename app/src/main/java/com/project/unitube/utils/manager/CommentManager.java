@@ -1,14 +1,17 @@
-package com.project.unitube;
-
-import static android.content.ContentValues.TAG;
+package com.project.unitube.utils.manager;
 
 import android.content.Context;
-import android.util.Log;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.project.unitube.R;
+import com.project.unitube.entities.Comment;
+import com.project.unitube.entities.User;
+import com.project.unitube.entities.Video;
+import com.project.unitube.ui.adapter.CommentAdapter;
 
 import java.util.List;
 

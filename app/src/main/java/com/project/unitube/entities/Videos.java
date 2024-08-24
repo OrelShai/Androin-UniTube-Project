@@ -1,4 +1,4 @@
-package com.project.unitube;
+package com.project.unitube.entities;
 
 import java.util.ArrayList;
 import java.util.List;

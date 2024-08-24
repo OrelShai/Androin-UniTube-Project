@@ -1,4 +1,4 @@
-package com.project.unitube;
+package com.project.unitube.ui.activity;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -7,6 +7,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.project.unitube.R;
+import com.project.unitube.utils.manager.UserManager;
+import com.project.unitube.entities.User;
+
 import java.util.List;
 
 public class LoginScreen extends Activity {

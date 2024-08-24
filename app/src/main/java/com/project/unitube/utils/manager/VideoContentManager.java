@@ -1,10 +1,12 @@
-package com.project.unitube;
+package com.project.unitube.utils.manager;
 
 import android.app.Activity;
 import android.content.Context;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+
+import com.project.unitube.R;
 
 public class VideoContentManager {
 

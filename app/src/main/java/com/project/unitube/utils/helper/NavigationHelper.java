@@ -1,6 +1,6 @@
-package com.project.unitube;
+package com.project.unitube.utils.helper;
 
-import static com.project.unitube.Videos.videosList;
+import static com.project.unitube.entities.Videos.videosList;
 
 import android.content.Context;
 import android.util.Log;
@@ -12,7 +12,8 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.navigation.NavigationView;
-import java.util.List;
+import com.project.unitube.R;
+import com.project.unitube.ui.adapter.VideoAdapter;
 
 public class NavigationHelper implements NavigationView.OnNavigationItemSelectedListener {
 

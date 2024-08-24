@@ -1,4 +1,4 @@
-package com.project.unitube;
+package com.project.unitube.ui.activity;
 
 import android.Manifest;
 import android.content.Intent;
@@ -19,12 +19,29 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.core.view.GravityCompat;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.room.Room;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.navigation.NavigationView;
-import static com.project.unitube.VideoInteractionHandler.updateDate;
+import com.project.unitube.Room.Dao.CommentDao;
+import com.project.unitube.Room.Dao.UserDao;
+import com.project.unitube.Room.Database.AppDB;
+import com.project.unitube.Room.Dao.VideoDao;
+import com.project.unitube.utils.helper.DarkModeHelper;
+import com.project.unitube.utils.manager.DataManager;
+import com.project.unitube.utils.helper.NavigationHelper;
+import com.project.unitube.R;
+import com.project.unitube.utils.manager.UserManager;
+import com.project.unitube.ui.adapter.VideoAdapter;
+import com.project.unitube.entities.User;
+import com.project.unitube.entities.Video;
+import com.project.unitube.entities.Videos;
+import com.project.unitube.viewmodel.UserViewModel;
+
+import static com.project.unitube.utils.VideoInteractionHandler.updateDate;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -33,9 +50,13 @@ public class MainActivity extends AppCompatActivity {
     private DrawerLayout drawerLayout;
     private NavigationHelper navigationHelper;
     private DarkModeHelper darkModeHelper;
-    private static final String TAG = "MainActivity";
     private DataManager dataManager;
     private VideoAdapter videoAdapter;
+
+//    private UserViewModel userViewModel;
+//    private AppDB appDB;
+//    private UserDao userDao;
+//    private VideoDao videoDao;
 
     private static final String[] REQUIRED_PERMISSIONS = {
             Manifest.permission.CAMERA,
@@ -64,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
         // Add an admin user for testing
         createAdminUser();
     }
+
 
     private boolean allPermissionsGranted() {
         for (String permission : REQUIRED_PERMISSIONS) {

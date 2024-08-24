@@ -1,4 +1,4 @@
-package com.project.unitube;
+package com.project.unitube.ui.adapter;
 
 import android.content.Context;
 import android.content.Intent;
@@ -6,11 +6,15 @@ import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.project.unitube.R;
+import com.project.unitube.entities.Video;
+import com.project.unitube.entities.Videos;
+import com.project.unitube.ui.activity.VideoPlayActivity;
 
 public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHolder> {
     private final Context context;

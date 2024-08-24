@@ -18,6 +18,7 @@
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
 
     <application
+        android:name=".unitube"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -31,7 +32,7 @@
         tools:targetApi="31">
 
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.activity.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -40,16 +41,16 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".LoginScreen"
+            android:name=".ui.activity.LoginScreen"
             android:exported="false" />
         <activity
-            android:name=".RegisterScreen"
+            android:name=".ui.activity.RegisterScreen"
             android:exported="false" />
         <activity
-            android:name=".AddVideoScreen"
+            android:name=".ui.activity.AddVideoScreen"
             android:exported="false" />
         <activity
-            android:name=".VideoPlayActivity"
+            android:name=".ui.activity.VideoPlayActivity"
             android:configChanges="uiMode|orientation|screenSize" />
 
         <provider

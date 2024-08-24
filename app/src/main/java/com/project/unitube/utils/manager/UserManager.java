@@ -1,4 +1,6 @@
-package com.project.unitube;
+package com.project.unitube.utils.manager;
+
+import com.project.unitube.entities.User;
 
 import java.util.ArrayList;
 import java.util.List;

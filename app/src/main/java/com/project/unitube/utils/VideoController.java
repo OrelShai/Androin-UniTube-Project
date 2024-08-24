@@ -1,4 +1,4 @@
-package com.project.unitube;
+package com.project.unitube.utils;
 
 import android.content.Context;
 import android.os.Handler;
@@ -7,6 +7,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.VideoView;
+
+import com.project.unitube.R;
 
 public class VideoController {
     private Context context;

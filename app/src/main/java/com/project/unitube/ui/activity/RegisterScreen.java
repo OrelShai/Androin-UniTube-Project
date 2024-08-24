@@ -1,4 +1,4 @@
-package com.project.unitube;
+package com.project.unitube.ui.activity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -15,6 +15,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.core.content.FileProvider;
+
+import com.project.unitube.R;
+import com.project.unitube.utils.manager.UserManager;
+import com.project.unitube.entities.User;
 
 import java.io.File;
 import java.io.FileOutputStream;

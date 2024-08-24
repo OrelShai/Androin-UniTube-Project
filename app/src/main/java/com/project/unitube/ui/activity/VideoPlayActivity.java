@@ -1,4 +1,4 @@
-package com.project.unitube;
+package com.project.unitube.ui.activity;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -21,6 +21,17 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.Manifest;
+
+import com.project.unitube.ui.adapter.CommentAdapter;
+import com.project.unitube.utils.manager.CommentManager;
+import com.project.unitube.R;
+import com.project.unitube.ui.adapter.VideoAdapter;
+import com.project.unitube.utils.manager.VideoContentManager;
+import com.project.unitube.utils.VideoController;
+import com.project.unitube.utils.VideoInteractionHandler;
+import com.project.unitube.utils.VideoLoader;
+import com.project.unitube.entities.Video;
+import com.project.unitube.entities.Videos;
 
 /**
  * VideoPlayActivity handles the playback of a video, as well as displaying video details,

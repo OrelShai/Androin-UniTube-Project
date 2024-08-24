@@ -1,10 +1,14 @@
-package com.project.unitube;
+package com.project.unitube.entities;
 
 import android.net.Uri;
 
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
+@Entity
 public class Comment {
     private static int nextId = 1;
-
+    @PrimaryKey
     private final int id;
     private String userName;
     private Uri profilePicture;
