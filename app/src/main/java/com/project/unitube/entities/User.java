@@ -4,6 +4,9 @@ import android.net.Uri;
 
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
+import androidx.room.TypeConverters;
+
+import com.project.unitube.utils.converter.UriConverter;
 
 import java.io.Serializable;
 
@@ -16,6 +19,7 @@ public class User implements Serializable {
     private final String password;
     private final String userName;
     private final String profilePicture;
+    @TypeConverters(UriConverter.class)
     private Uri profilePictureUri;
 
     // Constructor
@@ -26,6 +30,14 @@ public class User implements Serializable {
         this.userName = userName;
         this.profilePicture = profilePicture;
         this.profilePictureUri = profilePictureUri;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public void setProfilePictureUri(Uri profilePictureUri) {

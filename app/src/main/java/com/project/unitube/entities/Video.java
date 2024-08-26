@@ -2,6 +2,11 @@ package com.project.unitube.entities;
 
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
+import androidx.room.TypeConverters;
+
+import com.project.unitube.utils.converter.CommentListConverter;
+import com.project.unitube.utils.converter.UserConverter;
+import com.project.unitube.utils.converter.StringListConverter;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
@@ -12,8 +17,9 @@ import java.util.Locale;
 
 @Entity
 public class Video implements Serializable {
+
     @PrimaryKey(autoGenerate = true)
-    private final int id;
+    private int id;
     private static int nextId = 1;
 
 
@@ -21,13 +27,17 @@ public class Video implements Serializable {
     private String description;
     private String url;
     private String thumbnailUrl;
+    @TypeConverters(UserConverter.class)
     private User user;
     private int likes;
     private int dislikes;
     private String uploadDate;
     private final String duration;
+    @TypeConverters(StringListConverter.class)
     private List<String> likesList;
+    @TypeConverters(StringListConverter.class)
     private List<String> dislikesList;
+    @TypeConverters(CommentListConverter.class)
     private List<Comment> comments;
 
     // Constructor with thumbnailUrl
@@ -50,6 +60,36 @@ public class Video implements Serializable {
     // Getters and Setters
     public int getId() {
         return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+
+
+    public static void setNextId(int nextId) {
+        Video.nextId = nextId;
+    }
+
+    public void setLikes(int likes) {
+        this.likes = likes;
+    }
+
+    public void setDislikes(int dislikes) {
+        this.dislikes = dislikes;
+    }
+
+    public void setLikesList(List<String> likesList) {
+        this.likesList = likesList;
+    }
+
+    public void setDislikesList(List<String> dislikesList) {
+        this.dislikesList = dislikesList;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
     }
 
     public String getTitle() {

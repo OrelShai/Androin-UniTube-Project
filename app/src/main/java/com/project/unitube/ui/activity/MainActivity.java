@@ -28,7 +28,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.bumptech.glide.Glide;
 import com.google.android.material.navigation.NavigationView;
 import com.project.unitube.Room.Dao.CommentDao;
-import com.project.unitube.Room.Dao.UserDao;
+//import com.project.unitube.Room.Dao.UserDao;
 import com.project.unitube.Room.Database.AppDB;
 import com.project.unitube.Room.Dao.VideoDao;
 import com.project.unitube.utils.helper.DarkModeHelper;
@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
     private DrawerLayout drawerLayout;
     private NavigationHelper navigationHelper;
     private DarkModeHelper darkModeHelper;
-//    private DataManager dataManager;
+    private DataManager dataManager;
     private VideoAdapter videoAdapter;
 
     private UserViewModel userViewModel;
@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // Initialize DataManager
-//        dataManager = new DataManager(this);
+        dataManager = new DataManager(this);
 
         // Initialize the UI components. Binds the XML views to the corresponding Java objects.
         initializeUIComponents();
@@ -93,9 +93,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initializeViewModels() {
-        userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
-        videoViewModel = new ViewModelProvider(this).get(VideoViewModel.class);
-        commentViewModel = new ViewModelProvider(this).get(CommentViewModel.class);
+//        userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
+//        videoViewModel = new ViewModelProvider(this).get(VideoViewModel.class);
+//        commentViewModel = new ViewModelProvider(this).get(CommentViewModel.class);
     }
 
     private void createAdminUser() {

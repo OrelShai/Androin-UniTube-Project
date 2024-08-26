@@ -4,13 +4,17 @@ import android.net.Uri;
 
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
+import androidx.room.TypeConverters;
+
+import com.project.unitube.utils.converter.UriConverter;
 
 @Entity
 public class Comment {
     private static int nextId = 1;
     @PrimaryKey
-    private final int id;
+    private  int id;
     private String userName;
+    @TypeConverters(UriConverter.class)
     private Uri profilePicture;
     private String commentText;
 
@@ -19,6 +23,14 @@ public class Comment {
         this.userName = userName;
         this.profilePicture = profilePicture;
         this.commentText = commentText;
+    }
+
+    public static void setNextId(int nextId) {
+        Comment.nextId = nextId;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public int getId() {
