@@ -22,7 +22,7 @@ public class VideoViewModel extends ViewModel {
      */
     public VideoViewModel(Context context) {
         videoRepository = new VideoRepository(context);
-        videos = videoRepository.getAll();
+        videos = videoRepository.getAllVideos();
     }
 
     /**
@@ -35,7 +35,12 @@ public class VideoViewModel extends ViewModel {
     }
 
     public LiveData<List<Video>> reloadVideos() {
+        videos = videoRepository.getAllVideos();
         return videos;
+    }
+
+    public LiveData<Video> getVideoByID(int id) {
+        return videoRepository.getVideoByID(id);
     }
 
     /**

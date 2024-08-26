@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
     private DrawerLayout drawerLayout;
     private NavigationHelper navigationHelper;
     private DarkModeHelper darkModeHelper;
-    private DataManager dataManager;
+//    private DataManager dataManager;
     private VideoAdapter videoAdapter;
 
     private UserViewModel userViewModel;
@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // Initialize DataManager
-        dataManager = new DataManager(this);
+//        dataManager = new DataManager(this);
 
         // Initialize the UI components. Binds the XML views to the corresponding Java objects.
         initializeUIComponents();
@@ -204,19 +204,19 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        SwipeRefreshLayout swipeRefreshLayout = findViewById(R.id.swipe_refresh_layout);
-        swipeRefreshLayout.setOnRefreshListener(() -> {
-            // Refresh the video list when the user swipes down
-            videoViewModel.reloadVideos();
-        });
-
-        videoViewModel.getVideos().observe(this, videos -> {
-            Videos.videosList.clear();
-            Videos.videosList.addAll(videos);
-            initializeVideosToShow();
-            //videoAdapter.notifyDataSetChanged();
-            swipeRefreshLayout.setRefreshing(false);
-        });
+//        SwipeRefreshLayout swipeRefreshLayout = findViewById(R.id.swipe_refresh_layout);
+//        swipeRefreshLayout.setOnRefreshListener(() -> {
+//            // Refresh the video list when the user swipes down
+//            videoViewModel.reloadVideos();
+//        });
+//
+//        videoViewModel.getVideos().observe(this, videos -> {
+//            Videos.videosList.clear();
+//            Videos.videosList.addAll(videos);
+//            initializeVideosToShow();
+//            //videoAdapter.notifyDataSetChanged();
+//            swipeRefreshLayout.setRefreshing(false);
+//        });
         }
 
 
