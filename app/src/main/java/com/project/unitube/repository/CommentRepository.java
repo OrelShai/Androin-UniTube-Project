@@ -3,30 +3,26 @@ package com.project.unitube.repository;
 import android.content.Context;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import com.project.unitube.Room.Dao.CommentDao;
 import com.project.unitube.Room.Database.AppDB;
 import com.project.unitube.entities.Comment;
-import com.project.unitube.entities.Video;
-//import com.project.unitube.network.CommentService;
 
+import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 
 public class CommentRepository {
     private final CommentDao commentDao;
-//    private final CommentService commentService;
-    private final Executor executor;
+    private CommentListData commentListData;
 
     public CommentRepository(Context context) {
         AppDB db = AppDB.getInstance(context);
         commentDao = db.commentDao();
-//        commentService = new CommentService(); // Assuming CommentService is already implemented
-        executor = Executors.newSingleThreadExecutor();
+        commentListData = new CommentListData();
     }
 
-    public LiveData<List<Comment>> getAllComments() {
+    public List<Comment> getAllComments() {
         return commentDao.getAllComments();
     }
 
@@ -35,21 +31,35 @@ public class CommentRepository {
     }
 
     public void insertComment(Comment comment) {
-        executor.execute(() -> commentDao.insertComment(comment));
+        commentDao.insertComment(comment);
     }
 
     public void updateComment(Comment comment) {
-        executor.execute(() -> commentDao.updateComment(comment));
+        commentDao.updateComment(comment);
     }
 
     public void deleteComment(Comment comment) {
-        executor.execute(() -> commentDao.deleteComment(comment));
+        commentDao.deleteComment(comment);
     }
 
-//    public void fetchCommentsFromNetwork() {
-//        executor.execute(() -> {
-//            List<Comment> comments = commentService.getComments(); // Assuming this method is synchronous
-//            commentDao.insertComments(comments);
-//        });
-//    }
+    class CommentListData extends MutableLiveData<List<Comment>> {
+        public CommentListData() {
+            super();
+            setValue(new LinkedList<Comment>());
+        }
+
+        @Override
+        protected void onActive() {
+            super.onActive();
+
+            new Thread(() -> {
+                commentListData.postValue(commentDao.getAllComments());
+            }).start();
+        }
+
+        public LiveData<List<Comment>> getAll() {
+            return commentListData;
+        }
+    }
+
 }

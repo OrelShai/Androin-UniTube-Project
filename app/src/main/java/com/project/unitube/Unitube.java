@@ -3,7 +3,7 @@ package com.project.unitube;
 import android.app.Application;
 import android.content.Context;
 
-public class unitube extends Application {
+public class Unitube extends Application {
     public static Context context;
 
     @Override

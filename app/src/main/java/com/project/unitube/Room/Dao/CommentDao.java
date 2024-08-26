@@ -15,7 +15,7 @@ import java.util.List;
 public interface CommentDao {
 
     @Query("SELECT * FROM comment")
-    LiveData<List<Comment>> getAllComments();
+    List<Comment> getAllComments();
 
     @Query("SELECT * FROM comment WHERE id = :id")
     Comment getCommentByID(int id);
@@ -23,9 +23,15 @@ public interface CommentDao {
     @Insert
     void insertComment(Comment... comments);
 
+    @Insert
+    void insertAllComments(List<Comment> comments);
+
     @Update
     void updateComment(Comment... comments);
 
     @Delete
     void deleteComment(Comment... comments);
+
+    @Query("DELETE FROM comment")
+    void deleteAllComments();
 }

@@ -12,7 +12,7 @@ import java.util.Locale;
 
 @Entity
 public class Video implements Serializable {
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     private final int id;
     private static int nextId = 1;
 

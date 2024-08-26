@@ -15,7 +15,7 @@ import java.util.List;
 public interface UserDao {
 
     @Query("SELECT * FROM user")
-    LiveData<List<User>> getAllUsers();
+    List<User> getAllUsers();
 
     @Query("SELECT * FROM user WHERE userName = :userName")
     User getUserByID(String userName);
@@ -23,9 +23,17 @@ public interface UserDao {
     @Insert
     void insertUser(User... users);
 
+    @Insert
+    void insertAllUsers(List<User> users);
+
     @Update
     void updateUser(User... users);
 
     @Delete
     void deleteUser(User... users);
+
+    @Query("DELETE FROM user")
+    void deleteAllUsers();
+
+
 }

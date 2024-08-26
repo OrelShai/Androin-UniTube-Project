@@ -3,53 +3,63 @@ package com.project.unitube.repository;
 import android.content.Context;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import com.project.unitube.Room.Dao.UserDao;
 import com.project.unitube.Room.Database.AppDB;
 import com.project.unitube.entities.User;
-//import com.project.unitube.network.UserService;
 
+import java.util.LinkedList;
 import java.util.List;
-//import java.util.concurrent.Executor;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 
 public class UserRepository {
     private final UserDao userDao;
-//    private final UserService userService;
-    private final Executor executor;
+    private UserListData userListData;
 
     public UserRepository(Context context) {
         AppDB db = AppDB.getInstance(context);
         userDao = db.userDao();
-//        userService = new UserService(); // Assuming UserService is already implemented
-        executor = Executors.newSingleThreadExecutor();
+        userListData = new UserListData();
     }
 
-    public LiveData<List<User>> getAllUsers() {
+    public List<User> getAllVideos() {
         return userDao.getAllUsers();
     }
 
-    public User getUserByID(String userName) {
+    public User getVideoByID(String userName) {
         return userDao.getUserByID(userName);
     }
 
     public void insertUser(User user) {
-        executor.execute(() -> userDao.insertUser(user));
+        userDao.insertUser(user);
     }
 
     public void updateUser(User user) {
-        executor.execute(() -> userDao.updateUser(user));
+        userDao.updateUser(user);
     }
 
     public void deleteUser(User user) {
-        executor.execute(() -> userDao.deleteUser(user));
+        userDao.deleteUser(user);
     }
 
-//    public void fetchUsersFromNetwork() {
-//        executor.execute(() -> {
-//            List<User> users = userService.getUsers(); // Assuming this method is synchronous
-//            userDao.insertUsers(users);
-//        });
-//    }
+    class UserListData extends MutableLiveData<List<User>> {
+        public UserListData() {
+            super();
+            setValue(new LinkedList<User>());
+        }
+
+        @Override
+        protected void onActive() {
+            super.onActive();
+
+            new Thread(() -> {
+                userListData.postValue(userDao.getAllUsers());
+            }).start();
+        }
+
+        public LiveData<List<User>> getAll() {
+            return userListData;
+        }
+    }
+
 }

@@ -15,7 +15,7 @@ import java.util.List;
 public interface VideoDao {
 
     @Query("SELECT * FROM video")
-    LiveData<List<Video>> getAllVideos();
+    List<Video> getAllVideos();
 
     @Query("SELECT * FROM video WHERE id = :id")
     Video getVideoByID(int id);
@@ -23,9 +23,15 @@ public interface VideoDao {
     @Insert
     void insertVideo(Video... videos);
 
+    @Insert
+    void insertAllVideos(List<Video> videos);
+
     @Update
     void updateVideo(Video... videos);
 
     @Delete
     void deleteVideo(Video... videos);
+
+    @Query("DELETE FROM video")
+    void deleteAllVideos();
 }

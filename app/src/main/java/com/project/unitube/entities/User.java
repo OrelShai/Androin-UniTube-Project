@@ -9,10 +9,11 @@ import java.io.Serializable;
 
 @Entity
 public class User implements Serializable {
+    @PrimaryKey(autoGenerate = true)
+    private int id;
     private final String firstName;
     private final String lastName;
     private final String password;
-    @PrimaryKey
     private final String userName;
     private final String profilePicture;
     private Uri profilePictureUri;

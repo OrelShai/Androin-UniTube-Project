@@ -23,6 +23,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.navigation.NavigationView;
@@ -39,7 +40,9 @@ import com.project.unitube.ui.adapter.VideoAdapter;
 import com.project.unitube.entities.User;
 import com.project.unitube.entities.Video;
 import com.project.unitube.entities.Videos;
+import com.project.unitube.viewmodel.CommentViewModel;
 import com.project.unitube.viewmodel.UserViewModel;
+import com.project.unitube.viewmodel.VideoViewModel;
 
 import static com.project.unitube.utils.VideoInteractionHandler.updateDate;
 
@@ -53,10 +56,9 @@ public class MainActivity extends AppCompatActivity {
     private DataManager dataManager;
     private VideoAdapter videoAdapter;
 
-//    private UserViewModel userViewModel;
-//    private AppDB appDB;
-//    private UserDao userDao;
-//    private VideoDao videoDao;
+    private UserViewModel userViewModel;
+    private VideoViewModel videoViewModel;
+    private CommentViewModel commentViewModel;
 
     private static final String[] REQUIRED_PERMISSIONS = {
             Manifest.permission.CAMERA,
@@ -76,6 +78,9 @@ public class MainActivity extends AppCompatActivity {
         // Initialize the UI components. Binds the XML views to the corresponding Java objects.
         initializeUIComponents();
 
+        // Initialize the ViewModels
+        initializeViewModels();
+
         // Set up listeners for the buttons in the activity.
         setUpListeners();
 
@@ -84,16 +89,13 @@ public class MainActivity extends AppCompatActivity {
 
         // Add an admin user for testing
         createAdminUser();
+
     }
 
-
-    private boolean allPermissionsGranted() {
-        for (String permission : REQUIRED_PERMISSIONS) {
-            if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
-                return false;
-            }
-        }
-        return true;
+    private void initializeViewModels() {
+        userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
+        videoViewModel = new ViewModelProvider(this).get(VideoViewModel.class);
+        commentViewModel = new ViewModelProvider(this).get(CommentViewModel.class);
     }
 
     private void createAdminUser() {
@@ -124,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
         videoRecyclerView.setAdapter(videoAdapter);
 
         // Initialize NavigationHelper
-        navigationHelper = new NavigationHelper(this, drawerLayout, videoRecyclerView);
+         navigationHelper = new NavigationHelper(this, drawerLayout, videoRecyclerView);
         navigationHelper.initializeNavigation(navigationView);
 
         // Initialize DarkModeHelper
@@ -201,7 +203,22 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-    }
+
+        SwipeRefreshLayout swipeRefreshLayout = findViewById(R.id.swipe_refresh_layout);
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            // Refresh the video list when the user swipes down
+            videoViewModel.reloadVideos();
+        });
+
+        videoViewModel.getVideos().observe(this, videos -> {
+            Videos.videosList.clear();
+            Videos.videosList.addAll(videos);
+            initializeVideosToShow();
+            //videoAdapter.notifyDataSetChanged();
+            swipeRefreshLayout.setRefreshing(false);
+        });
+        }
+
 
     private void initializeVideosToShow() {
         Videos.videosToShow.clear();
