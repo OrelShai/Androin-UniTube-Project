@@ -100,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void createAdminUser() {
         // Create admin user
-        User admin = new User("o", "s", "1", "os", "default_profile_image", Uri.parse("default_profile_image"));
+        User admin = new User("o", "s", "1", "os", "default_profile_image");
         UserManager.getInstance().addUser(admin);
     }
 
@@ -277,7 +277,7 @@ public class MainActivity extends AppCompatActivity {
         User currentUser = UserManager.getInstance().getCurrentUser();
 
         if (currentUser != null) {
-            Uri profilePhotoUri = currentUser.getProfilePictureUri();
+            Uri profilePhotoUri = Uri.parse(currentUser.getProfilePicture());
 
             if (profilePhotoUri != null) {
 

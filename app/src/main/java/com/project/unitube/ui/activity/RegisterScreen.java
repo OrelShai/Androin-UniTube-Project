@@ -113,8 +113,7 @@ public class RegisterScreen extends Activity {
                         lastNameEditText.getText().toString(),
                         passwordEditText.getText().toString(),
                         userNameEditText.getText().toString(),
-                        profileImageView.getTag() != null ? profileImageView.getTag().toString() : "default_profile_image",
-                        getSelectedPhotoUri());
+                        profileImageView.getTag() != null ? profileImageView.getTag().toString() : "default_profile_image");
 
                 // Add the user to the list and set as current user
                 UserManager.getInstance().addUser(user);

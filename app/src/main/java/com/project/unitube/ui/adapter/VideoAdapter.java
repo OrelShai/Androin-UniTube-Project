@@ -52,7 +52,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
         if (profileImageResourceId != 0) {
             holder.uploaderProfileImage.setImageResource(profileImageResourceId);
         } else {
-            holder.uploaderProfileImage.setImageURI(video.getUser().getProfilePictureUri()); // Fallback profile image
+            holder.uploaderProfileImage.setImageURI(Uri.parse(video.getUser().getProfilePicture())); // Fallback profile image
         }
 
 

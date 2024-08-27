@@ -1,6 +1,7 @@
 package com.project.unitube.utils.manager;
 
 import android.content.Context;
+import android.net.Uri;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -49,7 +50,7 @@ public class CommentManager {
             if (profileImageResourceId != 0) {
                 userProfileImageView.setImageResource(profileImageResourceId);
             } else {
-                userProfileImageView.setImageURI(currentUser.getProfilePictureUri()); // Fallback profile image
+                userProfileImageView.setImageURI(Uri.parse(currentUser.getProfilePicture())); // Fallback profile image
             }
         } else {
             userProfileImageView.setImageResource(R.drawable.ic_profile_placeholder); // Default image when not logged in
@@ -73,7 +74,7 @@ public class CommentManager {
         if (!commentText.isEmpty()) {
             Comment newComment = new Comment(
                     currentUser.getUserName(),
-                    currentUser.getProfilePictureUri(),
+                    Uri.parse(currentUser.getProfilePicture()),
                     commentText
             );
 

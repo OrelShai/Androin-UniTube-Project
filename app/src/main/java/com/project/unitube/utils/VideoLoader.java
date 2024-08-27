@@ -35,7 +35,7 @@ public class VideoLoader {
         if (profileImageResourceId != 0) {
             uploaderProfileImageView.setImageResource(profileImageResourceId);
         } else {
-            uploaderProfileImageView.setImageURI(video.getUser().getProfilePictureUri());
+            uploaderProfileImageView.setImageURI(Uri.parse(video.getUser().getProfilePicture()));
         }
         Uri videoUri;
         int videoResourceId = context.getResources().getIdentifier(video.getUrl(), "raw", context.getPackageName());
