@@ -8,11 +8,13 @@ import androidx.lifecycle.MutableLiveData;
 import com.project.unitube.Room.Dao.UserDao;
 import com.project.unitube.Room.Database.AppDB;
 import com.project.unitube.entities.User;
+import com.project.unitube.network.objectAPI.UserAPI;
 
 import java.util.LinkedList;
 import java.util.List;
 
 public class UserRepository {
+    private UserAPI userAPI;
     private final UserDao userDao;
     private UserListData userListData;
 
@@ -20,6 +22,7 @@ public class UserRepository {
         AppDB db = AppDB.getInstance(context);
         userDao = db.userDao();
         userListData = new UserListData();
+        userAPI = new UserAPI(userDao);
     }
 
     public List<User> getAllVideos() {
@@ -31,7 +34,7 @@ public class UserRepository {
     }
 
     public void insertUser(User user) {
-        userDao.insertUser(user);
+        userAPI.createUser(user);
     }
 
     public void updateUser(User user) {

@@ -19,6 +19,7 @@ import androidx.core.content.FileProvider;
 import com.project.unitube.R;
 import com.project.unitube.utils.manager.UserManager;
 import com.project.unitube.entities.User;
+import com.project.unitube.viewmodel.UserViewModel;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -47,6 +48,8 @@ public class RegisterScreen extends Activity {
 
     private Uri selectedPhotoUri;
 
+    private UserViewModel userViewModel;
+
     private static final int PICK_IMAGE_REQUEST = 1;
     private static final int CAPTURE_IMAGE_REQUEST = 2;
 
@@ -67,8 +70,11 @@ public class RegisterScreen extends Activity {
         // Initialize UI components
         initializeUIComponents();
 
-        // Request permissions for accessing media files
-        //requestPermissions();
+        // Initialize the UserViewModel
+        userViewModel = new UserViewModel();
+
+//         Request permissions for accessing media files
+//        requestPermissions();
 
         // Set up listeners for buttons
         setUpListeners();
@@ -116,7 +122,8 @@ public class RegisterScreen extends Activity {
                         profileImageView.getTag() != null ? profileImageView.getTag().toString() : "default_profile_image");
 
                 // Add the user to the list and set as current user
-                UserManager.getInstance().addUser(user);
+                userViewModel.insertUser(user);
+//                UserManager.getInstance().addUser(user);
 
                 // Show "Sign up successful" toast and move to sign-in page
                 Toast.makeText(this, "Sign up successful", Toast.LENGTH_SHORT).show();
