@@ -8,22 +8,29 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.LifecycleOwner;
+
 import com.project.unitube.R;
 import com.project.unitube.utils.manager.UserManager;
 import com.project.unitube.entities.User;
+import com.project.unitube.viewmodel.UserViewModel;
 
-import java.util.List;
-
-public class LoginScreen extends Activity {
+public class LoginScreen extends AppCompatActivity {
     private EditText UserNameLoginTextBox;
     private EditText passwordLoginTextBox;
     private Button loginButton;
     private TextView alreadyHaveAccount;
+    private UserViewModel userViewModel;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_screen);
+
+        // Initialize the UserViewModel
+        userViewModel = new UserViewModel();
 
         // Initialize UI components
         initializeUIComponents();
@@ -45,18 +52,18 @@ public class LoginScreen extends Activity {
             String password = passwordLoginTextBox.getText().toString();
 
 
-            // Search for the user in the UserLinkedList
-            User foundUser = findUser(username, password);
-
-            if (foundUser != null) {
-                // Set the currentUser reference to the found user
-                UserManager.getInstance().setCurrentUser(foundUser);
-                Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show();
-                // back to the main activity
-                finish();
-            } else {
-                Toast.makeText(this, "Invalid username or password", Toast.LENGTH_SHORT).show();
-            }
+            // Call the login method from UserViewModel and observe the result
+            userViewModel.loginUser(username, password).observe( this, user -> {
+                if (user != null) {
+                    // Login successful
+                    UserManager.getInstance().setCurrentUser(user);
+                    Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show();
+                    finish();
+                } else {
+                    // Login failed
+                    Toast.makeText(this, "Invalid username or password", Toast.LENGTH_SHORT).show();
+                }
+            });
         });
 
         alreadyHaveAccount.setOnClickListener(v -> {
@@ -65,14 +72,4 @@ public class LoginScreen extends Activity {
         });
     }
 
-    private User findUser(String username, String password) {
-        // Iterate through the usersList and find the user
-        List<User> users = UserManager.getInstance().getUsers();
-        for (User user : users) {
-            if (user.getUserName().equals(username) && user.getPassword().equals(password)) {
-                return user;
-            }
-        }
-        return null; // User not found
-    }
 }

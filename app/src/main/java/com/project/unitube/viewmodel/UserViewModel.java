@@ -21,11 +21,11 @@ public class UserViewModel extends ViewModel {
         userRepository.insertUser(user);
     }
 
+    public MutableLiveData<User> getUser(String username) {
+        return userRepository.getUser(username);
+    }
 
-    public MutableLiveData<User> getUserMutableLiveData() {
-        if (userMutableLiveData == null) {
-            userMutableLiveData = new MutableLiveData<>();
-        }
-        return userMutableLiveData;
+    public MutableLiveData<User> loginUser(String username, String password) {
+        return userRepository.loginUser(username, password);
     }
 }

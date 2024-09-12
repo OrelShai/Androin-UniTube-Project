@@ -12,7 +12,7 @@ import retrofit2.converter.scalars.ScalarsConverterFactory;
  * Singleton class to manage the Retrofit instance.
  */
 public class RetrofitClient {
-    private static final String BASE_URL = "http://192.168.1.223:8200/";
+    private static final String BASE_URL = "http://192.168.1.224:8200/";
     private static Retrofit retrofit = null;
 
     /**

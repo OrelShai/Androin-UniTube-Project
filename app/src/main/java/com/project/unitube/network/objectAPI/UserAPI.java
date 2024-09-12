@@ -15,9 +15,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 
 public class UserAPI {
-    private MutableLiveData<User> currentUser;
-
-    private MutableLiveData<List<User>> users;
+    private MutableLiveData<User> currentUser = new MutableLiveData<>();
 
     private UserDao userDao;
     Retrofit retrofit;
@@ -29,8 +27,9 @@ public class UserAPI {
         userWebServiceAPI = retrofit.create(UserWebServiceAPI.class);
     }
 
-    public void getUser() {
-        Call<User> call = userWebServiceAPI.getUser();
+
+    public MutableLiveData<User> getUser(String username) {
+        Call<User> call = userWebServiceAPI.getUser(username);
         call.enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
@@ -43,25 +42,32 @@ public class UserAPI {
             public void onFailure(Call<User> call, Throwable t) {
             }
         });
+        return currentUser;
     }
 
-    public void getAllUsers() {
-        Call<List<User>> call = userWebServiceAPI.getAllUsers();
-        call.enqueue(new Callback<List<User>>() {
+
+    public MutableLiveData<User> loginUser(String username, String password) {
+        Call<User> call = userWebServiceAPI.getUser(username);
+        call.enqueue(new Callback<User>() {
             @Override
-            public void onResponse(Call<List<User>> call, Response<List<User>> response) {
-                new Thread(() -> {
-                    userDao.deleteAllUsers();
-                    userDao.insertAllUsers(response.body());
-                    users.postValue(userDao.getAllUsers());
-                }).start();
+            public void onResponse(Call<User> call, Response<User> response) {
+                User user = response.body();
+                if (user != null && user.getPassword().equals(password)) {
+                    // Store the user locally using Room
+                        currentUser.postValue(user);
+                } else {
+                    currentUser.postValue(null);
+                }
             }
 
             @Override
-            public void onFailure(Call<List<User>> call, Throwable t) {
+            public void onFailure(Call<User> call, Throwable t) {
+                currentUser.postValue(null);
             }
         });
+        return currentUser;
     }
+
 
     public void createUser(User user) {
         Call<Void> call = userWebServiceAPI.createUser(user);
@@ -76,7 +82,5 @@ public class UserAPI {
             }
         });
     }
-
-
 
 }
