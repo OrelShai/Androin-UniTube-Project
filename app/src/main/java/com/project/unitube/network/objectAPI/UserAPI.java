@@ -2,6 +2,7 @@ package com.project.unitube.network.objectAPI;
 
 import androidx.lifecycle.MutableLiveData;
 
+import com.project.unitube.CallBack;
 import com.project.unitube.Room.Dao.UserDao;
 import com.project.unitube.entities.User;
 import com.project.unitube.network.RetroFit.RetrofitClient;
@@ -17,14 +18,17 @@ import retrofit2.Retrofit;
 public class UserAPI {
     private MutableLiveData<User> currentUser = new MutableLiveData<>();
 
-    private UserDao userDao;
     Retrofit retrofit;
     UserWebServiceAPI userWebServiceAPI;
+    CallBack callBack;
 
-    public UserAPI(UserDao userDao) {
-        this.userDao = userDao;
+    public UserAPI( ) {
         retrofit = RetrofitClient.getClient();
         userWebServiceAPI = retrofit.create(UserWebServiceAPI.class);
+    }
+
+    public void setCallBack(CallBack callBack) {
+        this.callBack = callBack;
     }
 
 
@@ -74,13 +78,42 @@ public class UserAPI {
         call.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
-                userDao.insertUser(user);
+                //userDao.insertUser(user);
+                if (response.isSuccessful()) {
+                    callBack.onSuccess("");
+                } else if (response.code() == 409) {
+                    callBack.onFail("Username already exists");
+                }
             }
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
             }
         });
+    }
+
+    public MutableLiveData<Boolean> isUsernameTaken(String username) {
+        MutableLiveData<Boolean> usernameExists = new MutableLiveData<>();
+
+        Call<Boolean> call = userWebServiceAPI.isUsernameTaken(username);
+        call.enqueue(new Callback<Boolean>() {
+            @Override
+            public void onResponse(Call<Boolean> call, Response<Boolean> response) {
+                if (response.isSuccessful()) {
+                    // Post the result of whether the username is taken or not
+                    usernameExists.postValue(response.body());
+                } else {
+                    usernameExists.postValue(false);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Boolean> call, Throwable t) {
+                usernameExists.postValue(false); // On failure, assume the username isn't taken
+            }
+        });
+
+        return usernameExists;
     }
 
 }

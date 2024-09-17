@@ -17,4 +17,7 @@ public interface UserWebServiceAPI {
 
     @POST("user")
     Call<Void> createUser(@Body User user);
+
+    @GET("checkIfUserExists")
+    Call<Boolean> isUsernameTaken(@Query("userName") String username);
 }

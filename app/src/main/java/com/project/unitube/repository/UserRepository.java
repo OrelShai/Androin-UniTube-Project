@@ -14,7 +14,7 @@ public class UserRepository {
     public UserRepository(Context context) {
         AppDB db = AppDB.getInstance(context);
         userDao = db.userDao();
-        userAPI = new UserAPI(userDao);
+        userAPI = new UserAPI();
     }
 
     public void insertUser(User user) {
@@ -27,5 +27,9 @@ public class UserRepository {
 
     public MutableLiveData<User> loginUser(String username, String password) {
         return userAPI.loginUser(username, password);
+    }
+
+    public MutableLiveData<Boolean> isUsernameTaken(String username) {
+        return userAPI.isUsernameTaken(username);
     }
 }

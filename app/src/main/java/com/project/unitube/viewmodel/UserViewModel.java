@@ -10,11 +10,9 @@ import com.project.unitube.repository.UserRepository;
 public class UserViewModel extends ViewModel {
     private UserRepository userRepository;
 
-    private MutableLiveData<User> userMutableLiveData;
 
     public UserViewModel() {
         userRepository = new UserRepository(Unitube.context);
-        userMutableLiveData = new MutableLiveData<>();
     }
 
     public void insertUser(User user) {
@@ -27,5 +25,9 @@ public class UserViewModel extends ViewModel {
 
     public MutableLiveData<User> loginUser(String username, String password) {
         return userRepository.loginUser(username, password);
+    }
+
+    public MutableLiveData<Boolean> isUsernameTaken(String username) {
+        return userRepository.isUsernameTaken(username);
     }
 }
