@@ -27,7 +27,7 @@ public class UserViewModel extends ViewModel {
         return userRepository.loginUser(username, password);
     }
 
-    public MutableLiveData<Boolean> isUsernameTaken(String username) {
-        return userRepository.isUsernameTaken(username);
+    public void deleteUser(String userName) {
+        userRepository.deleteUser(userName);
     }
 }

@@ -1,5 +1,7 @@
 package com.project.unitube.network.objectAPI;
 
+import android.util.Log;
+
 import androidx.lifecycle.MutableLiveData;
 
 import com.project.unitube.CallBack;
@@ -7,6 +9,7 @@ import com.project.unitube.Room.Dao.UserDao;
 import com.project.unitube.entities.User;
 import com.project.unitube.network.RetroFit.RetrofitClient;
 import com.project.unitube.network.interfaceAPI.UserWebServiceAPI;
+import com.project.unitube.utils.manager.UserManager;
 
 import java.util.List;
 
@@ -49,7 +52,7 @@ public class UserAPI {
         return currentUser;
     }
 
-
+/*
     public MutableLiveData<User> loginUser(String username, String password) {
         Call<User> call = userWebServiceAPI.getUser(username);
         call.enqueue(new Callback<User>() {
@@ -67,6 +70,29 @@ public class UserAPI {
             @Override
             public void onFailure(Call<User> call, Throwable t) {
                 currentUser.postValue(null);
+            }
+        });
+        return currentUser;
+    }
+*/
+
+    public MutableLiveData<User> loginUser(String username, String password) {
+        Call<String> call = userWebServiceAPI.loginUser(username, password);
+        call.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                if (response.isSuccessful()) {
+                    String token = response.body();
+                    // Store the user locally using Room
+                    UserManager.token = token;
+                    currentUser = getUser(username);
+                } else {
+                    //error
+                }
+            }
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+                currentUser.postValue(null);  // Set null in case of failure
             }
         });
         return currentUser;
@@ -92,28 +118,22 @@ public class UserAPI {
         });
     }
 
-    public MutableLiveData<Boolean> isUsernameTaken(String username) {
-        MutableLiveData<Boolean> usernameExists = new MutableLiveData<>();
 
-        Call<Boolean> call = userWebServiceAPI.isUsernameTaken(username);
-        call.enqueue(new Callback<Boolean>() {
+    public void deleteUser(String userName) {
+        Call<Void> call = userWebServiceAPI.deleteUser(userName);
+        call.enqueue(new Callback<Void>() {
             @Override
-            public void onResponse(Call<Boolean> call, Response<Boolean> response) {
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                //userDao.insertUser(user);
                 if (response.isSuccessful()) {
-                    // Post the result of whether the username is taken or not
-                    usernameExists.postValue(response.body());
-                } else {
-                    usernameExists.postValue(false);
+                    Log.d("UserAPI", "User deleted successfully");
                 }
             }
 
             @Override
-            public void onFailure(Call<Boolean> call, Throwable t) {
-                usernameExists.postValue(false); // On failure, assume the username isn't taken
+            public void onFailure(Call<Void> call, Throwable t) {
+                Log.e("UserAPI", "Error deleting user: " + t.getMessage());
             }
         });
-
-        return usernameExists;
     }
-
 }

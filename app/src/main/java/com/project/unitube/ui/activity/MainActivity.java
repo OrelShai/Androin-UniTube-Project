@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -181,6 +182,16 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void setDeleteAccountButtonVisibility() {
+        LinearLayout deleteAccountButton = findViewById(R.id.delete_user_button_layout);
+        User currentUser = UserManager.getInstance().getCurrentUser();
+        if (currentUser != null) {
+            deleteAccountButton.setVisibility(View.VISIBLE);
+        } else {
+            deleteAccountButton.setVisibility(View.GONE);
+        }
+    }
+
     private void setUpListeners() {
         // Set up action_menu button to open the drawer
         findViewById(R.id.action_menu).setOnClickListener(view -> {
@@ -270,6 +281,7 @@ public class MainActivity extends AppCompatActivity {
         initLoginSignOutButton();
         initializeVideosToShow(); // Ensure the videos list is updated
         videoAdapter.notifyDataSetChanged(); // Refresh the adapter
+        setDeleteAccountButtonVisibility();
     }
 
     private void updateProfilePhotoPresent() {

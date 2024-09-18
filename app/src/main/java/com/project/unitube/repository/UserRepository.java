@@ -29,7 +29,7 @@ public class UserRepository {
         return userAPI.loginUser(username, password);
     }
 
-    public MutableLiveData<Boolean> isUsernameTaken(String username) {
-        return userAPI.isUsernameTaken(username);
+    public void deleteUser(String userName) {
+        userAPI.deleteUser(userName);
     }
 }

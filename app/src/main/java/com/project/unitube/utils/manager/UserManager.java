@@ -9,6 +9,7 @@ public class UserManager {
     private static UserManager instance;
     private List<User> users;
     private User currentUser;
+    public static String token;
 
     private UserManager() {
         users = new ArrayList<>();
