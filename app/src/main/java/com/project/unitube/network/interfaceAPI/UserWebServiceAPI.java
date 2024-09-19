@@ -18,8 +18,8 @@ public interface UserWebServiceAPI {
 
     // Log in the user
     @FormUrlEncoded
-    @POST("api/users/login")
-    Call<String> loginUser(@Field("userName") String userName, @Field("password") String password);
+    @POST("api/tokens")
+    Call<String> processLogin(@Field("userName") String userName, @Field("password") String password);
 
     // Fetch user details by userName
     @GET("api/users/{userName}")

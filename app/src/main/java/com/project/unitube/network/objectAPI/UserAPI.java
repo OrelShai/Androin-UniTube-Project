@@ -77,7 +77,7 @@ public class UserAPI {
 */
 
     public MutableLiveData<User> loginUser(String username, String password) {
-        Call<String> call = userWebServiceAPI.loginUser(username, password);
+        Call<String> call = userWebServiceAPI.processLogin(username, password);
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
@@ -117,7 +117,6 @@ public class UserAPI {
             }
         });
     }
-
 
     public void deleteUser(String userName) {
         Call<Void> call = userWebServiceAPI.deleteUser(userName);
