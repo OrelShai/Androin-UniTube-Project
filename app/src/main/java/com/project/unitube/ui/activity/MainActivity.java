@@ -94,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initializeViewModels() {
-//        userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
+        userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
 //        videoViewModel = new ViewModelProvider(this).get(VideoViewModel.class);
 //        commentViewModel = new ViewModelProvider(this).get(CommentViewModel.class);
     }
@@ -187,9 +187,25 @@ public class MainActivity extends AppCompatActivity {
         User currentUser = UserManager.getInstance().getCurrentUser();
         if (currentUser != null) {
             deleteAccountButton.setVisibility(View.VISIBLE);
+
+            // Set up listener for delete account button
+            deleteAccountButton.setOnClickListener(view -> {
+                // Delete the user account
+                userViewModel.deleteUser(currentUser.getUserName());
+
+                // make current user to null
+                // go back to login screen
+                // ((((check if we need to delete the token from the user manager))))
+                // ((((check if we need to delete the token from the user manager))))
+                // ((((check if we need to delete the token from the user manager))))
+                // ((((check if we need to delete the token from the user manager))))
+                // ((((check if we need to delete the token from the user manager))))
+                Toast.makeText(this, "User account deleted", Toast.LENGTH_SHORT).show();
+            });
         } else {
             deleteAccountButton.setVisibility(View.GONE);
         }
+
     }
 
     private void setUpListeners() {
