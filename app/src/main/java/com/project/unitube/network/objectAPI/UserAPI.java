@@ -87,7 +87,7 @@ public class UserAPI {
                     UserManager.token = token;
                     currentUser = getUser(username);
                 } else {
-                    //error
+                    currentUser.postValue(null);  // Set null in case of failure
                 }
             }
             @Override
