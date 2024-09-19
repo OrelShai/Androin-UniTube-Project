@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/delete_user_button_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:padding="8dp"
+    android:layout_marginBottom="16dp"
+    android:clickable="true"
+    android:focusable="true"
+    android:visibility="gone" > <!-- Initially hidden -->
+
+    <ImageView
+        android:id="@+id/icon_delete_user"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:contentDescription="@string/sign_out_icon"
+        android:src="@drawable/trash_icon"
+        app:tint="#FF0000"
+        android:layout_marginEnd="8dp"/>
+
+    <TextView
+        android:id="@+id/text_delete_user"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/delete_my_account"
+        android:textColor="#FF0000"
+        android:textSize="20sp"/>
+</LinearLayout>
