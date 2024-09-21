@@ -192,15 +192,10 @@ public class MainActivity extends AppCompatActivity {
             deleteAccountButton.setOnClickListener(view -> {
                 // Delete the user account
                 userViewModel.deleteUser(currentUser.getUserName());
-
-                // make current user to null
-                // go back to login screen
-                // ((((check if we need to delete the token from the user manager))))
-                // ((((check if we need to delete the token from the user manager))))
-                // ((((check if we need to delete the token from the user manager))))
-                // ((((check if we need to delete the token from the user manager))))
-                // ((((check if we need to delete the token from the user manager))))
+                UserManager.getInstance().setCurrentUser(null);
                 Toast.makeText(this, "User account deleted", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(MainActivity.this, LoginScreen.class);
+                startActivity(intent);
             });
         } else {
             deleteAccountButton.setVisibility(View.GONE);
