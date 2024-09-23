@@ -42,17 +42,6 @@
         android:inputType="text"
         android:layout_marginBottom="16dp"/>
 
-    <!-- User Name (Non-editable) -->
-    <TextView
-        android:id="@+id/edit_user_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Username"
-        android:text="User123"
-        android:textColor="@android:color/darker_gray"
-        android:layout_marginBottom="16dp"
-        android:enabled="false"  />
-
     <!-- Password -->
     <EditText
         android:id="@+id/edit_password"
@@ -61,6 +50,17 @@
         android:hint="Password"
         android:inputType="textPassword"
         android:layout_marginBottom="16dp"/>
+
+    <!-- User Name (Non-editable) -->
+    <TextView
+        android:id="@+id/edit_user_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Username"
+        android:text="user name can't be changed"
+        android:textColor="@android:color/darker_gray"
+        android:layout_marginBottom="16dp"
+        android:enabled="false"  />
 
 </LinearLayout>
 

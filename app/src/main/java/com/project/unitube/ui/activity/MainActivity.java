@@ -4,9 +4,10 @@ import android.Manifest;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -20,21 +21,16 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.core.view.GravityCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.room.Room;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.navigation.NavigationView;
-import com.project.unitube.Room.Dao.CommentDao;
 //import com.project.unitube.Room.Dao.UserDao;
-import com.project.unitube.Room.Database.AppDB;
-import com.project.unitube.Room.Dao.VideoDao;
 import com.project.unitube.utils.helper.DarkModeHelper;
 import com.project.unitube.utils.manager.DataManager;
 import com.project.unitube.utils.helper.NavigationHelper;
@@ -50,9 +46,23 @@ import com.project.unitube.viewmodel.VideoViewModel;
 
 import static com.project.unitube.utils.VideoInteractionHandler.updateDate;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 public class MainActivity extends AppCompatActivity {
 
     private static final int ADD_VIDEO_REQUEST = 1; // Request code for adding a video
+
+    private static final int PICK_IMAGE_REQUEST = 2;
+    private static final int CAPTURE_IMAGE_REQUEST = 3;
+
+    private Uri editDialogSelectedPhotoUri;
+    private ImageView editDialogprofileImageView;
 
     private DrawerLayout drawerLayout;
     private NavigationHelper navigationHelper;
@@ -90,21 +100,12 @@ public class MainActivity extends AppCompatActivity {
 
         // Initialize VideosToShow with all videos
         initializeVideosToShow();
-
-        // Add an admin user for testing
-        createAdminUser();
     }
 
     private void initializeViewModels() {
         userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
 //        videoViewModel = new ViewModelProvider(this).get(VideoViewModel.class);
 //        commentViewModel = new ViewModelProvider(this).get(CommentViewModel.class);
-    }
-
-    private void createAdminUser() {
-        // Create admin user
-        User admin = new User("o", "s", "1", "os", "default_profile_image");
-        UserManager.getInstance().addUser(admin);
     }
 
     private void initializeUIComponents() {
@@ -220,27 +221,45 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showEditUserDialog() {
-            // Create an AlertDialog.Builder
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        // Create an AlertDialog.Builder
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
-            // Inflate the custom dialog layout
-            LayoutInflater inflater = getLayoutInflater();
-            View dialogView = inflater.inflate(R.layout.dialog_edit_user, null);
-            builder.setView(dialogView);
+        // Inflate the custom dialog layout
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_edit_user, null);
+        builder.setView(dialogView);
 
-            // Reference the EditText fields
-            EditText firstNameEditText = dialogView.findViewById(R.id.edit_first_name);
-            EditText lastNameEditText = dialogView.findViewById(R.id.edit_last_name);
-            EditText passwordEditText = dialogView.findViewById(R.id.edit_password);
+        // Reference the EditText fields
+        EditText firstNameEditText = dialogView.findViewById(R.id.edit_first_name);
+        EditText lastNameEditText = dialogView.findViewById(R.id.edit_last_name);
+        EditText passwordEditText = dialogView.findViewById(R.id.edit_password);
+        editDialogprofileImageView = dialogView.findViewById(R.id.edit_profile_picture);
+        Button changeProfilePictureButton = dialogView.findViewById(R.id.change_profile_picture_button);
 
-            // Get the current user and set the EditText fields
-            User user = UserManager.getInstance().getCurrentUser();
-            firstNameEditText.setText(user.getFirstName());
-            lastNameEditText.setText(user.getLastName());
-            passwordEditText.setText(user.getPassword());
+        // Get the current user and set the EditText fields
+        User user = UserManager.getInstance().getCurrentUser();
+        firstNameEditText.setText(user.getFirstName());
+        lastNameEditText.setText(user.getLastName());
+        passwordEditText.setText(user.getPassword());
 
-            // Set up the "Save" button
-            builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+        // Load current profile picture (if any)
+        if (user.getProfilePicture() != null) {
+            Uri profilePhotoUri = Uri.parse(user.getProfilePicture());
+            editDialogprofileImageView.setImageURI(profilePhotoUri);
+        } else {
+            editDialogprofileImageView.setImageResource(R.drawable.default_profile_image);
+        }
+
+        // Set up the profile picture change listener
+        changeProfilePictureButton.setOnClickListener(view -> {
+            // Call UploadPhotoHelper to choose or take a new profile picture
+            showImagePickerOptions();
+        });
+
+
+
+        // Set up the "Save" button
+        builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     // Get updated values from EditTexts
@@ -255,9 +274,13 @@ public class MainActivity extends AppCompatActivity {
                         user.setLastName(updatedLastName);
                         user.setPassword(updatedPassword);
 
+                        // Update the user profile picture (if changed)
+                        String updatedProfilePictureUri = getEditDialogSelectedPhotoUri().toString();
+                        user.setProfilePicture(updatedProfilePictureUri);
+
                         userViewModel.updateUser(user);
                         updateGreetingUser();
-
+                        updateProfilePhotoPresent();
                     } else {
                         // Show a message if validation fails
                         Toast.makeText(getApplicationContext(), "All fields are required", Toast.LENGTH_SHORT).show();
@@ -419,10 +442,90 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
         if (requestCode == ADD_VIDEO_REQUEST && resultCode == RESULT_OK) {
             // Refresh the video list when a new video is added
             initializeVideosToShow();
             videoAdapter.notifyDataSetChanged();
         }
+        if (requestCode == CAPTURE_IMAGE_REQUEST && resultCode == RESULT_OK) {
+            editDialogprofileImageView.setImageURI(editDialogSelectedPhotoUri);
+        }
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null) {
+            editDialogSelectedPhotoUri = data.getData(); // Get the URI from the result
+            saveImageFromUri(editDialogSelectedPhotoUri); // Call the method to save the image
+            // Update the profile image view
+            editDialogprofileImageView.setImageURI(editDialogSelectedPhotoUri);
+        }
+    }
+
+    public void showImagePickerOptions() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Select Image Source");
+        builder.setItems(new CharSequence[]{"Choose from Gallery", "Take a Photo"},
+                (dialog, which) -> {
+                    switch (which) {
+                        case 0:
+                            pickImageFromGallery();
+                            break;
+                        case 1:
+                            captureImageFromCamera();
+                            break;
+                    }
+                });
+        builder.show();
+    }
+
+    private void pickImageFromGallery() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
+    }
+
+    private void captureImageFromCamera() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            File photoFile = createImageFile();
+            if (photoFile != null) {
+                Uri photoUri = FileProvider.getUriForFile(this, "com.project.unitube.fileprovider", photoFile);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
+                editDialogSelectedPhotoUri = photoUri; // Store the selected photo URI
+                startActivityForResult(takePictureIntent, CAPTURE_IMAGE_REQUEST);
+            }
+        }
+    }
+
+    private File createImageFile() {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        try {
+            return File.createTempFile(imageFileName, ".jpg", storageDir);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+
+    private void saveImageFromUri(Uri uri) {
+        try {
+            File imageFile = createImageFile();
+            try (InputStream inputStream = getContentResolver().openInputStream(uri);
+                 FileOutputStream outputStream = new FileOutputStream(imageFile)) {
+                byte[] buffer = new byte[1024];
+                int length;
+                while ((length = inputStream.read(buffer)) > 0) {
+                    outputStream.write(buffer, 0, length);
+                }
+            }
+            editDialogSelectedPhotoUri = Uri.fromFile(imageFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Uri getEditDialogSelectedPhotoUri() {
+        return editDialogSelectedPhotoUri;
     }
 }

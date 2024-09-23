@@ -49,7 +49,6 @@ public class RegisterScreen extends Activity implements CallBack {
     private Button signUpButton;
 
     private Uri selectedPhotoUri;
-
     private UserViewModel userViewModel;
     private UserAPI userAPI;
 
@@ -124,10 +123,8 @@ public class RegisterScreen extends Activity implements CallBack {
                         userNameEditText.getText().toString(),
                         profileImageView.getTag() != null ? profileImageView.getTag().toString() : "default_profile_image");
 
-                // Add the user to the list and set as current user
 //                userViewModel.insertUser(user);
                 this.userAPI.createUser(user);
-//                UserManager.getInstance().addUser(user);
 
             }
         });
@@ -294,7 +291,6 @@ public class RegisterScreen extends Activity implements CallBack {
             }
         }
     }
-
 
     private File createImageFile() {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
