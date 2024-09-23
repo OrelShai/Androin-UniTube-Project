@@ -1,12 +1,15 @@
 package com.project.unitube.ui.activity;
 
 import android.Manifest;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -90,7 +93,6 @@ public class MainActivity extends AppCompatActivity {
 
         // Add an admin user for testing
         createAdminUser();
-
     }
 
     private void initializeViewModels() {
@@ -182,25 +184,98 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void setDeleteAccountButtonVisibility() {
+    private void InitDeleteAndEditAccountButtons() {
         LinearLayout deleteAccountButton = findViewById(R.id.delete_user_button_layout);
+
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        View headerView = navigationView.getHeaderView(0);
+        ImageView editUserButton = headerView.findViewById(R.id.edit_user_button); // Access from headerView
+
         User currentUser = UserManager.getInstance().getCurrentUser();
+
         if (currentUser != null) {
+            // Make buttons visible
             deleteAccountButton.setVisibility(View.VISIBLE);
+            editUserButton.setVisibility(View.VISIBLE);
 
             // Set up listener for delete account button
             deleteAccountButton.setOnClickListener(view -> {
                 // Delete the user account
                 userViewModel.deleteUser(currentUser.getUserName());
                 UserManager.getInstance().setCurrentUser(null);
+
+                // Notify the user and navigate to LoginScreen
                 Toast.makeText(this, "User account deleted", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(MainActivity.this, LoginScreen.class);
                 startActivity(intent);
             });
-        } else {
-            deleteAccountButton.setVisibility(View.GONE);
-        }
 
+            // Set up listener for edit user button
+            editUserButton.setOnClickListener(view -> showEditUserDialog());
+        } else {
+            // Hide buttons if no user is logged in
+            deleteAccountButton.setVisibility(View.GONE);
+            editUserButton.setVisibility(View.GONE);
+        }
+    }
+
+    private void showEditUserDialog() {
+            // Create an AlertDialog.Builder
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+            // Inflate the custom dialog layout
+            LayoutInflater inflater = getLayoutInflater();
+            View dialogView = inflater.inflate(R.layout.dialog_edit_user, null);
+            builder.setView(dialogView);
+
+            // Reference the EditText fields
+            EditText firstNameEditText = dialogView.findViewById(R.id.edit_first_name);
+            EditText lastNameEditText = dialogView.findViewById(R.id.edit_last_name);
+            EditText passwordEditText = dialogView.findViewById(R.id.edit_password);
+
+            // Get the current user and set the EditText fields
+            User user = UserManager.getInstance().getCurrentUser();
+            firstNameEditText.setText(user.getFirstName());
+            lastNameEditText.setText(user.getLastName());
+            passwordEditText.setText(user.getPassword());
+
+            // Set up the "Save" button
+            builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    // Get updated values from EditTexts
+                    String updatedFirstName = firstNameEditText.getText().toString();
+                    String updatedLastName = lastNameEditText.getText().toString();
+                    String updatedPassword = passwordEditText.getText().toString();
+
+                    // Validate the input and update the user data
+                    if (!updatedFirstName.isEmpty() && !updatedLastName.isEmpty() && !updatedPassword.isEmpty()) {
+                        // Update the user object
+                        user.setFirstName(updatedFirstName);
+                        user.setLastName(updatedLastName);
+                        user.setPassword(updatedPassword);
+
+                        userViewModel.updateUser(user);
+                        updateGreetingUser();
+
+                    } else {
+                        // Show a message if validation fails
+                        Toast.makeText(getApplicationContext(), "All fields are required", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+
+            // Set up the "Cancel" button
+            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss(); // Simply dismiss the dialog
+                }
+            });
+
+            // Create and show the dialog
+            AlertDialog dialog = builder.create();
+            dialog.show();
     }
 
     private void setUpListeners() {
@@ -225,21 +300,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
-//        SwipeRefreshLayout swipeRefreshLayout = findViewById(R.id.swipe_refresh_layout);
-//        swipeRefreshLayout.setOnRefreshListener(() -> {
-//            // Refresh the video list when the user swipes down
-//            videoViewModel.reloadVideos();
-//        });
-//
-//        videoViewModel.getVideos().observe(this, videos -> {
-//            Videos.videosList.clear();
-//            Videos.videosList.addAll(videos);
-//            initializeVideosToShow();
-//            //videoAdapter.notifyDataSetChanged();
-//            swipeRefreshLayout.setRefreshing(false);
-//        });
-        }
+    }
 
 
     private void initializeVideosToShow() {
@@ -292,7 +353,7 @@ public class MainActivity extends AppCompatActivity {
         initLoginSignOutButton();
         initializeVideosToShow(); // Ensure the videos list is updated
         videoAdapter.notifyDataSetChanged(); // Refresh the adapter
-        setDeleteAccountButtonVisibility();
+        InitDeleteAndEditAccountButtons();
     }
 
     private void updateProfilePhotoPresent() {

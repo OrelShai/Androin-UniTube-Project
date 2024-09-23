@@ -13,13 +13,13 @@ import java.io.Serializable;
 
 @Entity
 public class User implements Serializable {
-    private final String firstName;
-    private final String lastName;
-    private final String password;
+    private String firstName;
+    private String lastName;
+    private  String password;
     @PrimaryKey
     @NonNull
     private final String userName;
-    private final String profilePicture;
+    private String profilePicture;
 
     // Constructor
     public User(String firstName, String lastName, String password, @NonNull String userName, String profilePicture) {
@@ -55,4 +55,19 @@ public class User implements Serializable {
         return profilePicture;
     }
 
+    public void setProfilePicture(String profilePicture) {
+        this.profilePicture = profilePicture;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 }

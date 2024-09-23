@@ -135,4 +135,23 @@ public class UserAPI {
             }
         });
     }
+
+    public void updateUser(User user) {
+        Call<Void> call = userWebServiceAPI.updateUser(user);
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                //userDao.insertUser(user);
+                if (response.isSuccessful()) {
+                    UserManager.getInstance().setCurrentUser(user);
+                    Log.d("UserAPI", "User updated successfully");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Log.e("UserAPI", "Error updating user: " + t.getMessage());
+            }
+        });
+    }
 }

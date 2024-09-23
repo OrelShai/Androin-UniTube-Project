@@ -11,6 +11,7 @@ import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Body;
+import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
@@ -33,4 +34,8 @@ public interface UserWebServiceAPI {
     // Delete a user by userName
     @DELETE("api/users/{userName}")
     Call<Void> deleteUser(@Path("userName") String userName);
+
+    // Update a user
+    @PUT("api/users/{userName}")
+    Call<Void> updateUser(@Body User user);
 }

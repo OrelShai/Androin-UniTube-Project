@@ -1,17 +1,16 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:paddingTop="16dp"
-    android:paddingBottom="16dp"
     android:paddingLeft="16dp"
-    android:paddingRight="16dp">
+    android:paddingTop="16dp"
+    android:paddingRight="16dp"
+    android:paddingBottom="16dp">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:gravity="center_vertical">
 
         <!-- Logo Image -->
@@ -19,27 +18,40 @@
             android:id="@+id/logo_image"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:src="@drawable/logo_image_light_mode"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
             android:contentDescription="@string/app_name"
-            android:layout_gravity="center_vertical"
-            app:tint="?attr/colorOnPrimary"/>
+            android:src="@drawable/logo_image_light_mode"
+            app:tint="?attr/colorOnPrimary" />
 
         <!-- Text -->
         <TextView
             android:id="@+id/user_greeting"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/logo_image"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="16dp"
             android:text="@string/welcome_to_unitube"
             android:textColor="?attr/colorOnPrimary"
-            android:textSize="24sp"
-            android:layout_marginLeft="16dp"
-            android:layout_gravity="center_vertical"/>
-    </LinearLayout>
+            android:textSize="24sp" />
+
+        <!-- Edit User Button -->
+        <ImageView
+            android:id="@+id/edit_user_button"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:contentDescription="@string/edit_user_button"
+            android:src="@drawable/edit_user_icon"
+            app:tint="?attr/colorOnPrimary" />
+    </RelativeLayout>
 
     <!-- Divider -->
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:tint="?attr/colorOnPrimary"
-        android:layout_marginTop="16dp"/>
+        android:layout_marginTop="16dp"
+        android:tint="?attr/colorOnPrimary" />
 </LinearLayout>

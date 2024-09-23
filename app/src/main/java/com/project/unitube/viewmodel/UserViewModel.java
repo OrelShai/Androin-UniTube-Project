@@ -30,4 +30,8 @@ public class UserViewModel extends ViewModel {
     public void deleteUser(String userName) {
         userRepository.deleteUser(userName);
     }
+
+    public void updateUser(User user) {
+        userRepository.updateUser(user);
+    }
 }

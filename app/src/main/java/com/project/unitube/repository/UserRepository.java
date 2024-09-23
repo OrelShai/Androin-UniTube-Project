@@ -32,4 +32,8 @@ public class UserRepository {
     public void deleteUser(String userName) {
         userAPI.deleteUser(userName);
     }
+
+    public void updateUser(User user) {
+        userAPI.updateUser(user);
+    }
 }
