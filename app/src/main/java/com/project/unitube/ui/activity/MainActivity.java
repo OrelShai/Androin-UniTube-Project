@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -233,6 +234,7 @@ public class MainActivity extends AppCompatActivity {
         EditText firstNameEditText = dialogView.findViewById(R.id.edit_first_name);
         EditText lastNameEditText = dialogView.findViewById(R.id.edit_last_name);
         EditText passwordEditText = dialogView.findViewById(R.id.edit_password);
+        EditText reEnterPasswordEditText = dialogView.findViewById(R.id.edit_reEnter_password);
         editDialogprofileImageView = dialogView.findViewById(R.id.edit_profile_picture);
         Button changeProfilePictureButton = dialogView.findViewById(R.id.change_profile_picture_button);
 
@@ -241,6 +243,7 @@ public class MainActivity extends AppCompatActivity {
         firstNameEditText.setText(user.getFirstName());
         lastNameEditText.setText(user.getLastName());
         passwordEditText.setText(user.getPassword());
+        reEnterPasswordEditText.setText(user.getPassword());
 
         // Load current profile picture (if any)
         if (user.getProfilePicture() != null) {
@@ -259,47 +262,96 @@ public class MainActivity extends AppCompatActivity {
 
 
         // Set up the "Save" button
-        builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    // Get updated values from EditTexts
-                    String updatedFirstName = firstNameEditText.getText().toString();
-                    String updatedLastName = lastNameEditText.getText().toString();
-                    String updatedPassword = passwordEditText.getText().toString();
+        builder.setPositiveButton("Save", null); // Null listener to prevent dialog from closing in case of invalid input
 
-                    // Validate the input and update the user data
-                    if (!updatedFirstName.isEmpty() && !updatedLastName.isEmpty() && !updatedPassword.isEmpty()) {
-                        // Update the user object
-                        user.setFirstName(updatedFirstName);
-                        user.setLastName(updatedLastName);
-                        user.setPassword(updatedPassword);
+        // Set up the "Cancel" button
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss(); // Simply dismiss the dialog
+            }
+        });
 
-                        // Update the user profile picture (if changed)
-                        String updatedProfilePictureUri = getEditDialogSelectedPhotoUri().toString();
-                        user.setProfilePicture(updatedProfilePictureUri);
+        // Create and show the dialog
+        AlertDialog dialog = builder.create();
+        dialog.show();
 
-                        userViewModel.updateUser(user);
-                        updateGreetingUser();
-                        updateProfilePhotoPresent();
-                    } else {
-                        // Show a message if validation fails
-                        Toast.makeText(getApplicationContext(), "All fields are required", Toast.LENGTH_SHORT).show();
-                    }
+        // Handle the "Save" button click
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(view -> {
+            // Get updated values from EditTexts
+            String updatedFirstName = firstNameEditText.getText().toString();
+            String updatedLastName = lastNameEditText.getText().toString();
+            String updatedPassword = passwordEditText.getText().toString();
+
+            // Validate the input and update the user data
+            if (validateFields(firstNameEditText, lastNameEditText, passwordEditText, reEnterPasswordEditText)) {
+                // Update the user object
+                user.setFirstName(updatedFirstName);
+                user.setLastName(updatedLastName);
+                user.setPassword(updatedPassword);
+
+                // Update the user profile picture (if changed)
+                if (getEditDialogSelectedPhotoUri() != null) {
+                    String updatedProfilePictureUri = getEditDialogSelectedPhotoUri().toString();
+                    user.setProfilePicture(updatedProfilePictureUri);
                 }
-            });
 
-            // Set up the "Cancel" button
-            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss(); // Simply dismiss the dialog
-                }
-            });
-
-            // Create and show the dialog
-            AlertDialog dialog = builder.create();
-            dialog.show();
+                userViewModel.updateUser(user);
+                updateGreetingUser();
+                updateProfilePhotoPresent();
+                dialog.dismiss(); // Dismiss the dialog only if the update is successful
+            }
+        });
     }
+
+    private boolean validateFields(EditText firstNameEditText, EditText lastNameEditText, EditText passwordEditText, EditText reEnterPasswordEditText) {
+        boolean isValid = true;
+
+        // Check if first name is empty or contains numbers
+        String firstName = firstNameEditText.getText().toString();
+        if (TextUtils.isEmpty(firstName)) {
+            firstNameEditText.setError("First name is required");
+            isValid = false;
+        } else if (firstName.matches(".*\\d.*")) {
+            firstNameEditText.setError("First name should contain letters only");
+            isValid = false;
+        }
+
+        // Check if last name is empty or contains numbers
+        String lastName = lastNameEditText.getText().toString();
+        if (TextUtils.isEmpty(lastName)) {
+            lastNameEditText.setError("Last name is required");
+            isValid = false;
+        } else if (lastName.matches(".*\\d.*")) {
+            lastNameEditText.setError("Last name should contain letters only");
+            isValid = false;
+        }
+
+        // Check if password is empty, contains non-alphanumeric characters, or less than 8 characters.
+        String password = passwordEditText.getText().toString();
+        if (TextUtils.isEmpty(password)) {
+            passwordEditText.setError("Password is required");
+            isValid = false;
+        } else if (!password.matches("[a-zA-Z0-9]+")) {
+            passwordEditText.setError("Password should contain only letters and numbers");
+        } else if (password.length() < 8) {
+            passwordEditText.setError("Password must be at least 8 characters");
+            isValid = false;
+        }
+
+        // Check if re-enter password is empty or do not match password
+        String reEnterPassword = reEnterPasswordEditText.getText().toString();
+        if (TextUtils.isEmpty(reEnterPassword)) {
+            reEnterPasswordEditText.setError("Re-entering password is required");
+            isValid = false;
+        } else if (!reEnterPassword.equals(password)) {
+            reEnterPasswordEditText.setError("Passwords do not match");
+            isValid = false;
+        }
+
+        return isValid;
+    }
+
 
     private void setUpListeners() {
         // Set up action_menu button to open the drawer

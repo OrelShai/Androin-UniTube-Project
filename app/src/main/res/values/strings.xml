@@ -54,4 +54,6 @@
     <string name="BaseUrl">mongodb://10.0.2.2:27017/unitube</string>
     <string name="delete_my_account">Delete my account</string>
     <string name="edit_user_button">edit user button</string>
+    <string name="user_name_can_t_be_changed">user name can\'t be changed</string>
+    <string name="change_profile_picture">Change Profile Picture</string>
 </resources>

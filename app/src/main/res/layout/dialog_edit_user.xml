@@ -12,7 +12,7 @@
         android:layout_height="100dp"
         android:layout_gravity="center"
         android:src="@drawable/default_profile_image"
-        android:contentDescription="Profile Picture"
+        android:contentDescription="@string/profile_photo"
         android:scaleType="centerCrop"
         android:layout_marginBottom="16dp"/>
 
@@ -20,7 +20,7 @@
         android:id="@+id/change_profile_picture_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Change Profile Picture"
+        android:text="@string/change_profile_picture"
         android:layout_gravity="center"
         android:layout_marginBottom="16dp" />
 
@@ -29,7 +29,7 @@
         android:id="@+id/edit_first_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="First Name"
+        android:hint="@string/first_name"
         android:inputType="text"
         android:layout_marginBottom="16dp"/>
 
@@ -38,7 +38,7 @@
         android:id="@+id/edit_last_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Last Name"
+        android:hint="@string/last_name"
         android:inputType="text"
         android:layout_marginBottom="16dp"/>
 
@@ -47,7 +47,16 @@
         android:id="@+id/edit_password"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Password"
+        android:hint="@string/password"
+        android:inputType="textPassword"
+        android:layout_marginBottom="16dp"/>
+
+    <!-- Password -->
+    <EditText
+        android:id="@+id/edit_reEnter_password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/re_enter_password"
         android:inputType="textPassword"
         android:layout_marginBottom="16dp"/>
 
@@ -56,8 +65,7 @@
         android:id="@+id/edit_user_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Username"
-        android:text="user name can't be changed"
+        android:text="@string/user_name_can_t_be_changed"
         android:textColor="@android:color/darker_gray"
         android:layout_marginBottom="16dp"
         android:enabled="false"  />
