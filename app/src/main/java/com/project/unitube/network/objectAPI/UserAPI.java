@@ -128,7 +128,7 @@ public class UserAPI {
     public MutableLiveData<String> updateUser(User user) {
         MutableLiveData<String> resultLiveData = new MutableLiveData<>();
 
-        Call<Void> call = userWebServiceAPI.updateUser(user);
+        Call<Void> call = userWebServiceAPI.updateUser(user.getUserName(), user);
         call.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {

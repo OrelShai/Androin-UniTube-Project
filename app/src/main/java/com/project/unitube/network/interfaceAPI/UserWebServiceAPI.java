@@ -28,7 +28,7 @@ public interface UserWebServiceAPI {
 
     // Update a user
     @PUT("api/users/{id}")
-    Call<Void> updateUser(@Body User user);
+    Call<Void> updateUser(@Path("id") String userName, @Body User user);
 
     // Delete a user by userName
     @DELETE("api/users/{id}")
