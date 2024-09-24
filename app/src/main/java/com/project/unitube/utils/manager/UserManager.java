@@ -37,6 +37,10 @@ public class UserManager {
     public void setCurrentUser(User user) {
         this.currentUser = user;
     }
+
+    public String getToken() {
+        return token;
+    }
 }
 
 

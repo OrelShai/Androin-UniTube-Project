@@ -32,7 +32,7 @@ public interface UserWebServiceAPI {
 
     // Delete a user by userName
     @DELETE("api/users/{id}")
-    Call<Void> deleteUser(@Path("id") String userName, @Header("Authorization") String token);
+    Call<Void> deleteUser(@Path("id") String userName);
 
     // Log in the user
     @FormUrlEncoded

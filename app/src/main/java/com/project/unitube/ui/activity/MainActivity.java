@@ -204,7 +204,7 @@ public class MainActivity extends AppCompatActivity {
             deleteAccountButton.setOnClickListener(view -> {
 
                 // Delete the user account
-                userViewModel.deleteUser(currentUser.getUserName(), token).observe(this, result -> {
+                userViewModel.deleteUser(currentUser.getUserName()).observe(this, result -> {
                     // Handle the result with observer to the response
                     if (result.equals("success")) {
                         // Notify the user, set current user to null and navigate to LoginScreen
@@ -212,7 +212,7 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(this, "User account deleted", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(MainActivity.this, LoginScreen.class);
                         startActivity(intent);
-                    } else if (result.equals("403")) {
+                    } else if (result.equals("403") || result.equals("401")) {
                         Toast.makeText(this, "Unauthorized access", Toast.LENGTH_SHORT).show();
                     } else {
                         Toast.makeText(this, "Failed to delete user", Toast.LENGTH_SHORT).show();

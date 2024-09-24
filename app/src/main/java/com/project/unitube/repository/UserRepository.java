@@ -1,6 +1,5 @@
 package com.project.unitube.repository;
 
-import static com.project.unitube.utils.manager.UserManager.token;
 
 import android.content.Context;
 
@@ -37,8 +36,8 @@ public class UserRepository {
         return userAPI.loginUser(username, password);
     }
 
-    public MutableLiveData<String> deleteUser(String userName, String token) {
-        return userAPI.deleteUser(userName, token);
+    public MutableLiveData<String> deleteUser(String userName) {
+        return userAPI.deleteUser(userName);
     }
 
     public MutableLiveData<String> updateUser(User user) {

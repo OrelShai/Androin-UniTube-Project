@@ -54,9 +54,12 @@ public class UserAPI {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
                 if (response.isSuccessful()) {
-                    String token = response.body();
+                    // Assuming you receive a JSON object from the server with the token
+                    String fullTokenResponse = response.body(); // This will be the whole JSON {"token":"<token_value>"}
+                    String actualToken = fullTokenResponse.split(":")[1].replace("\"", "").replace("}", ""); // Extract just the token string
+
                     // Store the user locally using Room
-                    UserManager.token = token;
+                    UserManager.token = actualToken.trim();
                     currentUser = getUser(username);
                 } else {
                     currentUser.postValue(null);  // Set null in case of failure
@@ -95,10 +98,10 @@ public class UserAPI {
         return resultLiveData;
     }
 
-    public MutableLiveData<String> deleteUser(String userName, String token) {
+    public MutableLiveData<String> deleteUser(String userName) {
         MutableLiveData<String> resultLiveData = new MutableLiveData<>();
 
-        Call<Void> call = userWebServiceAPI.deleteUser(userName, "Bearer " + token);
+        Call<Void> call = userWebServiceAPI.deleteUser(userName);
 
         call.enqueue(new Callback<Void>() {
             @Override
@@ -107,6 +110,8 @@ public class UserAPI {
                     resultLiveData.postValue("success");
                 } else if (response.code() == 403) {
                     resultLiveData.postValue("403");
+                } else if (response.code() == 401) {
+                    resultLiveData.postValue("401");
                 } else {
                     resultLiveData.postValue("failure");
                 }

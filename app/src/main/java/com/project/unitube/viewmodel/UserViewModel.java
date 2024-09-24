@@ -28,8 +28,8 @@ public class UserViewModel extends ViewModel {
         return userRepository.loginUser(username, password);
     }
 
-    public MutableLiveData<String> deleteUser(String userName, String token) {
-        return userRepository.deleteUser(userName, token);
+    public MutableLiveData<String> deleteUser(String userName) {
+        return userRepository.deleteUser(userName);
     }
 
     public MutableLiveData<String> updateUser(User user) {
