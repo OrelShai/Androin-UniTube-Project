@@ -1,5 +1,6 @@
 package com.project.unitube.viewmodel;
 
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -15,8 +16,8 @@ public class UserViewModel extends ViewModel {
         userRepository = new UserRepository(Unitube.context);
     }
 
-    public void insertUser(User user) {
-        userRepository.insertUser(user);
+    public  MutableLiveData<String> createUser(User user) {
+        return userRepository.createUser(user);
     }
 
     public MutableLiveData<User> getUser(String username) {
@@ -27,11 +28,11 @@ public class UserViewModel extends ViewModel {
         return userRepository.loginUser(username, password);
     }
 
-    public void deleteUser(String userName) {
-        userRepository.deleteUser(userName);
+    public MutableLiveData<String> deleteUser(String userName, String token) {
+        return userRepository.deleteUser(userName, token);
     }
 
-    public void updateUser(User user) {
-        userRepository.updateUser(user);
+    public MutableLiveData<String> updateUser(User user) {
+        return userRepository.updateUser(user);
     }
 }

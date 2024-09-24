@@ -46,6 +46,7 @@ import com.project.unitube.viewmodel.UserViewModel;
 import com.project.unitube.viewmodel.VideoViewModel;
 
 import static com.project.unitube.utils.VideoInteractionHandler.updateDate;
+import static com.project.unitube.utils.manager.UserManager.token;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -188,7 +189,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void InitDeleteAndEditAccountButtons() {
         LinearLayout deleteAccountButton = findViewById(R.id.delete_user_button_layout);
-
         NavigationView navigationView = findViewById(R.id.nav_view);
         View headerView = navigationView.getHeaderView(0);
         ImageView editUserButton = headerView.findViewById(R.id.edit_user_button); // Access from headerView
@@ -202,15 +202,24 @@ public class MainActivity extends AppCompatActivity {
 
             // Set up listener for delete account button
             deleteAccountButton.setOnClickListener(view -> {
-                // Delete the user account
-                userViewModel.deleteUser(currentUser.getUserName());
-                UserManager.getInstance().setCurrentUser(null);
 
-                // Notify the user and navigate to LoginScreen
-                Toast.makeText(this, "User account deleted", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(MainActivity.this, LoginScreen.class);
-                startActivity(intent);
+                // Delete the user account
+                userViewModel.deleteUser(currentUser.getUserName(), token).observe(this, result -> {
+                    // Handle the result with observer to the response
+                    if (result.equals("success")) {
+                        // Notify the user, set current user to null and navigate to LoginScreen
+                        UserManager.getInstance().setCurrentUser(null);
+                        Toast.makeText(this, "User account deleted", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(MainActivity.this, LoginScreen.class);
+                        startActivity(intent);
+                    } else if (result.equals("403")) {
+                        Toast.makeText(this, "Unauthorized access", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(this, "Failed to delete user", Toast.LENGTH_SHORT).show();
+                    }
+                });
             });
+
 
             // Set up listener for edit user button
             editUserButton.setOnClickListener(view -> showEditUserDialog());
@@ -296,10 +305,19 @@ public class MainActivity extends AppCompatActivity {
                     user.setProfilePicture(updatedProfilePictureUri);
                 }
 
-                userViewModel.updateUser(user);
-                updateGreetingUser();
-                updateProfilePhotoPresent();
-                dialog.dismiss(); // Dismiss the dialog only if the update is successful
+                userViewModel.updateUser(user).observe(this, result -> {
+                    // Handle the result with observer to the response
+                    if (result.equals("success")) {
+                        Toast.makeText(this, "User updated successfully", Toast.LENGTH_SHORT).show();
+                        updateGreetingUser();
+                        updateProfilePhotoPresent();
+                        dialog.dismiss(); // Dismiss the dialog only if the update is successful
+                    } else if (result.equals("403")) {
+                        Toast.makeText(this, "Unauthorized access", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(this, "Failed to update user", Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
         });
     }

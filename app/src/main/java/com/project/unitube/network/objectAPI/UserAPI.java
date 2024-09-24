@@ -1,11 +1,11 @@
 package com.project.unitube.network.objectAPI;
 
+import static com.project.unitube.utils.manager.UserManager.token;
+
 import android.util.Log;
 
 import androidx.lifecycle.MutableLiveData;
 
-import com.project.unitube.CallBack;
-import com.project.unitube.Room.Dao.UserDao;
 import com.project.unitube.entities.User;
 import com.project.unitube.network.RetroFit.RetrofitClient;
 import com.project.unitube.network.interfaceAPI.UserWebServiceAPI;
@@ -23,15 +23,10 @@ public class UserAPI {
 
     Retrofit retrofit;
     UserWebServiceAPI userWebServiceAPI;
-    CallBack callBack;
 
     public UserAPI( ) {
         retrofit = RetrofitClient.getClient();
         userWebServiceAPI = retrofit.create(UserWebServiceAPI.class);
-    }
-
-    public void setCallBack(CallBack callBack) {
-        this.callBack = callBack;
     }
 
 
@@ -52,29 +47,6 @@ public class UserAPI {
         return currentUser;
     }
 
-/*
-    public MutableLiveData<User> loginUser(String username, String password) {
-        Call<User> call = userWebServiceAPI.getUser(username);
-        call.enqueue(new Callback<User>() {
-            @Override
-            public void onResponse(Call<User> call, Response<User> response) {
-                User user = response.body();
-                if (user != null && user.getPassword().equals(password)) {
-                    // Store the user locally using Room
-                        currentUser.postValue(user);
-                } else {
-                    currentUser.postValue(null);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<User> call, Throwable t) {
-                currentUser.postValue(null);
-            }
-        });
-        return currentUser;
-    }
-*/
 
     public MutableLiveData<User> loginUser(String username, String password) {
         Call<String> call = userWebServiceAPI.processLogin(username, password);
@@ -99,52 +71,70 @@ public class UserAPI {
     }
 
 
-    public void createUser(User user) {
+    public MutableLiveData<String> createUser(User user) {
+        MutableLiveData<String> resultLiveData = new MutableLiveData<>();
+
         Call<Void> call = userWebServiceAPI.createUser(user);
         call.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
-                //userDao.insertUser(user);
                 if (response.isSuccessful()) {
-                    callBack.onSuccess("");
+                    resultLiveData.postValue("success");
                 } else if (response.code() == 409) {
-                    callBack.onFail("Username already exists");
+                    resultLiveData.postValue("409");
+                } else {
+                    resultLiveData.postValue("failure");
                 }
             }
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
+                resultLiveData.postValue("failure");
             }
         });
+        return resultLiveData;
     }
 
-    public void deleteUser(String userName) {
-        Call<Void> call = userWebServiceAPI.deleteUser(userName);
+    public MutableLiveData<String> deleteUser(String userName, String token) {
+        MutableLiveData<String> resultLiveData = new MutableLiveData<>();
+
+        Call<Void> call = userWebServiceAPI.deleteUser(userName, "Bearer " + token);
+
         call.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
-                //userDao.insertUser(user);
                 if (response.isSuccessful()) {
-                    Log.d("UserAPI", "User deleted successfully");
+                    resultLiveData.postValue("success");
+                } else if (response.code() == 403) {
+                    resultLiveData.postValue("403");
+                } else {
+                    resultLiveData.postValue("failure");
                 }
             }
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
-                Log.e("UserAPI", "Error deleting user: " + t.getMessage());
+                resultLiveData.postValue("failure");
             }
         });
+        return resultLiveData;
     }
 
-    public void updateUser(User user) {
+    public MutableLiveData<String> updateUser(User user) {
+        MutableLiveData<String> resultLiveData = new MutableLiveData<>();
+
         Call<Void> call = userWebServiceAPI.updateUser(user);
         call.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
-                //userDao.insertUser(user);
                 if (response.isSuccessful()) {
+                    resultLiveData.postValue("success");
                     UserManager.getInstance().setCurrentUser(user);
-                    Log.d("UserAPI", "User updated successfully");
+                } else if (response.code() == 403) {
+                    resultLiveData.postValue("403");
+                }
+                else {
+                    resultLiveData.postValue("failure");
                 }
             }
 
@@ -153,5 +143,6 @@ public class UserAPI {
                 Log.e("UserAPI", "Error updating user: " + t.getMessage());
             }
         });
+        return  resultLiveData;
     }
 }

@@ -14,11 +14,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
-import com.project.unitube.CallBack;
 import com.project.unitube.R;
-import com.project.unitube.network.objectAPI.UserAPI;
 import com.project.unitube.utils.manager.UserManager;
 import com.project.unitube.entities.User;
 import com.project.unitube.viewmodel.UserViewModel;
@@ -37,7 +36,7 @@ import java.util.Locale;
  * and allows the user to upload a profile photo either by selecting from
  * the gallery or taking a new photo using the camera.
  */
-public class RegisterScreen extends Activity implements CallBack {
+public class RegisterScreen extends AppCompatActivity  {
 
     private ImageView profileImageView;
     private EditText firstNameEditText;
@@ -47,11 +46,8 @@ public class RegisterScreen extends Activity implements CallBack {
     private EditText userNameEditText;
     private Button uploadPhotoButton;
     private Button signUpButton;
-
     private Uri selectedPhotoUri;
     private UserViewModel userViewModel;
-    private UserAPI userAPI;
-
     private static final int PICK_IMAGE_REQUEST = 1;
     private static final int CAPTURE_IMAGE_REQUEST = 2;
 
@@ -74,9 +70,6 @@ public class RegisterScreen extends Activity implements CallBack {
 
         // Initialize the UserViewModel
         userViewModel = new UserViewModel();
-        this.userAPI = new UserAPI();
-        this.userAPI.setCallBack(this);
-
 
         // Set up listeners for buttons
         setUpListeners();
@@ -123,9 +116,16 @@ public class RegisterScreen extends Activity implements CallBack {
                         userNameEditText.getText().toString(),
                         profileImageView.getTag() != null ? profileImageView.getTag().toString() : "default_profile_image");
 
-//                userViewModel.insertUser(user);
-                this.userAPI.createUser(user);
-
+                userViewModel.createUser(user).observe(this, result -> {
+                    if (result.equals("success")) {
+                        Toast.makeText(this, "Sign up successful", Toast.LENGTH_SHORT).show();
+                        finish();
+                    } else if (result.equals("409")) {
+                        Toast.makeText(this, "Username already exists", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(this, "Sign up failed", Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
         });
     }
@@ -247,12 +247,13 @@ public class RegisterScreen extends Activity implements CallBack {
                 selectedPhotoUri = data.getData();
                 saveImageFromUri(selectedPhotoUri);
                 // Handle picking image from gallery
-            } else if (requestCode == CAPTURE_IMAGE_REQUEST) {
+            }
+                // if (requestCode == CAPTURE_IMAGE_REQUEST)
                 // Handle capturing image from camera
                 // The selected photo URI is already set in captureImageFromCamera()
-            }
         }
     }
+
     public void showImagePickerOptions() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Select Image Source");
@@ -323,29 +324,6 @@ public class RegisterScreen extends Activity implements CallBack {
 
     public Uri getSelectedPhotoUri() {
         return selectedPhotoUri;
-    }
-
-    @Override
-    public void onSuccess(String token) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                // Show "Sign up successful" toast and move to sign-in page
-                Toast.makeText(RegisterScreen.this, "Sign up successful", Toast.LENGTH_SHORT).show();
-                // back to the LoginScreen
-                finish();
-            }
-        });
-    }
-
-    @Override
-    public void onFail(final String message) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(RegisterScreen.this, message, Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 
 }

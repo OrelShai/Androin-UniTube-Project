@@ -1,11 +1,19 @@
 package com.project.unitube.repository;
 
+import static com.project.unitube.utils.manager.UserManager.token;
+
 import android.content.Context;
+
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import com.project.unitube.Room.Dao.UserDao;
 import com.project.unitube.Room.Database.AppDB;
 import com.project.unitube.entities.User;
 import com.project.unitube.network.objectAPI.UserAPI;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class UserRepository {
     private UserAPI userAPI;
@@ -17,8 +25,8 @@ public class UserRepository {
         userAPI = new UserAPI();
     }
 
-    public void insertUser(User user) {
-        userAPI.createUser(user);
+    public MutableLiveData<String> createUser(User user) {
+        return userAPI.createUser(user);
     }
 
     public MutableLiveData<User> getUser(String username) {
@@ -29,11 +37,11 @@ public class UserRepository {
         return userAPI.loginUser(username, password);
     }
 
-    public void deleteUser(String userName) {
-        userAPI.deleteUser(userName);
+    public MutableLiveData<String> deleteUser(String userName, String token) {
+        return userAPI.deleteUser(userName, token);
     }
 
-    public void updateUser(User user) {
-        userAPI.updateUser(user);
+    public MutableLiveData<String> updateUser(User user) {
+        return userAPI.updateUser(user);
     }
 }
