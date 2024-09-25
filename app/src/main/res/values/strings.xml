@@ -56,4 +56,9 @@
     <string name="edit_user_button">edit user button</string>
     <string name="user_name_can_t_be_changed">user name can\'t be changed</string>
     <string name="change_profile_picture">Change Profile Picture</string>
+    <string name="videos">videos</string>
+    <string name="community">community</string>
+    <string name="subscribe">subscribe</string>
+    <string name="full_name">firstName -- lastName</string>
+    <string name="back_to_home_page">back to home page</string>
 </resources>
