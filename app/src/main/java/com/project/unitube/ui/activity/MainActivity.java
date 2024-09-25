@@ -255,11 +255,11 @@ public class MainActivity extends AppCompatActivity {
         reEnterPasswordEditText.setText(user.getPassword());
 
         // Load current profile picture (if any)
-        if (user.getProfilePicture() != null) {
+        if (user.getProfilePicture() .equals( "default_profile_image")) {
+            editDialogprofileImageView.setImageResource(R.drawable.default_profile_image);
+        } else {
             Uri profilePhotoUri = Uri.parse(user.getProfilePicture());
             editDialogprofileImageView.setImageURI(profilePhotoUri);
-        } else {
-            editDialogprofileImageView.setImageResource(R.drawable.default_profile_image);
         }
 
         // Set up the profile picture change listener

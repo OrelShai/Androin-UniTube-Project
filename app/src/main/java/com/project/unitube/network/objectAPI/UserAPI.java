@@ -53,6 +53,7 @@ public class UserAPI {
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
+
                 if (response.isSuccessful()) {
                     // Assuming you receive a JSON object from the server with the token
                     String fullTokenResponse = response.body(); // This will be the whole JSON {"token":"<token_value>"}
