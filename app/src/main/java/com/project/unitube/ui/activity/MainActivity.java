@@ -102,24 +102,6 @@ public class MainActivity extends AppCompatActivity {
 
         // Initialize VideosToShow with all videos
         initializeVideosToShow();
-
-        initLogoToOpenUserPage();
-    }
-
-    private void initLogoToOpenUserPage() {
-        ImageView logo = findViewById(R.id.logo);
-        logo.setOnClickListener(view -> {
-            User currentUser = UserManager.getInstance().getCurrentUser();
-            if (currentUser != null) {
-                Intent intent = new Intent(MainActivity.this, UserPageActivity.class);
-                intent.putExtra("user", currentUser);
-                startActivity(intent);
-            } else {
-                Toast.makeText(this, "Log in first", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(MainActivity.this, LoginScreen.class);
-                startActivity(intent);
-            }
-        });
     }
 
     private void initializeViewModels() {

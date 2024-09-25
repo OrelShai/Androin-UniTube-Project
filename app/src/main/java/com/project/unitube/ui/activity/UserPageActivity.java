@@ -3,6 +3,7 @@ package com.project.unitube.ui.activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -11,10 +12,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.project.unitube.R;
 import com.project.unitube.entities.User;
+import com.project.unitube.ui.adapter.VideoAdapter;
 import com.project.unitube.utils.manager.UserManager;
 
 public class UserPageActivity extends AppCompatActivity {
@@ -22,24 +25,37 @@ public class UserPageActivity extends AppCompatActivity {
     private ImageView profileImageView;
     private TextView fullNameTextView;
     private TextView usernameTextView;
+    private Button homeButton;
     private RecyclerView videosRecyclerView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_page);
 
-        // Initialize views
-        profileImageView = findViewById(R.id.profileImageView);
-        fullNameTextView = findViewById(R.id.fullNameTextView);
-        usernameTextView = findViewById(R.id.usernameTextView);
-        videosRecyclerView = findViewById(R.id.videosRecyclerView);
+        // initialize views
+        initializeUIComponents();
 
         // Load user details (replace with actual user data)
         loadUserDetails();
 
         // Set up RecyclerView
         setupRecyclerView();
+    }
+
+    private void initializeUIComponents() {
+        // Initialize views
+        profileImageView = findViewById(R.id.profileImageView);
+        fullNameTextView = findViewById(R.id.fullNameTextView);
+        usernameTextView = findViewById(R.id.usernameTextView);
+        homeButton = findViewById(R.id.backToHomePageButton);
+        videosRecyclerView = findViewById(R.id.userPageVideosRecyclerView);
+
+        // Set on click listener for home button
+        homeButton.setOnClickListener(v -> {
+            finish();
+        });
     }
 
     private void loadUserDetails() {
@@ -65,7 +81,12 @@ public class UserPageActivity extends AppCompatActivity {
     }
 
     private void setupRecyclerView() {
+        // Initialize RecyclerView
+        RecyclerView videoRecyclerView = findViewById(R.id.userPageVideosRecyclerView);
+        videoRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        // Set the adapter for the RecyclerView using the global videos list
+        VideoAdapter videoAdapter = new VideoAdapter(this);
+        videosRecyclerView.setAdapter(videoAdapter);
     }
-
-
 }

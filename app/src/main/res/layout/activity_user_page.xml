@@ -169,10 +169,18 @@
 
     <!-- RecyclerView to display video items -->
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/videosRecyclerView"
+        android:id="@+id/userPageVideosRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"/>
+
+    <!-- Dividing Line -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/darker_gray"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp" />
 
     <Button
         android:id="@+id/backToHomePageButton"
