@@ -86,7 +86,6 @@ public class CommentManager {
                     currentUser.getProfilePicture(),
                     commentText
             );
-            Log.d("newComment", "comment = \n" + "mongoID:" + newComment.getId() + " video_id:" + newComment.getVideoId() + " user_name:" + newComment.getUserName() + " comment_text:" + newComment.getCommentText());
 
             // Add the comment to the database
             commentViewModel.createComment(newComment).observe((LifecycleOwner) context, result -> {
@@ -97,9 +96,17 @@ public class CommentManager {
                 }
             });
 
-            comments.add(newComment);
-            commentAdapter.notifyItemInserted(comments.size() - 1);
-            commentAdapter.notifyItemRangeChanged(comments.size() - 1, comments.size());
+            // fetch all comments including the new one and update the UI
+            commentViewModel.getCommentsForVideo(currentVideo.getId()).observe((LifecycleOwner) context, comments -> {
+                this.comments.clear();
+                this.comments.addAll(comments);
+                commentAdapter.notifyDataSetChanged();
+
+                for (Comment comment : comments) {
+                    Log.d("newCommentManager", "New_comment_id : " + comment.getId() + " new_comment_text: " + comment.getCommentText());
+                }
+            });
+
             commentEditText.setText("");
 
             // Update the comment count
