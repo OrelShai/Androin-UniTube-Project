@@ -33,10 +33,12 @@ public class CommentRepository {
     }
 
     public MutableLiveData<String> updateComment(Comment comment) {
-        MutableLiveData<String> resultLiveData = new MutableLiveData<>();
-        return resultLiveData;
+        return commentAPI.updateComment(comment.getId(), comment);
     }
 
+    public MutableLiveData<String> deleteComment(String commentId) {
+        return commentAPI.deleteComment(commentId);
+    }
 
 
     class CommentListData extends MutableLiveData<List<Comment>> {

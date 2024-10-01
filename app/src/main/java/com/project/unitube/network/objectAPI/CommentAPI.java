@@ -100,16 +100,25 @@ public class CommentAPI {
         return resultLiveData;
     }
 
-//    public void deleteComment(int commentId) {
-//        Call<Void> call = commentWebServiceAPI.deleteComment(commentId);
-//        call.enqueue(new Callback<Void>() {
-//            @Override
-//            public void onResponse(Call<Void> call, Response<Void> response) {
-//            }
-//
-//            @Override
-//            public void onFailure(Call<Void> call, Throwable t) {
-//            }
-//        });
-//    }
+    public MutableLiveData<String> deleteComment(String commentId) {
+        MutableLiveData<String> resultLiveData = new MutableLiveData<>();
+
+        Call<Void> call = commentWebServiceAPI.deleteComment(commentId);
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    resultLiveData.postValue("Success");
+                } else {
+                    resultLiveData.postValue("Failed: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                resultLiveData.postValue("failure: " + t.getMessage());
+            }
+        });
+        return resultLiveData;
+    }
 }

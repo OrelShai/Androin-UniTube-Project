@@ -23,6 +23,6 @@ public interface CommentWebServiceAPI {
     @PUT("api/comments/{id}")
     Call<Void> updateComment(@Path("id") String commentId, @Body Comment comment);
 
-//    @DELETE("api/comments/{id}")
-//    Call<Void> deleteComment(@Path("id") int commentId);
+    @DELETE("api/comments/{id}")
+    Call<Void> deleteComment(@Path("id") String commentId);
 }

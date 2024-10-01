@@ -23,13 +23,18 @@ public class CommentViewModel extends ViewModel {
         return commentRepository.getCommentsForVideo(videoId);
     }
 
-
     public MutableLiveData<String> createComment(Comment comment) {
         return commentRepository.createComment(comment);
     }
 
-//    public MutableLiveData<String> updateComment(Comment comment) {
-//        return commentRepository.updateComment(comment);
-//    }
+    public MutableLiveData<String> updateComment(Comment comment) {
+        return commentRepository.updateComment(comment);
+    }
+
+    public MutableLiveData<String> deleteComment(String commentId) {
+        return commentRepository.deleteComment(commentId);
+    }
+
+
 
 }
