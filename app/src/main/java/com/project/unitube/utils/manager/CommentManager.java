@@ -2,17 +2,23 @@ package com.project.unitube.utils.manager;
 
 import android.content.Context;
 import android.net.Uri;
+import android.util.Log;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.lifecycle.LifecycleOwner;
+
 import com.project.unitube.R;
+import com.project.unitube.Unitube;
 import com.project.unitube.entities.Comment;
 import com.project.unitube.entities.User;
 import com.project.unitube.entities.Video;
 import com.project.unitube.ui.adapter.CommentAdapter;
+import com.project.unitube.viewmodel.CommentViewModel;
+import com.project.unitube.viewmodel.UserViewModel;
 
 import java.util.List;
 
@@ -25,6 +31,7 @@ public class CommentManager {
     private List<Comment> comments;
     private TextView commentCountTextView;
     private ImageView userProfileImageView;
+    private CommentViewModel commentViewModel;
 
     public CommentManager(Context context, Video currentVideo, EditText commentEditText, ImageButton uploadCommentButton,
                           CommentAdapter commentAdapter, List<Comment> comments, TextView commentCountTextView, ImageView userProfileImageView) {
@@ -36,6 +43,7 @@ public class CommentManager {
         this.comments = comments;
         this.commentCountTextView = commentCountTextView;
         this.userProfileImageView = userProfileImageView;
+        this.commentViewModel = new CommentViewModel();
 
         initialize();
     }
@@ -73,10 +81,21 @@ public class CommentManager {
 
         if (!commentText.isEmpty()) {
             Comment newComment = new Comment(
+                    currentVideo.getId(),
                     currentUser.getUserName(),
-                    Uri.parse(currentUser.getProfilePicture()),
+                    currentUser.getProfilePicture(),
                     commentText
             );
+            Log.d("newComment", "comment = \n" + "mongoID:" + newComment.getId() + " video_id:" + newComment.getVideoId() + " user_name:" + newComment.getUserName() + " comment_text:" + newComment.getCommentText());
+
+            // Add the comment to the database
+            commentViewModel.createComment(newComment).observe((LifecycleOwner) context, result -> {
+                if (result.equals("Success")) {
+                    Toast.makeText(context, "Comment added successfully.", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(context, "Failed to add comment. Please try again.", Toast.LENGTH_SHORT).show();
+                }
+            });
 
             comments.add(newComment);
             commentAdapter.notifyItemInserted(comments.size() - 1);

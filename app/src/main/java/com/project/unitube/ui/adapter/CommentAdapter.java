@@ -1,6 +1,7 @@
 package com.project.unitube.ui.adapter;
 
 import android.content.Context;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.project.unitube.R;
 import com.project.unitube.utils.manager.UserManager;
 import com.project.unitube.entities.Comment;
+import com.project.unitube.viewmodel.CommentViewModel;
 
 import java.util.List;
 
@@ -57,7 +59,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
             holder.commentUserProfileImage.setImageResource(profileImageResourceId);
         } else {
             // Profile picture is a uri
-            holder.commentUserProfileImage.setImageURI(comment.getProfilePicture());
+            holder.commentUserProfileImage.setImageURI(Uri.parse(comment.getProfilePicture()));
         }
 
         // Set up more options button logic

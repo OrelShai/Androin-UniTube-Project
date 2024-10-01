@@ -20,10 +20,14 @@ import com.project.unitube.entities.Videos;
 
 
 import com.project.unitube.entities.Comment;
+import com.project.unitube.viewmodel.CommentViewModel;
+import com.project.unitube.viewmodel.UserViewModel;
 
 public class DataManager {
+    private CommentViewModel commentViewModel;
+    private UserViewModel userViewModel;
     private List<User> userList;
-    private List<FakeProfileForComments> fakeProfilesForComments;
+//    private List<FakeProfileForComments> fakeProfilesForComments;
 
     public void logCommentsForAllVideos() {
         for (Video video : Videos.videosList) {
@@ -36,12 +40,15 @@ public class DataManager {
 
     // Constructor initializes lists and calls parsing methods
     public DataManager(Context context) {
+        commentViewModel = new CommentViewModel();
+        userViewModel = new UserViewModel();
+
         userList = new ArrayList<>();
-        fakeProfilesForComments = new ArrayList<>();
+//        fakeProfilesForComments = new ArrayList<>();
         Videos.videosList = new ArrayList<>();
         parseUsers(context);
         parseVideos(context);
-        parseComments(context);
+        getComments(context, (androidx.lifecycle.LifecycleOwner) context);
         logCommentsForAllVideos();  // Add this line to log comments after parsing
     }
 
@@ -68,7 +75,6 @@ public class DataManager {
                 String password = jsonObject.getString("password");
                 String userName = jsonObject.getString("userName");
                 String profilePicture = jsonObject.optString("profilePicture", "placeholder_profile");
-                Uri profilePictureUri = Uri.parse(profilePicture);
 
                 User user = new User(firstName, lastName, password, userName, profilePicture);
                 userList.add(user);
@@ -105,62 +111,94 @@ public class DataManager {
         }
     }
 
-    // Parses comments and links them to the corresponding videos
-    private void parseComments(Context context) {
+//     Parses comments and links them to the corresponding videos
+//    private void parseComments(Context context) {
+//        try {
+//            // Parse random comments profiles
+//            InputStream profilesStream = context.getAssets().open("randomCommentsProfiles.json");
+//            Scanner profilesScanner = new Scanner(profilesStream).useDelimiter("\\A");
+//            String profilesJsonString = profilesScanner.hasNext() ? profilesScanner.next() : "";
+//            JSONArray profilesJsonArray = new JSONArray(profilesJsonString);
+//
+//            for (int i = 0; i < profilesJsonArray.length(); i++) {
+//                JSONObject profileObject = profilesJsonArray.getJSONObject(i);
+//                String name = profileObject.getString("name");
+//                String profilePicture = profileObject.getString("profilePicture");
+//
+//                FakeProfileForComments profile = new FakeProfileForComments(name, profilePicture);
+//                fakeProfilesForComments.add(profile);
+//            }
+//
+//            // Parse comments and assign them to videos
+//            InputStream commentsStream = context.getAssets().open("comments.json");
+//            Scanner commentsScanner = new Scanner(commentsStream).useDelimiter("\\A");
+//            String commentsJsonString = commentsScanner.hasNext() ? commentsScanner.next() : "";
+//            JSONArray commentsJsonArray = new JSONArray(commentsJsonString);
+//
+//            for (int i = 0; i < commentsJsonArray.length(); i++) {
+//                JSONObject videoCommentsObject = commentsJsonArray.getJSONObject(i);
+//                String videoTitle = videoCommentsObject.getString("title");
+//                JSONArray commentsArray = videoCommentsObject.getJSONArray("comments");
+//
+//                Video video = getVideoByTitle(videoTitle);
+//                if (video != null) {
+//                    for (int j = 0; j < commentsArray.length(); j++) {
+//                        JSONObject commentObject = commentsArray.getJSONObject(j);
+//                        String name = commentObject.getString("name");
+//                        String text = commentObject.getString("text");
+//
+//                        String profilePicture = getProfilePictureByName(name);
+//                        Comment comment = new Comment(video.getId(), name, profilePicture, text);
+//                        video.addComment(comment);
+//                    }
+//                }
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
+
+    // for each video from videos list, fetch comments from the server
+    private void getComments(Context context, androidx.lifecycle.LifecycleOwner lifecycleOwner) {
         try {
-            // Parse random comments profiles
-            InputStream profilesStream = context.getAssets().open("randomCommentsProfiles.json");
-            Scanner profilesScanner = new Scanner(profilesStream).useDelimiter("\\A");
-            String profilesJsonString = profilesScanner.hasNext() ? profilesScanner.next() : "";
-            JSONArray profilesJsonArray = new JSONArray(profilesJsonString);
+            // get comments for each video
+            for (Video video : Videos.videosList) {
+                    commentViewModel.getCommentsForVideo(video.getId()).observe(lifecycleOwner, comments -> {
+                        if (comments != null) {
+                            video.setComments(comments);  // Set the comments for the specific video
+                            for (Comment comment : comments) {
+                                Log.d("DataManager", "comment = \n" + "mongoID:" + comment.getId() + " video_id:" + video.getId() + " user_name:" + comment.getUserName() + " comment_text:" + comment.getCommentText());
+                            }
+                        } else {
+                            Log.d("DataManager", "No comments found for video ID: " + video.getId());
+                        }
+                    });
 
-            for (int i = 0; i < profilesJsonArray.length(); i++) {
-                JSONObject profileObject = profilesJsonArray.getJSONObject(i);
-                String name = profileObject.getString("name");
-                String profilePicture = profileObject.getString("profilePicture");
-
-                FakeProfileForComments profile = new FakeProfileForComments(name, profilePicture);
-                fakeProfilesForComments.add(profile);
-            }
-
-            // Parse comments and assign them to videos
-            InputStream commentsStream = context.getAssets().open("comments.json");
-            Scanner commentsScanner = new Scanner(commentsStream).useDelimiter("\\A");
-            String commentsJsonString = commentsScanner.hasNext() ? commentsScanner.next() : "";
-            JSONArray commentsJsonArray = new JSONArray(commentsJsonString);
-
-            for (int i = 0; i < commentsJsonArray.length(); i++) {
-                JSONObject videoCommentsObject = commentsJsonArray.getJSONObject(i);
-                String videoTitle = videoCommentsObject.getString("title");
-                JSONArray commentsArray = videoCommentsObject.getJSONArray("comments");
-
-                Video video = getVideoByTitle(videoTitle);
-                if (video != null) {
-                    for (int j = 0; j < commentsArray.length(); j++) {
-                        JSONObject commentObject = commentsArray.getJSONObject(j);
-                        String name = commentObject.getString("name");
-                        String text = commentObject.getString("text");
-
-                        Uri profilePicture = Uri.parse(getProfilePictureByName(name));
-                        Comment comment = new Comment(name, profilePicture, text);
-                        video.addComment(comment);
+                    // set profile picture for each comment - does not work yet!!
+                    for (Comment comment : video.getComments()) {
+                        userViewModel.getUser(comment.getUserName()).observe(lifecycleOwner, user -> {
+                            if (user != null) {
+                                comment.setProfilePicture(user.getProfilePicture());
+                            }
+                        });
                     }
                 }
-            }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
+
+
     // Retrieves the profile picture URL for a given name
-    private String getProfilePictureByName(String name) {
-        for (FakeProfileForComments profile : fakeProfilesForComments) {
-            if (profile.getName().equals(name)) {
-                return profile.getProfilePicture();
-            }
-        }
-        return "default_profile_picture"; // Default profile picture if not found
-    }
+//    private String getProfilePictureByName(String name) {
+//        for (FakeProfileForComments profile : fakeProfilesForComments) {
+//            if (profile.getName().equals(name)) {
+//                return profile.getProfilePicture();
+//            }
+//        }
+//        return "default_profile_picture"; // Default profile picture if not found
+//    }
 
     // Retrieves the video duration for a given URL
     private String getVideoDuration(Context context, String url) {
