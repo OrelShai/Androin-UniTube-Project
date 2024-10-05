@@ -33,20 +33,17 @@ import com.bumptech.glide.Glide;
 import com.google.android.material.navigation.NavigationView;
 //import com.project.unitube.Room.Dao.UserDao;
 import com.project.unitube.utils.helper.DarkModeHelper;
-import com.project.unitube.utils.manager.DataManager;
 import com.project.unitube.utils.helper.NavigationHelper;
 import com.project.unitube.R;
 import com.project.unitube.utils.manager.UserManager;
 import com.project.unitube.ui.adapter.VideoAdapter;
 import com.project.unitube.entities.User;
 import com.project.unitube.entities.Video;
-import com.project.unitube.entities.Videos;
 import com.project.unitube.viewmodel.CommentViewModel;
 import com.project.unitube.viewmodel.UserViewModel;
 import com.project.unitube.viewmodel.VideoViewModel;
 
 import static com.project.unitube.utils.VideoInteractionHandler.updateDate;
-import static com.project.unitube.utils.manager.UserManager.token;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -59,7 +56,6 @@ import java.util.Locale;
 public class MainActivity extends AppCompatActivity {
 
     private static final int ADD_VIDEO_REQUEST = 1; // Request code for adding a video
-
     private static final int PICK_IMAGE_REQUEST = 2;
     private static final int CAPTURE_IMAGE_REQUEST = 3;
 
@@ -69,7 +65,6 @@ public class MainActivity extends AppCompatActivity {
     private DrawerLayout drawerLayout;
     private NavigationHelper navigationHelper;
     private DarkModeHelper darkModeHelper;
-    private DataManager dataManager;
     private VideoAdapter videoAdapter;
 
     private UserViewModel userViewModel;
@@ -88,9 +83,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Initialize DataManager
-        dataManager = new DataManager(this);
-
         // Initialize the UI components. Binds the XML views to the corresponding Java objects.
         initializeUIComponents();
 
@@ -106,8 +98,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void initializeViewModels() {
         userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
-//        videoViewModel = new ViewModelProvider(this).get(VideoViewModel.class);
-//        commentViewModel = new ViewModelProvider(this).get(CommentViewModel.class);
+        videoViewModel = new ViewModelProvider(this).get(VideoViewModel.class);
+//        commentViewModel = new ViewModelProvider(sthis).get(CommentViewModel.class);
     }
 
     private void initializeUIComponents() {
@@ -115,6 +107,7 @@ public class MainActivity extends AppCompatActivity {
             updateDate = false;
             onResume();
         }
+
         // Initialize Toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -132,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
         videoRecyclerView.setAdapter(videoAdapter);
 
         // Initialize NavigationHelper
-         navigationHelper = new NavigationHelper(this, drawerLayout, videoRecyclerView);
+        navigationHelper = new NavigationHelper(this, drawerLayout, videoRecyclerView);
         navigationHelper.initializeNavigation(navigationView);
 
         // Initialize DarkModeHelper
@@ -370,7 +363,6 @@ public class MainActivity extends AppCompatActivity {
         return isValid;
     }
 
-
     private void setUpListeners() {
         // Set up action_menu button to open the drawer
         findViewById(R.id.action_menu).setOnClickListener(view -> {
@@ -397,8 +389,10 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void initializeVideosToShow() {
-        Videos.videosToShow.clear();
-        Videos.videosToShow.addAll(Videos.videosList);
+        videoViewModel.getVideos().observe(this, videos -> {
+            videoAdapter.setVideos(videos);
+        });
+        videoViewModel.getVideos();
     }
 
     private void initializeSearchFunctionality() {
@@ -411,7 +405,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                filterVideos(s.toString());
+                //filterVideos(s.toString());
             }
 
             @Override
@@ -420,7 +414,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
+/*
     private void filterVideos(String query) {
         Videos.videosToShow.clear();
         if (query.isEmpty()) {
@@ -437,7 +431,7 @@ public class MainActivity extends AppCompatActivity {
         }
         videoAdapter.notifyDataSetChanged();
     }
-
+*/
     @Override
     protected void onResume() {
         super.onResume();
@@ -503,8 +497,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-
-
 
     @Override
     public void onBackPressed() {

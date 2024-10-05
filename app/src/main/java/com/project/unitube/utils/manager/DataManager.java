@@ -16,10 +16,10 @@ import java.util.Scanner;
 
 import com.project.unitube.entities.User;
 import com.project.unitube.entities.Video;
-import com.project.unitube.entities.Videos;
 
 
 import com.project.unitube.entities.Comment;
+import com.project.unitube.entities.Videos;
 
 public class DataManager {
     private List<User> userList;
@@ -40,7 +40,7 @@ public class DataManager {
         fakeProfilesForComments = new ArrayList<>();
         Videos.videosList = new ArrayList<>();
         parseUsers(context);
-        parseVideos(context);
+        //parseVideos(context);
         parseComments(context);
         logCommentsForAllVideos();  // Add this line to log comments after parsing
     }
@@ -77,7 +77,7 @@ public class DataManager {
             e.printStackTrace();
         }
     }
-
+/*
     // Parses videos from videos.json
     private void parseVideos(Context context) {
         try {
@@ -104,6 +104,8 @@ public class DataManager {
             e.printStackTrace();
         }
     }
+
+ */
 
     // Parses comments and links them to the corresponding videos
     private void parseComments(Context context) {

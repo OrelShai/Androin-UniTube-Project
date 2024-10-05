@@ -14,19 +14,16 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class VideoRepository {
-    private final VideoDao videoDao;
     private VideoListData videoListData;
     private VideoAPI videoAPI;
 
-    public VideoRepository(Context context) {
-        AppDB db = AppDB.getInstance(context);
-        videoDao = db.videoDao();
+    public VideoRepository() {
         videoListData = new VideoListData();
-        videoAPI = new VideoAPI(videoListData, videoDao);
+        videoAPI = new VideoAPI(videoListData);
     }
 
     public LiveData<List<Video>> getAllVideos() {
-        return videoAPI.getAllVideos();
+        return videoListData;
     }
 
     public LiveData<Video> getVideoByID(int id) {
@@ -42,7 +39,7 @@ public class VideoRepository {
     }
 
     public void deleteVideo(Video video) {
-        videoAPI.deleteVideo(video.getUser().getUserName(), video.getId());
+        videoAPI.deleteVideo(video.getUploader(), video.getId());
     }
 
     class VideoListData extends MutableLiveData<List<Video>> {
@@ -54,15 +51,11 @@ public class VideoRepository {
         @Override
         protected void onActive() {
             super.onActive();
-
-            new Thread(() -> {
+            VideoAPI videoAPI = new VideoAPI(this);
+            videoAPI.getAllVideos();
+            /*new Thread(() -> {
                 videoListData.postValue(videoDao.getAllVideos());
-            }).start();
+            }).start();*/
         }
     }
-    public LiveData<List<Video>> getAll() {
-        return videoListData;
-    }
-
-
 }

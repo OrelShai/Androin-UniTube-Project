@@ -12,7 +12,7 @@ import retrofit2.http.PUT;
 import retrofit2.http.Path;
 
 public interface VideoWebServiceAPI {
-    @GET("videos/all")
+    @GET("api/videos")
     Call<List<Video>> getVideos();
 
     @GET("videos/{videoId}")

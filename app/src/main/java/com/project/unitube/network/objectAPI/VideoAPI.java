@@ -17,16 +17,15 @@ import retrofit2.Retrofit;
 public class VideoAPI {
     private MutableLiveData<List<Video>> videoListData;
     private Video video;
-    private VideoDao videoDao;
+    //private VideoDao videoDao;
     VideoWebServiceAPI videoWebServiceAPI;
 
-    public VideoAPI(MutableLiveData<List<Video>> VideoListData, VideoDao videoDao) {
+    public VideoAPI(MutableLiveData<List<Video>> VideoListData) {
         this.videoListData = VideoListData;
-        this.videoDao = videoDao;
+        //this.videoDao = videoDao;
         Retrofit retrofit = RetrofitClient.getClient();
         videoWebServiceAPI = retrofit.create(VideoWebServiceAPI.class);
     }
-
 
     public MutableLiveData<List<Video>> getAllVideos() {
         Call<List<Video>> call = videoWebServiceAPI.getVideos();
@@ -35,9 +34,9 @@ public class VideoAPI {
             public void onResponse(Call<List<Video>> call, Response<List<Video>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                 new Thread(() -> {
-                    videoDao.deleteAllVideos();
-                    videoDao.insertAllVideos(response.body());
-                    videoListData.postValue(videoDao.getAllVideos());
+                    //videoDao.deleteAllVideos();
+                    //videoDao.insertAllVideos(response.body());
+                    videoListData.postValue(response.body());
                 }).start();
                 }
             }
@@ -67,28 +66,15 @@ public class VideoAPI {
         return videoData;
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
     public void getUserVideos(String userName) {
         Call<List<Video>> call = videoWebServiceAPI.getUserVideos(userName);
         call.enqueue(new Callback<List<Video>>() {
             @Override
             public void onResponse(Call<List<Video>> call, Response<List<Video>> response) {
                 new Thread(() -> {
-                    videoDao.deleteAllVideos();
-                    videoDao.insertAllVideos(response.body());
-                    videoListData.postValue(videoDao.getAllVideos());
+                    //videoDao.deleteAllVideos();
+                    //videoDao.insertAllVideos(response.body());
+                    //videoListData.postValue(videoDao.getAllVideos());
                 }).start();
             }
 
@@ -104,8 +90,8 @@ public class VideoAPI {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 new Thread(() -> {
-                    videoDao.updateVideo(video);
-                    videoListData.postValue(videoDao.getAllVideos());
+                    //videoDao.updateVideo(video);
+                    //videoListData.postValue(videoDao.getAllVideos());
                 }).start();
             }
 
@@ -121,8 +107,8 @@ public class VideoAPI {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 new Thread(() -> {
-                    videoDao.insertVideo(video);
-                    videoListData.postValue(videoDao.getAllVideos());
+                    //videoDao.insertVideo(video);
+                    //videoListData.postValue(videoDao.getAllVideos());
                 }).start();
             }
 
@@ -138,8 +124,8 @@ public class VideoAPI {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 new Thread(() -> {
-                    videoDao.deleteVideo(videoDao.getVideoByID(videoId));
-                    videoListData.postValue(videoDao.getAllVideos());
+                    //videoDao.deleteVideo(videoDao.getVideoByID(videoId));
+                    //videoListData.postValue(videoDao.getAllVideos());
                 }).start();
             }
 
@@ -148,6 +134,5 @@ public class VideoAPI {
             }
         });
     }
-
 
 }

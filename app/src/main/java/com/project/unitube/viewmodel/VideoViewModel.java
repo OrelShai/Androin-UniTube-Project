@@ -20,8 +20,8 @@ public class VideoViewModel extends ViewModel {
     /**
      * Constructor to initialize VideoRepository and fetch all videos.
      */
-    public VideoViewModel(Context context) {
-        videoRepository = new VideoRepository(context);
+    public VideoViewModel() {
+        videoRepository = new VideoRepository();
         videos = videoRepository.getAllVideos();
     }
 
@@ -57,7 +57,7 @@ public class VideoViewModel extends ViewModel {
      *
      * @param video the video to be deleted
      */
-    public void deleteVideo(Video video) {
+    public void deleteVideo(Video video, int id) {
         videoRepository.deleteVideo(video);
     }
 

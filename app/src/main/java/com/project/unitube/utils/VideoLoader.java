@@ -30,12 +30,13 @@ public class VideoLoader {
     public void loadVideo(Video video) {
         titleTextView.setText(video.getTitle());
         descriptionTextView.setText(video.getDescription());
-        uploaderNameTextView.setText(video.getUser().getFirstName() + " " + video.getUser().getLastName());
-        int profileImageResourceId = context.getResources().getIdentifier(video.getUser().getProfilePicture(), "drawable", context.getPackageName());
+        //uploaderNameTextView.setText(video.getUser().getFirstName() + " " + video.getUser().getLastName());
+        uploaderNameTextView.setText(video.getUploader());
+        int profileImageResourceId = context.getResources().getIdentifier(video.getProfilePicture(), "drawable", context.getPackageName());
         if (profileImageResourceId != 0) {
             uploaderProfileImageView.setImageResource(profileImageResourceId);
         } else {
-            uploaderProfileImageView.setImageURI(Uri.parse(video.getUser().getProfilePicture()));
+            uploaderProfileImageView.setImageURI(Uri.parse(video.getProfilePicture()));
         }
         Uri videoUri;
         int videoResourceId = context.getResources().getIdentifier(video.getUrl(), "raw", context.getPackageName());
@@ -45,7 +46,6 @@ public class VideoLoader {
             videoUri = Uri.parse(video.getUrl());
         }
         videoView.setVideoURI(videoUri);
-
 
         videoView.setOnPreparedListener(mp -> videoView.start());
     }
