@@ -2,6 +2,7 @@ package com.project.unitube.network.objectAPI;
 
 import static com.project.unitube.utils.manager.UserManager.token;
 
+import android.net.Uri;
 import android.util.Log;
 
 import androidx.lifecycle.MutableLiveData;
@@ -11,8 +12,12 @@ import com.project.unitube.network.RetroFit.RetrofitClient;
 import com.project.unitube.network.interfaceAPI.UserWebServiceAPI;
 import com.project.unitube.utils.manager.UserManager;
 
+import java.io.File;
 import java.util.List;
 
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -75,10 +80,24 @@ public class UserAPI {
     }
 
 
-    public MutableLiveData<String> createUser(User user) {
+    public MutableLiveData<String> createUser(User user, Uri selectedPhotoUri) {
         MutableLiveData<String> resultLiveData = new MutableLiveData<>();
 
-        Call<Void> call = userWebServiceAPI.createUser(user);
+        // Create the parts for the request body (text fields)
+        RequestBody firstNamePart = RequestBody.create(okhttp3.MultipartBody.FORM, user.getFirstName());
+        RequestBody lastNamePart = RequestBody.create(okhttp3.MultipartBody.FORM, user.getLastName());
+        RequestBody usernamePart = RequestBody.create(okhttp3.MultipartBody.FORM, user.getUserName());
+        RequestBody passwordPart = RequestBody.create(okhttp3.MultipartBody.FORM, user.getPassword());
+
+        // Create the file part for the profile picture if a photo was selected
+        MultipartBody.Part profilePicturePart = null;
+        if (selectedPhotoUri != null) {
+            File file = new File(selectedPhotoUri.getPath());
+            RequestBody requestFile = RequestBody.create(MediaType.parse("image/*"), file);
+            profilePicturePart = MultipartBody.Part.createFormData("profilePicture", file.getName(), requestFile);
+        }
+
+        Call<Void> call = userWebServiceAPI.createUser(usernamePart, firstNamePart, lastNamePart, passwordPart, profilePicturePart);
         call.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {

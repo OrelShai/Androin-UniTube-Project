@@ -116,7 +116,7 @@ public class RegisterScreen extends AppCompatActivity  {
                         userNameEditText.getText().toString(),
                         profileImageView.getTag() != null ? profileImageView.getTag().toString() : "default_profile_image");
 
-                userViewModel.createUser(user).observe(this, result -> {
+                userViewModel.createUser(user, selectedPhotoUri).observe(this, result -> {
                     if (result.equals("success")) {
                         Toast.makeText(this, "Sign up successful", Toast.LENGTH_SHORT).show();
                         finish();
