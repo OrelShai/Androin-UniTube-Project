@@ -224,33 +224,25 @@ public class RegisterScreen extends AppCompatActivity  {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        handleActivityResult(requestCode, resultCode, data);
-
-        // Update profileImageView with the selected/captured photo
         if (resultCode == RESULT_OK) {
-            Uri photoUri = getSelectedPhotoUri();
-            if (photoUri != null) {
-                try {
-                    profileImageView.setImageURI(photoUri);
-                    profileImageView.setTag(photoUri.toString()); // Set tag to store URI
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Toast.makeText(this, "Failed to set image", Toast.LENGTH_SHORT).show();
-                }
-            }
+            handleActivityResult(requestCode, resultCode, data);
         }
     }
 
     public void handleActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == Activity.RESULT_OK) {
-            if (requestCode == PICK_IMAGE_REQUEST && data != null && data.getData() != null) {
-                selectedPhotoUri = data.getData();
+        if (requestCode == PICK_IMAGE_REQUEST && data != null && data.getData() != null) {
+            selectedPhotoUri = data.getData();
+            profileImageView.setImageURI(selectedPhotoUri);
+            profileImageView.setTag(selectedPhotoUri.toString());
+            saveImageFromUri(selectedPhotoUri);
+        } else if (requestCode == CAPTURE_IMAGE_REQUEST) {
+            if (selectedPhotoUri != null) {
+                profileImageView.setImageURI(selectedPhotoUri);
+                profileImageView.setTag(selectedPhotoUri.toString());
                 saveImageFromUri(selectedPhotoUri);
-                // Handle picking image from gallery
+            } else {
+                Toast.makeText(this, "Failed to capture image", Toast.LENGTH_SHORT).show();
             }
-                // if (requestCode == CAPTURE_IMAGE_REQUEST)
-                // Handle capturing image from camera
-                // The selected photo URI is already set in captureImageFromCamera()
         }
     }
 
@@ -285,11 +277,14 @@ public class RegisterScreen extends AppCompatActivity  {
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
             File photoFile = createImageFile();
             if (photoFile != null) {
-                Uri photoUri = FileProvider.getUriForFile(this, "com.project.unitube.fileprovider", photoFile);
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
-                selectedPhotoUri = photoUri; // Store the selected photo URI
+                selectedPhotoUri = FileProvider.getUriForFile(this, "com.project.unitube.fileprovider", photoFile);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, selectedPhotoUri);
                 startActivityForResult(takePictureIntent, CAPTURE_IMAGE_REQUEST);
+            } else {
+                Toast.makeText(this, "Failed to create image file", Toast.LENGTH_SHORT).show();
             }
+        } else {
+            Toast.makeText(this, "No camera application found", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -297,28 +292,29 @@ public class RegisterScreen extends AppCompatActivity  {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
         File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = null;
         try {
-            return File.createTempFile(imageFileName, ".jpg", storageDir);
-        } catch (IOException ex) {
-            ex.printStackTrace();
-            return null;
+            image = File.createTempFile(imageFileName, ".jpg", storageDir);
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Error creating file", Toast.LENGTH_SHORT).show();
         }
+        return image;
     }
 
     private void saveImageFromUri(Uri uri) {
-        try {
-            File imageFile = createImageFile();
-            try (InputStream inputStream = getContentResolver().openInputStream(uri);
-                 FileOutputStream outputStream = new FileOutputStream(imageFile)) {
-                byte[] buffer = new byte[1024];
-                int length;
-                while ((length = inputStream.read(buffer)) > 0) {
-                    outputStream.write(buffer, 0, length);
-                }
+        try (InputStream inputStream = getContentResolver().openInputStream(uri);
+             FileOutputStream outputStream = new FileOutputStream(new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), "profile_image.jpg"))) {
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = inputStream.read(buffer)) > 0) {
+                outputStream.write(buffer, 0, length);
             }
-            selectedPhotoUri = Uri.fromFile(imageFile);
+            this.selectedPhotoUri = Uri.parse(new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), "profile_image.jpg").getAbsolutePath());
+            Toast.makeText(this, "Image saved successfully", Toast.LENGTH_SHORT).show();
         } catch (IOException e) {
             e.printStackTrace();
+            Toast.makeText(this, "Failed to save image", Toast.LENGTH_SHORT).show();
         }
     }
 
