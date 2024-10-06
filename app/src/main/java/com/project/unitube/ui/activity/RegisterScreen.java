@@ -303,20 +303,25 @@ public class RegisterScreen extends AppCompatActivity  {
     }
 
     private void saveImageFromUri(Uri uri) {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_profile.jpg";  // Unique filename
+        File imageFile = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), imageFileName);
+
         try (InputStream inputStream = getContentResolver().openInputStream(uri);
-             FileOutputStream outputStream = new FileOutputStream(new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), "profile_image.jpg"))) {
+             FileOutputStream outputStream = new FileOutputStream(imageFile)) {
             byte[] buffer = new byte[1024];
             int length;
             while ((length = inputStream.read(buffer)) > 0) {
                 outputStream.write(buffer, 0, length);
             }
-            this.selectedPhotoUri = Uri.parse(new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), "profile_image.jpg").getAbsolutePath());
+            this.selectedPhotoUri = Uri.parse(imageFile.getAbsolutePath());
             Toast.makeText(this, "Image saved successfully", Toast.LENGTH_SHORT).show();
         } catch (IOException e) {
             e.printStackTrace();
             Toast.makeText(this, "Failed to save image", Toast.LENGTH_SHORT).show();
         }
     }
+
 
     public Uri getSelectedPhotoUri() {
         return selectedPhotoUri;
