@@ -37,8 +37,15 @@ public interface UserWebServiceAPI {
     Call<User> getUser(@Path("id") String userName);
 
     // Update a user
+    @Multipart
     @PUT("api/users/{id}")
-    Call<Void> updateUser(@Path("id") String userName, @Body User user);
+    Call<User> updateUser(
+            @Path("id") String userName,
+            @Part("firstName") RequestBody firstName,
+            @Part("lastName") RequestBody lastName,
+            @Part("password") RequestBody password,
+            @Part MultipartBody.Part profilePicture
+    );
 
     // Delete a user by userName
     @DELETE("api/users/{id}")

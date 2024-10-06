@@ -41,7 +41,7 @@ public class UserRepository {
         return userAPI.deleteUser(userName);
     }
 
-    public MutableLiveData<String> updateUser(User user) {
-        return userAPI.updateUser(user);
+    public MutableLiveData<String> updateUser(User user, Uri photoUri) {
+        return userAPI.updateUser(user, photoUri);
     }
 }

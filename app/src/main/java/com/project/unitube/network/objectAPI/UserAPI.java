@@ -145,27 +145,44 @@ public class UserAPI {
         return resultLiveData;
     }
 
-    public MutableLiveData<String> updateUser(User user) {
+    public MutableLiveData<String> updateUser(User user, Uri selectedPhotoUri) {
         MutableLiveData<String> resultLiveData = new MutableLiveData<>();
 
-        Call<Void> call = userWebServiceAPI.updateUser(user.getUserName(), user);
-        call.enqueue(new Callback<Void>() {
+        // Prepare request body for the user fields
+        RequestBody firstName = RequestBody.create(MediaType.parse("text/plain"), user.getFirstName());
+        RequestBody lastName = RequestBody.create(MediaType.parse("text/plain"), user.getLastName());
+        RequestBody password = RequestBody.create(MediaType.parse("text/plain"), user.getPassword());
+
+        // Create the file part for the profile picture if a photo was selected
+        MultipartBody.Part profilePicturePart = null;
+        if (selectedPhotoUri != null) {
+            File file = new File(selectedPhotoUri.getPath());
+            RequestBody requestFile = RequestBody.create(MediaType.parse("image/*"), file);
+            profilePicturePart = MultipartBody.Part.createFormData("profilePicture", file.getName(), requestFile);
+        }
+
+        Call<User> call = userWebServiceAPI.updateUser(user.getUserName(), firstName, lastName, password, profilePicturePart);
+        call.enqueue(new Callback<User>() {
             @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
+            public void onResponse(Call<User> call, Response<User> response) {
                 if (response.isSuccessful()) {
-                    resultLiveData.postValue("success");
-                    UserManager.getInstance().setCurrentUser(user);
-                } else if (response.code() == 403) {
-                    resultLiveData.postValue("403");
-                }
-                else {
-                    resultLiveData.postValue("failure");
+                    User updatedUser = response.body();
+                    if (updatedUser != null) {
+                        // Set the updated user in UserManager
+                        UserManager.getInstance().setCurrentUser(updatedUser);
+                        resultLiveData.postValue("success");
+                    } else if (response.code() == 403) {
+                        resultLiveData.postValue("403");
+                    } else {
+                        resultLiveData.postValue("failure");
+                    }
                 }
             }
 
             @Override
-            public void onFailure(Call<Void> call, Throwable t) {
+            public void onFailure(Call<User> call, Throwable t) {
                 Log.e("UserAPI", "Error updating user: " + t.getMessage());
+                resultLiveData.postValue("failure");
             }
         });
         return  resultLiveData;

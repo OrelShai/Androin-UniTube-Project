@@ -34,7 +34,7 @@ public class UserViewModel extends ViewModel {
         return userRepository.deleteUser(userName);
     }
 
-    public MutableLiveData<String> updateUser(User user) {
-        return userRepository.updateUser(user);
+    public MutableLiveData<String> updateUser(User user, Uri photoUri) {
+        return userRepository.updateUser(user, photoUri);
     }
 }
