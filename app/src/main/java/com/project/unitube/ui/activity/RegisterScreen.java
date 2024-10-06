@@ -120,7 +120,7 @@ public class RegisterScreen extends AppCompatActivity  {
                     if (result.equals("success")) {
                         Toast.makeText(this, "Sign up successful", Toast.LENGTH_SHORT).show();
                         finish();
-                    } else if (result.equals("409")) {
+                    } else if (result.equals("User already exists")) {
                         Toast.makeText(this, "Username already exists", Toast.LENGTH_SHORT).show();
                     } else {
                         Toast.makeText(this, "Sign up failed", Toast.LENGTH_SHORT).show();
@@ -189,28 +189,8 @@ public class RegisterScreen extends AppCompatActivity  {
         } else if (!userName.matches("[a-zA-Z0-9]+")) {
             userNameEditText.setError("Username should contain letters and numbers only");
             isValid = false;
-        } else if (isUsernameTaken(userName)) {
-            userNameEditText.setError("Username is already taken");
-            isValid = false;
         }
-
         return isValid;
-    }
-
-    /**
-     * Checks if the given username is already taken by another user.
-     *
-     * @param username The username to check
-     * @return true if the username is taken, false otherwise.
-     */
-    private Boolean isUsernameTaken(String username) {
-        // Iterate through the usersList and find the user
-        for (User user : UserManager.getInstance().getUsers()) {
-            if (user.getUserName().equals(username)) {
-                return true;
-            }
-        }
-        return false; // User not found
     }
 
     /**

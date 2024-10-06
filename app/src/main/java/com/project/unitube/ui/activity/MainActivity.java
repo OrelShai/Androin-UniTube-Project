@@ -320,7 +320,7 @@ public class MainActivity extends AppCompatActivity {
                         updateGreetingUser();
                         updateProfilePhotoPresent();
                         dialog.dismiss(); // Dismiss the dialog only if the update is successful
-                    } else if (result.equals("403")) {
+                    } else if (result.equals("invalid token")) {
                         Toast.makeText(this, "Unauthorized access", Toast.LENGTH_SHORT).show();
                     } else {
                         Toast.makeText(this, "Failed to update user", Toast.LENGTH_SHORT).show();

@@ -103,8 +103,8 @@ public class UserAPI {
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
                     resultLiveData.postValue("success");
-                } else if (response.code() == 409) {
-                    resultLiveData.postValue("409");
+                } else if (response.code() == 400) {
+                    resultLiveData.postValue("User already exists");
                 } else {
                     resultLiveData.postValue("failure");
                 }
@@ -171,8 +171,8 @@ public class UserAPI {
                         // Set the updated user in UserManager
                         UserManager.getInstance().setCurrentUser(updatedUser);
                         resultLiveData.postValue("success");
-                    } else if (response.code() == 403) {
-                        resultLiveData.postValue("403");
+                    } else if (response.code() == 403 || response.code() == 401){
+                        resultLiveData.postValue("invalid token");
                     } else {
                         resultLiveData.postValue("failure");
                     }
