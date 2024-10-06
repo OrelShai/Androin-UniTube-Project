@@ -32,6 +32,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.google.android.material.navigation.NavigationView;
 //import com.project.unitube.Room.Dao.UserDao;
+import com.project.unitube.network.RetroFit.RetrofitClient;
 import com.project.unitube.utils.helper.DarkModeHelper;
 import com.project.unitube.utils.manager.DataManager;
 import com.project.unitube.utils.helper.NavigationHelper;
@@ -455,17 +456,20 @@ public class MainActivity extends AppCompatActivity {
         User currentUser = UserManager.getInstance().getCurrentUser();
 
         if (currentUser != null) {
-            Uri profilePhotoUri = Uri.parse(currentUser.getProfilePicture());
 
-            if (profilePhotoUri != null) {
+            if (currentUser.getProfilePicture() != null) {
+                // Construct the full profile picture URL
+                String baseUrl = RetrofitClient.getBaseUrl();
+                String profilePhotoUrl = baseUrl + currentUser.getProfilePicture();  // Combine base URL and path
 
-                currentUserProfilePic.setImageURI(profilePhotoUri);
                 Glide.with(this)
-                        .load(profilePhotoUri)
+                        .load(profilePhotoUrl)
                         .circleCrop()
                         .placeholder(R.drawable.default_profile_image) // Placeholder in case of loading issues
                         .into(currentUserProfilePic);
             } else {
+                Uri profilePhotoUri = Uri.parse(currentUser.getProfilePicture());
+
                 currentUserProfilePic.setImageResource(R.drawable.default_profile_image);
                 Glide.with(this)
                         .load(profilePhotoUri)  // This line seems redundant as profilePhotoUri is null here.

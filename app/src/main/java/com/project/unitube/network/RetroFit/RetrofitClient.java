@@ -62,4 +62,9 @@ public class RetrofitClient {
         }
         return retrofit;
     }
+
+    // get the base url
+    public static String getBaseUrl() {
+        return BASE_URL;
+    }
 }
