@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.project.unitube.R;
 import com.project.unitube.entities.Video;
 import com.project.unitube.entities.Videos;
+import com.project.unitube.ui.activity.UserPageActivity;
 import com.project.unitube.ui.activity.VideoPlayActivity;
 
 public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHolder> {
@@ -66,6 +67,16 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
             // Start the activity
             context.startActivity(intent);
         });
+
+        holder.uploaderProfileImage.setOnClickListener(v -> {
+            // Create an Intent to start UserPageActivity
+            Intent intent = new Intent(context, UserPageActivity.class);
+            // Pass the user ID to the activity
+            intent.putExtra("USER", video.getUser());
+            // Start the activity
+            context.startActivity(intent);
+        });
+
     }
 
     @Override

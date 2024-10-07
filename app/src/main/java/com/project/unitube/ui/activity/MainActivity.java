@@ -32,6 +32,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.google.android.material.navigation.NavigationView;
 //import com.project.unitube.Room.Dao.UserDao;
+import com.project.unitube.network.RetroFit.RetrofitClient;
 import com.project.unitube.utils.helper.DarkModeHelper;
 import com.project.unitube.utils.manager.DataManager;
 import com.project.unitube.utils.helper.NavigationHelper;
@@ -107,7 +108,8 @@ public class MainActivity extends AppCompatActivity {
     private void initializeViewModels() {
         userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
 //        videoViewModel = new ViewModelProvider(this).get(VideoViewModel.class);
-//        commentViewModel = new ViewModelProvider(this).get(CommentViewModel.class);
+
+        // commentViewModel initialized in CommentManager
     }
 
     private void initializeUIComponents() {
@@ -255,11 +257,16 @@ public class MainActivity extends AppCompatActivity {
         reEnterPasswordEditText.setText(user.getPassword());
 
         // Load current profile picture (if any)
-        if (user.getProfilePicture() .equals( "default_profile_image")) {
-            editDialogprofileImageView.setImageResource(R.drawable.default_profile_image);
-        } else {
-            Uri profilePhotoUri = Uri.parse(user.getProfilePicture());
-            editDialogprofileImageView.setImageURI(profilePhotoUri);
+        if (user.getProfilePicture() != null) {
+            // Construct the full profile picture URL
+            String baseUrl = RetrofitClient.getBaseUrl();
+            String profilePhotoUrl = baseUrl + user.getProfilePicture();  // Combine base URL and path
+
+            Glide.with(this)
+                    .load(profilePhotoUrl)
+                    .circleCrop()
+                    .placeholder(R.drawable.default_profile_image) // Placeholder in case of loading issues
+                    .into(editDialogprofileImageView);
         }
 
         // Set up the profile picture change listener
@@ -304,15 +311,16 @@ public class MainActivity extends AppCompatActivity {
                     String updatedProfilePictureUri = getEditDialogSelectedPhotoUri().toString();
                     user.setProfilePicture(updatedProfilePictureUri);
                 }
+                String updatedProfilePictureUri = getEditDialogSelectedPhotoUri().toString();
 
-                userViewModel.updateUser(user).observe(this, result -> {
+                userViewModel.updateUser(user, editDialogSelectedPhotoUri).observe(this, result -> {
                     // Handle the result with observer to the response
                     if (result.equals("success")) {
                         Toast.makeText(this, "User updated successfully", Toast.LENGTH_SHORT).show();
                         updateGreetingUser();
                         updateProfilePhotoPresent();
                         dialog.dismiss(); // Dismiss the dialog only if the update is successful
-                    } else if (result.equals("403")) {
+                    } else if (result.equals("invalid token")) {
                         Toast.makeText(this, "Unauthorized access", Toast.LENGTH_SHORT).show();
                     } else {
                         Toast.makeText(this, "Failed to update user", Toast.LENGTH_SHORT).show();
@@ -454,17 +462,20 @@ public class MainActivity extends AppCompatActivity {
         User currentUser = UserManager.getInstance().getCurrentUser();
 
         if (currentUser != null) {
-            Uri profilePhotoUri = Uri.parse(currentUser.getProfilePicture());
 
-            if (profilePhotoUri != null) {
+            if (currentUser.getProfilePicture() != null) {
+                // Construct the full profile picture URL
+                String baseUrl = RetrofitClient.getBaseUrl();
+                String profilePhotoUrl = baseUrl + currentUser.getProfilePicture();  // Combine base URL and path
 
-                currentUserProfilePic.setImageURI(profilePhotoUri);
                 Glide.with(this)
-                        .load(profilePhotoUri)
+                        .load(profilePhotoUrl)
                         .circleCrop()
                         .placeholder(R.drawable.default_profile_image) // Placeholder in case of loading issues
                         .into(currentUserProfilePic);
             } else {
+                Uri profilePhotoUri = Uri.parse(currentUser.getProfilePicture());
+
                 currentUserProfilePic.setImageResource(R.drawable.default_profile_image);
                 Glide.with(this)
                         .load(profilePhotoUri)  // This line seems redundant as profilePhotoUri is null here.
@@ -472,6 +483,12 @@ public class MainActivity extends AppCompatActivity {
                         .placeholder(R.drawable.default_profile_image) // Placeholder in case of loading issues
                         .into(currentUserProfilePic);
             }
+
+            currentUserProfilePic.setOnClickListener(view -> {
+                Intent intent = new Intent(MainActivity.this, UserPageActivity.class);
+                intent.putExtra("USER", currentUser);
+                startActivity(intent);
+            });
         } else {
             currentUserProfilePic.setImageResource(R.drawable.unitube_logo);
             currentUserProfilePic.setBackground(null); // Remove background for default logo
@@ -512,6 +529,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            handleActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    public void handleActivityResult(int requestCode, int resultCode, Intent data) {
 
         if (requestCode == ADD_VIDEO_REQUEST && resultCode == RESULT_OK) {
             // Refresh the video list when a new video is added
@@ -520,12 +543,13 @@ public class MainActivity extends AppCompatActivity {
         }
         if (requestCode == CAPTURE_IMAGE_REQUEST && resultCode == RESULT_OK) {
             editDialogprofileImageView.setImageURI(editDialogSelectedPhotoUri);
+            saveImageFromUri(editDialogSelectedPhotoUri);
         }
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null) {
             editDialogSelectedPhotoUri = data.getData(); // Get the URI from the result
-            saveImageFromUri(editDialogSelectedPhotoUri); // Call the method to save the image
-            // Update the profile image view
             editDialogprofileImageView.setImageURI(editDialogSelectedPhotoUri);
+            editDialogprofileImageView.setTag(editDialogSelectedPhotoUri.toString());
+            saveImageFromUri(editDialogSelectedPhotoUri); // Call the method to save the image
         }
     }
 
@@ -558,11 +582,14 @@ public class MainActivity extends AppCompatActivity {
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
             File photoFile = createImageFile();
             if (photoFile != null) {
-                Uri photoUri = FileProvider.getUriForFile(this, "com.project.unitube.fileprovider", photoFile);
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
-                editDialogSelectedPhotoUri = photoUri; // Store the selected photo URI
+                editDialogSelectedPhotoUri = FileProvider.getUriForFile(this, "com.project.unitube.fileprovider", photoFile);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, editDialogSelectedPhotoUri);
                 startActivityForResult(takePictureIntent, CAPTURE_IMAGE_REQUEST);
+            } else {
+                Toast.makeText(this, "Failed to create image file", Toast.LENGTH_SHORT).show();
             }
+        } else {
+            Toast.makeText(this, "No camera application found", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -570,28 +597,33 @@ public class MainActivity extends AppCompatActivity {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
         File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = null;
         try {
-            return File.createTempFile(imageFileName, ".jpg", storageDir);
-        } catch (IOException ex) {
-            ex.printStackTrace();
-            return null;
+            image = File.createTempFile(imageFileName, ".jpg", storageDir);
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Error creating file", Toast.LENGTH_SHORT).show();
         }
+        return image;
     }
 
     private void saveImageFromUri(Uri uri) {
-        try {
-            File imageFile = createImageFile();
-            try (InputStream inputStream = getContentResolver().openInputStream(uri);
-                 FileOutputStream outputStream = new FileOutputStream(imageFile)) {
-                byte[] buffer = new byte[1024];
-                int length;
-                while ((length = inputStream.read(buffer)) > 0) {
-                    outputStream.write(buffer, 0, length);
-                }
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_profile.jpg";  // Unique filename
+        File imageFile = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), imageFileName);
+
+        try (InputStream inputStream = getContentResolver().openInputStream(uri);
+             FileOutputStream outputStream = new FileOutputStream(imageFile)) {
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = inputStream.read(buffer)) > 0) {
+                outputStream.write(buffer, 0, length);
             }
-            editDialogSelectedPhotoUri = Uri.fromFile(imageFile);
+            this.editDialogSelectedPhotoUri = Uri.parse(imageFile.getAbsolutePath());
+            Toast.makeText(this, "Image saved successfully", Toast.LENGTH_SHORT).show();
         } catch (IOException e) {
             e.printStackTrace();
+            Toast.makeText(this, "Failed to save image", Toast.LENGTH_SHORT).show();
         }
     }
 

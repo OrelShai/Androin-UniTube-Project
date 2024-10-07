@@ -2,6 +2,7 @@ package com.project.unitube.repository;
 
 
 import android.content.Context;
+import android.net.Uri;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -24,8 +25,8 @@ public class UserRepository {
         userAPI = new UserAPI();
     }
 
-    public MutableLiveData<String> createUser(User user) {
-        return userAPI.createUser(user);
+    public MutableLiveData<String> createUser(User user, Uri photoUri) {
+        return userAPI.createUser(user, photoUri);
     }
 
     public MutableLiveData<User> getUser(String username) {
@@ -40,7 +41,7 @@ public class UserRepository {
         return userAPI.deleteUser(userName);
     }
 
-    public MutableLiveData<String> updateUser(User user) {
-        return userAPI.updateUser(user);
+    public MutableLiveData<String> updateUser(User user, Uri photoUri) {
+        return userAPI.updateUser(user, photoUri);
     }
 }

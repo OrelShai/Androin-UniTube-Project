@@ -1,6 +1,7 @@
 package com.project.unitube.ui.adapter;
 
 import android.content.Context;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -13,11 +14,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.project.unitube.R;
 import com.project.unitube.utils.manager.UserManager;
 import com.project.unitube.entities.Comment;
+import com.project.unitube.viewmodel.CommentViewModel;
 
 import java.util.List;
 
@@ -57,7 +60,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
             holder.commentUserProfileImage.setImageResource(profileImageResourceId);
         } else {
             // Profile picture is a uri
-            holder.commentUserProfileImage.setImageURI(comment.getProfilePicture());
+            holder.commentUserProfileImage.setImageURI(Uri.parse(comment.getProfilePicture()));
         }
 
         // Set up more options button logic
@@ -86,14 +89,23 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
                                     .setTitle("Delete Comment")
                                     .setMessage("Are you sure you want to delete this comment?")
                                     .setPositiveButton("Yes", (dialog, which) -> {
-                                        // Delete the comment
-                                        comments.remove(adapterPosition);
-                                        notifyItemRemoved(adapterPosition);
-                                        notifyItemRangeChanged(adapterPosition, comments.size());
-                                        // Notify listener about the deletion
-                                        if (listener != null) {
-                                            listener.onCommentDeleted(comments.size());
-                                        }
+                                        // Delete the comment from the database
+                                        CommentViewModel commentViewModel = new CommentViewModel();
+                                        commentViewModel.deleteComment(comment.getId()).observe((LifecycleOwner) context, result -> {
+                                            if (result.equals("Success")) {
+                                                // Delete the comment
+                                                comments.remove(adapterPosition);
+                                                notifyItemRemoved(adapterPosition);
+                                                notifyItemRangeChanged(adapterPosition, comments.size());
+                                                // Notify listener about the deletion
+                                                if (listener != null) {
+                                                    listener.onCommentDeleted(comments.size());
+                                                }
+                                                Toast.makeText(context, "Comment deleted successfully.", Toast.LENGTH_SHORT).show();
+                                            } else {
+                                                Toast.makeText(context, "Failed to delete comment.", Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
                                     })
                                     .setNegativeButton("No", null)
                                     .show();
@@ -121,8 +133,18 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
         builder.setPositiveButton("OK", (dialog, which) -> {
             String newCommentText = input.getText().toString().trim();
             if (!newCommentText.isEmpty()) {
-                comment.setCommentText(newCommentText);
-                notifyItemChanged(position);
+
+                // Update the comment in the database
+                CommentViewModel commentViewModel = new CommentViewModel();
+                commentViewModel.updateComment(comment).observe((LifecycleOwner) context, result -> {
+                    if (result.equals("Success")) {
+                        Toast.makeText(context, "Comment updated successfully.", Toast.LENGTH_SHORT).show();
+                        comment.setCommentText(newCommentText);
+                        notifyItemChanged(position);
+                    } else {
+                        Toast.makeText(context, "Failed to update comment.", Toast.LENGTH_SHORT).show();
+                    }
+                });
             } else {
                 Toast.makeText(context, "Comment cannot be empty.", Toast.LENGTH_SHORT).show();
             }
