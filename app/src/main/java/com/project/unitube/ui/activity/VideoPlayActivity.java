@@ -216,13 +216,15 @@ public class VideoPlayActivity extends AppCompatActivity implements CommentAdapt
 
         CommentViewModel commentViewModel = new CommentViewModel();
         commentViewModel.getCommentsForVideo(currentVideo.getId()).observe(this, comments -> {
-            currentVideo.setComments(comments);
+            if (comments != null) {
+                currentVideo.setComments(comments);
 
-            // Set the text of the TextView to display the count in parentheses
-            commentCountTextView.setText("(" + currentVideo.getComments().size() + ")");
+                // Set the text of the TextView to display the count in parentheses
+                commentCountTextView.setText("(" + currentVideo.getComments().size() + ")");
 
-            CommentAdapter commentAdapter = new CommentAdapter(this, currentVideo.getComments(), this);
-            commentsRecyclerView.setAdapter(commentAdapter);
+                CommentAdapter commentAdapter = new CommentAdapter(this, currentVideo.getComments(), this);
+                commentsRecyclerView.setAdapter(commentAdapter);
+            }
         });
     }
 
