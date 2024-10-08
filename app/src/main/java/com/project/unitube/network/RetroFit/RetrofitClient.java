@@ -14,7 +14,7 @@ import com.project.unitube.utils.manager.UserManager; // Import UserManager to a
  * Singleton class to manage the Retrofit instance.
  */
 public class RetrofitClient {
-    private static final String BASE_URL = "http://172.20.10.11:8200/";
+    private static final String BASE_URL = "http://192.168.1.223:8200/";
     private static Retrofit retrofit = null;
 
     /**
@@ -60,6 +60,7 @@ public class RetrofitClient {
         return retrofit;
     }
 
+    // get the base url
     public static String getBaseUrl() {
         return BASE_URL;
     }

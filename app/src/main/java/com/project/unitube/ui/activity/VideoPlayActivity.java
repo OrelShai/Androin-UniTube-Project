@@ -65,6 +65,13 @@ public class VideoPlayActivity extends AppCompatActivity implements CommentAdapt
     private final Handler handler = new Handler();
     private Runnable updateProgressAction;
 
+    /**
+     * Initializes the activity, sets up the views, and loads the video if provided via intent.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after previously being shut down,
+     *                          this Bundle contains the data it most recently supplied.
+     */
+    @SuppressLint("WrongViewCast")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -205,20 +212,31 @@ public class VideoPlayActivity extends AppCompatActivity implements CommentAdapt
         commentCountTextView.setText("(" + newCommentCount + ")");
     }
 
+    /**
+     * Handles touch events for the video controller.
+     *
+     * @param event The motion event.
+     * @return True if the event was handled, false otherwise.
+     */
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         videoController.onTouchEvent(event);
         return super.onTouchEvent(event);
     }
 
+    /**
+     * Updates the progress bar and time indicator based on the video's current position.
+     */
     @SuppressLint("SetTextI18n")
     private void updateProgress() {
         int currentPosition = videoView.getCurrentPosition();
         int duration = videoView.getDuration();
 
         if (duration > 0) {
+            // Update time indicator
             timeIndicator.setText(formatTime(currentPosition) + " / " + formatTime(duration));
 
+            // Calculate progress as a fraction
             float progress = (float) currentPosition / duration;
 
             progressPlayed.post(() -> {
@@ -234,6 +252,12 @@ public class VideoPlayActivity extends AppCompatActivity implements CommentAdapt
         }
     }
 
+    /**
+     * Formats time in milliseconds to a string format.
+     *
+     * @param millis Time in milliseconds.
+     * @return Formatted time string.
+     */
     @SuppressLint("DefaultLocale")
     private String formatTime(int millis) {
         int seconds = (millis / 1000) % 60;
@@ -247,12 +271,20 @@ public class VideoPlayActivity extends AppCompatActivity implements CommentAdapt
         }
     }
 
+    /**
+     * Removes the update progress action callback when the activity is destroyed.
+     */
     @Override
     protected void onDestroy() {
         super.onDestroy();
         handler.removeCallbacks(updateProgressAction);
     }
 
+    /**
+     * Updates the video details in the UI.
+     *
+     * @param video The video object containing the details to be displayed.
+     */
     public void updateVideoDetails(Video video) {
         titleTextView.setText(video.getTitle());
         descriptionTextView.setText(video.getDescription());
