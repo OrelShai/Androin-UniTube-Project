@@ -2,11 +2,20 @@ package com.project.unitube.utils;
 
 import android.content.Context;
 import android.net.Uri;
+import android.util.Log;
 import android.widget.ImageView;
+import android.widget.MediaController;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.VideoView;
 
+import com.bumptech.glide.Glide;
+import com.project.unitube.R;
 import com.project.unitube.entities.Video;
+import com.project.unitube.network.RetroFit.RetrofitClient;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 public class VideoLoader {
 
@@ -30,24 +39,65 @@ public class VideoLoader {
     public void loadVideo(Video video) {
         titleTextView.setText(video.getTitle());
         descriptionTextView.setText(video.getDescription());
-        uploaderNameTextView.setText(video.getUser().getFirstName() + " " + video.getUser().getLastName());
-        int profileImageResourceId = context.getResources().getIdentifier(video.getUser().getProfilePicture(), "drawable", context.getPackageName());
-        if (profileImageResourceId != 0) {
-            uploaderProfileImageView.setImageResource(profileImageResourceId);
-        } else {
-            uploaderProfileImageView.setImageURI(Uri.parse(video.getUser().getProfilePicture()));
-        }
-        Uri videoUri;
-        int videoResourceId = context.getResources().getIdentifier(video.getUrl(), "raw", context.getPackageName());
-        if (videoResourceId != 0) {
-            videoUri = Uri.parse("android.resource://" + context.getPackageName() + "/" + videoResourceId);
-        } else {
-            videoUri = Uri.parse(video.getUrl());
-        }
-        videoView.setVideoURI(videoUri);
+        uploaderNameTextView.setText(video.getUploader());
 
-
-        videoView.setOnPreparedListener(mp -> videoView.start());
+        setProfilePicture(video.getProfilePicture());
+        setVideoView(video.getUrl());
     }
 
+    public void setProfilePicture(String profilePicture){
+        Glide.with(context)
+                .load(profilePicture)
+                .placeholder(R.drawable.default_profile)
+                .error(R.drawable.error_profile)
+                .circleCrop()
+                .into(uploaderProfileImageView);
+    }
+    public void setVideoView(String videoPath) {
+        String TAG = "VideoPlayer";
+        Log.d(TAG, "Setting video with path: " + videoPath);
+
+        // Normalize the video path
+        videoPath = videoPath.replace("\\", "/");
+        if (videoPath.startsWith("/")) {
+            videoPath = videoPath.substring(1);
+        }
+
+        // Construct the full URL
+        String API_URL = RetrofitClient.getBaseUrl();
+        String fullVideoUrl = API_URL + videoPath;
+
+        Log.d(TAG, "Full video URL (before encoding): " + fullVideoUrl);
+
+        // Encode the URL properly
+        String encodedUrl = Uri.encode(fullVideoUrl, ":/?#[]@!$&'()*+,;=");
+
+        Log.d(TAG, "Full video URL (after encoding): " + encodedUrl);
+
+        try {
+            // Create Uri object from the full URL
+            Uri videoUri = Uri.parse(fullVideoUrl);
+
+            // Set the video URI to the VideoView
+            videoView.setVideoURI(videoUri);
+
+            // Set up event listeners
+            videoView.setOnPreparedListener(mp -> {
+                Log.d(TAG, "Video prepared, starting playback");
+                videoView.start();
+            });
+
+            videoView.setOnErrorListener((mp, what, extra) -> {
+                Log.e(TAG, "Error playing video. Error code: " + what + ", Extra code: " + extra);
+                return false;
+            });
+
+            // Request focus and start loading the video
+            videoView.requestFocus();
+
+            Log.d(TAG, "Video loading initiated");
+        } catch (Exception e) {
+            Log.e(TAG, "Exception in setVideoView: ", e);
+        }
+    }
 }

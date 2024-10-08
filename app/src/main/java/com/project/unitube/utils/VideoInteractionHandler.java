@@ -1,6 +1,5 @@
 package com.project.unitube.utils;
 
-
 import android.app.AlertDialog;
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -13,10 +12,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.project.unitube.R;
+import com.project.unitube.entities.Videos;
 import com.project.unitube.utils.manager.UserManager;
 import com.project.unitube.entities.User;
 import com.project.unitube.entities.Video;
-import com.project.unitube.entities.Videos;
 import com.project.unitube.ui.activity.VideoPlayActivity;
 
 public class VideoInteractionHandler {

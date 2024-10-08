@@ -1,7 +1,5 @@
 package com.project.unitube.utils.helper;
 
-import static com.project.unitube.entities.Videos.videosList;
-
 import android.content.Context;
 import android.util.Log;
 import android.view.MenuItem;
@@ -31,10 +29,11 @@ public class NavigationHelper implements NavigationView.OnNavigationItemSelected
 
     public void initializeNavigation(NavigationView navigationView) {
         navigationView.setNavigationItemSelectedListener(this);
-        setupRecyclerView();
+        //setupRecyclerView();
         setupSignOutButton(navigationView);
     }
 
+    /*
     private void setupRecyclerView() {
         videoRecyclerView.setLayoutManager(new LinearLayoutManager(context));
         if (videosList.isEmpty()) {
@@ -45,6 +44,7 @@ public class NavigationHelper implements NavigationView.OnNavigationItemSelected
         videoAdapter = new VideoAdapter(context);
         videoRecyclerView.setAdapter(videoAdapter);
     }
+     */
 
     private void setupSignOutButton(NavigationView navigationView) {
         View signOutView = navigationView.getHeaderView(0).findViewById(R.id.log_in_out_button_layout);

@@ -17,22 +17,20 @@ import java.util.Locale;
 
 @Entity
 public class Video implements Serializable {
+    private static int nextId = 1;
 
     @PrimaryKey(autoGenerate = true)
     private int id;
-    private static int nextId = 1;
-
-
     private String title;
     private String description;
     private String url;
     private String thumbnailUrl;
-    @TypeConverters(UserConverter.class)
-    private User user;
+    private String uploader;
     private int likes;
     private int dislikes;
     private String uploadDate;
-    private final String duration;
+    private String duration;
+    private String profilePicture;
     @TypeConverters(StringListConverter.class)
     private List<String> likesList;
     @TypeConverters(StringListConverter.class)
@@ -40,36 +38,114 @@ public class Video implements Serializable {
     @TypeConverters(CommentListConverter.class)
     private List<Comment> comments;
 
-    // Constructor with thumbnailUrl
-    public Video(String title, String description, String url, String thumbnailUrl, User user, String duration) {
+    public Video() {}
+
+    public Video(String title, String description, String url, String thumbnailUrl,
+                 String uploader, String duration, String profilePicture) {
         this.id = nextId++;
         this.title = title;
         this.description = description;
         this.url = url;
-        this.thumbnailUrl = thumbnailUrl != null ? thumbnailUrl : generateThumbnail(url, 7); // Use provided thumbnail or generate
-        this.user = user;
+        this.thumbnailUrl = thumbnailUrl != null ? thumbnailUrl : "default_thumbnail";
+        // Use provided thumbnail or generate
+        this.uploader = uploader;
         this.likes = 0;
         this.dislikes = 0;
-        this.uploadDate = getCurrentDate();
+        this.uploadDate = getCurrentDate();;
         this.duration = duration;
+        this.profilePicture = profilePicture;
         this.likesList = new ArrayList<>();
         this.dislikesList = new ArrayList<>();
-        this.comments = new ArrayList<>(); // Initialize the comments list
+        this.comments = new ArrayList<>();
     }
 
-    // Getters and Setters
+    // Getters
+
     public int getId() {
         return id;
     }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public String getThumbnailUrl() {
+        return thumbnailUrl;
+    }
+
+    public String getUploader() {
+        return uploader;
+    }
+
+    public int getLikes() {
+        return likes;
+    }
+
+    public int getDislikes() {
+        return dislikes;
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public String getUploadDate() {
+        return uploadDate;
+    }
+
+    public String getDuration() {
+        return duration;
+    }
+
+    public String getProfilePicture() {
+        return profilePicture;
+    }
+
+    public List<String> getLikesList() {
+        return likesList;
+    }
+
+    public List<String> getDislikesList() {
+        return dislikesList;
+    }
+
+    private String getCurrentDate() {
+        return new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+    }
+
+
+    // Setters
 
     public void setId(int id) {
         this.id = id;
     }
 
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
-    public static void setNextId(int nextId) {
-        Video.nextId = nextId;
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public void setThumbnailUrl(String thumbnailUrl) {
+        this.thumbnailUrl = thumbnailUrl;
+    }
+
+    public void setUploader(String uploader) {
+        this.uploader = uploader;
     }
 
     public void setLikes(int likes) {
@@ -78,6 +154,18 @@ public class Video implements Serializable {
 
     public void setDislikes(int dislikes) {
         this.dislikes = dislikes;
+    }
+
+    public void setUploadDate(String uploadDate) {
+        this.uploadDate = uploadDate;
+    }
+
+    public void setDuration(String duration) {
+        this.duration = duration;
+    }
+
+    public void setProfilePicture(String profilePicture) {
+        this.profilePicture = profilePicture;
     }
 
     public void setLikesList(List<String> likesList) {
@@ -92,72 +180,8 @@ public class Video implements Serializable {
         this.comments = comments;
     }
 
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    public String getThumbnailUrl() {
-        return thumbnailUrl;
-    }
-
-    public void setThumbnailUrl(String thumbnailUrl) {
-        this.thumbnailUrl = thumbnailUrl;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public int getLikes() {
-        return likes;
-    }
-
-    public int getDislikes() {
-        return dislikes;
-    }
-
-    public String getUploadDate() {
-        return uploadDate;
-    }
-
-    public void setUploadDate(String uploadDate) {
-        this.uploadDate = uploadDate;
-    }
-
-    public String getDuration() {
-        return duration;
-    }
-
-    public List<String> getLikesList() {
-        return likesList;
-    }
-
-    public List<String> getDislikesList() {
-        return dislikesList;
+    public void addComment(Comment comment) {
+        comments.add(comment);
     }
 
     // Methods to handle likes and dislikes
@@ -189,41 +213,5 @@ public class Video implements Serializable {
             dislikesList.remove(userName);
             dislikes--;
         }
-    }
-
-    public boolean hasUserLiked(String userName) {
-        return likesList.contains(userName);
-    }
-
-    public boolean hasUserDisliked(String userName) {
-        return dislikesList.contains(userName);
-    }
-
-    // Helper method to generate a thumbnail at a specific time
-    private String generateThumbnail(String url, int seconds) {
-        // Placeholder logic to generate a thumbnail from the video at the given time
-        // This should be replaced with actual logic to capture a frame from the video
-        return "default_thumbnail"; // Example thumbnail URL
-    }
-
-    private String getCurrentDate() {
-        return new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
-    }
-
-
-    public boolean isLikedBy(String userName) {
-        return likesList.contains(userName);
-    }
-
-    public boolean isDislikedBy(String userName) {
-        return dislikesList.contains(userName);
-    }
-
-    public List<Comment> getComments() {
-        return comments;
-    }
-
-    public void addComment(Comment comment) {
-        comments.add(comment);
     }
 }

@@ -1,5 +1,7 @@
 package com.project.unitube.network.objectAPI;
 
+import android.util.Log;
+
 import androidx.lifecycle.MutableLiveData;
 
 import com.project.unitube.entities.Video;
@@ -16,17 +18,16 @@ import retrofit2.Retrofit;
 
 public class VideoAPI {
     private MutableLiveData<List<Video>> videoListData;
-    private Video video;
-    private VideoDao videoDao;
+    //private Video video;
+    //private VideoDao videoDao;
     VideoWebServiceAPI videoWebServiceAPI;
 
-    public VideoAPI(MutableLiveData<List<Video>> VideoListData, VideoDao videoDao) {
+    public VideoAPI(MutableLiveData<List<Video>> VideoListData) {
         this.videoListData = VideoListData;
-        this.videoDao = videoDao;
+        //this.videoDao = videoDao;
         Retrofit retrofit = RetrofitClient.getClient();
         videoWebServiceAPI = retrofit.create(VideoWebServiceAPI.class);
     }
-
 
     public MutableLiveData<List<Video>> getAllVideos() {
         Call<List<Video>> call = videoWebServiceAPI.getVideos();
@@ -35,9 +36,9 @@ public class VideoAPI {
             public void onResponse(Call<List<Video>> call, Response<List<Video>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                 new Thread(() -> {
-                    videoDao.deleteAllVideos();
-                    videoDao.insertAllVideos(response.body());
-                    videoListData.postValue(videoDao.getAllVideos());
+                    //videoDao.deleteAllVideos();
+                    //videoDao.insertAllVideos(response.body());
+                    videoListData.postValue(response.body());
                 }).start();
                 }
             }
@@ -49,36 +50,34 @@ public class VideoAPI {
         return videoListData;
     }
 
-    public MutableLiveData<Video> getVideoByID(int id) {
+    public MutableLiveData<Video> getVideoByID(int userId, int id) {
         MutableLiveData<Video> videoData = new MutableLiveData<>();
-        Call<Video> call = videoWebServiceAPI.getVideoById(id);
+
+        // Log to know the function was called
+        Log.d("VideoAPI", "Fetching video with ID: " + id);
+
+        Call<Video> call = videoWebServiceAPI.getVideoById(userId, id);
         call.enqueue(new Callback<Video>() {
             @Override
             public void onResponse(Call<Video> call, Response<Video> response) {
                 if (response.isSuccessful() && response.body() != null) {
+                    // Log the success of the API call and video details
+                    Log.d("VideoAPI", "Video fetched successfully: " + response.body().getTitle());
                     videoData.postValue(response.body());
+                } else {
+                    // Log the failure case if response is not successful or body is null
+                    Log.w("VideoAPI", "Failed to fetch video. Response Code: " + response.code());
                 }
             }
-
             @Override
             public void onFailure(Call<Video> call, Throwable t) {
+                // Log the error in case the call fails
+                Log.e("VideoAPI", "Error fetching video: " + t.getMessage(), t);
             }
         });
+
         return videoData;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     public void getUserVideos(String userName) {
         Call<List<Video>> call = videoWebServiceAPI.getUserVideos(userName);
@@ -86,9 +85,9 @@ public class VideoAPI {
             @Override
             public void onResponse(Call<List<Video>> call, Response<List<Video>> response) {
                 new Thread(() -> {
-                    videoDao.deleteAllVideos();
-                    videoDao.insertAllVideos(response.body());
-                    videoListData.postValue(videoDao.getAllVideos());
+                    //videoDao.deleteAllVideos();
+                    //videoDao.insertAllVideos(response.body());
+                    //videoListData.postValue(videoDao.getAllVideos());
                 }).start();
             }
 
@@ -104,8 +103,8 @@ public class VideoAPI {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 new Thread(() -> {
-                    videoDao.updateVideo(video);
-                    videoListData.postValue(videoDao.getAllVideos());
+                    //videoDao.updateVideo(video);
+                    //videoListData.postValue(videoDao.getAllVideos());
                 }).start();
             }
 
@@ -121,8 +120,8 @@ public class VideoAPI {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 new Thread(() -> {
-                    videoDao.insertVideo(video);
-                    videoListData.postValue(videoDao.getAllVideos());
+                    //videoDao.insertVideo(video);
+                    //videoListData.postValue(videoDao.getAllVideos());
                 }).start();
             }
 
@@ -138,8 +137,8 @@ public class VideoAPI {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 new Thread(() -> {
-                    videoDao.deleteVideo(videoDao.getVideoByID(videoId));
-                    videoListData.postValue(videoDao.getAllVideos());
+                    //videoDao.deleteVideo(videoDao.getVideoByID(videoId));
+                    //videoListData.postValue(videoDao.getAllVideos());
                 }).start();
             }
 
@@ -148,6 +147,5 @@ public class VideoAPI {
             }
         });
     }
-
 
 }

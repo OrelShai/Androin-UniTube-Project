@@ -2,23 +2,41 @@ package com.project.unitube.ui.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.project.unitube.R;
+import com.project.unitube.Unitube;
 import com.project.unitube.entities.Video;
-import com.project.unitube.entities.Videos;
 import com.project.unitube.ui.activity.UserPageActivity;
 import com.project.unitube.ui.activity.VideoPlayActivity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHolder> {
     private final Context context;
+    private List<Video> videos = new ArrayList<>();
+
+    public void setVideos(List<Video> videos) {
+        this.videos = videos;
+        notifyDataSetChanged();
+    }
 
     public VideoAdapter(Context context) {
         this.context = context;
@@ -33,55 +51,58 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
 
     @Override
     public void onBindViewHolder(@NonNull VideoViewHolder holder, int position) {
-        Video video = Videos.videosToShow.get(position); // Using the filtered list
+        Video video = videos.get(position);
 
+        setTextViews(holder, video);
+        loadThumbnail(holder.videoThumbnail, video.getThumbnailUrl());
+        loadProfilePicture(holder.uploaderProfileImage, video.getProfilePicture());
+        setClickListeners(holder, video);
+    }
+
+    private void setTextViews(VideoViewHolder holder, Video video) {
         holder.videoTitle.setText(video.getTitle());
-        holder.videoUploader.setText(video.getUser().getUserName());
+        holder.videoUploader.setText(video.getUploader());
         holder.videoUploadDate.setText(video.getUploadDate());
         holder.videoDuration.setText(video.getDuration());
+    }
 
-        // Load video thumbnail
-        int thumbnailResourceId = context.getResources().getIdentifier(video.getThumbnailUrl(), "drawable", context.getPackageName());
-        if (thumbnailResourceId != 0) {
-            holder.videoThumbnail.setImageResource(thumbnailResourceId);
-        } else {
-            holder.videoThumbnail.setImageURI(Uri.parse(video.getThumbnailUrl()));
-        }
+    private void loadThumbnail(ImageView imageView, String thumbnailUrl) {
+        Glide.with(context)
+                .load(thumbnailUrl)
+                .placeholder(R.drawable.placeholder_thumbnail)
+                .error(R.drawable.error_thumbnail)
+                .into(imageView);
+    }
 
-        // Load uploader profile image
-        int profileImageResourceId = context.getResources().getIdentifier(video.getUser().getProfilePicture(), "drawable", context.getPackageName());
-        if (profileImageResourceId != 0) {
-            holder.uploaderProfileImage.setImageResource(profileImageResourceId);
-        } else {
-            holder.uploaderProfileImage.setImageURI(Uri.parse(video.getUser().getProfilePicture())); // Fallback profile image
-        }
+    private void loadProfilePicture(ImageView imageView, String profilePicture) {
+        Glide.with(context)
+                .load(profilePicture)
+                .placeholder(R.drawable.default_profile)
+                .error(R.drawable.error_profile)
+                .circleCrop()
+                .into(imageView);
+    }
 
+    private void setClickListeners(VideoViewHolder holder, Video video) {
+        holder.itemView.setOnClickListener(v -> openVideoPlayActivity(video.getId()));
+        holder.uploaderProfileImage.setOnClickListener(v -> openUserPageActivity(video.getUploader()));
+    }
 
+    private void openVideoPlayActivity(int videoId) {
+        Intent intent = new Intent(context, VideoPlayActivity.class);
+        intent.putExtra("VIDEO_ID", videoId);
+        context.startActivity(intent);
+    }
 
-        // Set click listener on the whole item view to open VideoPlayActivity
-        holder.itemView.setOnClickListener(v -> {
-            // Create an Intent to start VideoPlayActivity
-            Intent intent = new Intent(context, VideoPlayActivity.class);
-            // Pass the video ID to the activity
-            intent.putExtra("VIDEO_ID", video.getId());
-            // Start the activity
-            context.startActivity(intent);
-        });
-
-        holder.uploaderProfileImage.setOnClickListener(v -> {
-            // Create an Intent to start UserPageActivity
-            Intent intent = new Intent(context, UserPageActivity.class);
-            // Pass the user ID to the activity
-            intent.putExtra("USER", video.getUser());
-            // Start the activity
-            context.startActivity(intent);
-        });
-
+    private void openUserPageActivity(String username) {
+        Intent intent = new Intent(context, UserPageActivity.class);
+        intent.putExtra("USERNAME", username);
+        context.startActivity(intent);
     }
 
     @Override
     public int getItemCount() {
-        return Videos.videosToShow.size(); // Using the filtered list size
+        return videos.size(); // Using the filtered list size
     }
 
     public static class VideoViewHolder extends RecyclerView.ViewHolder {
@@ -91,7 +112,6 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
         TextView videoUploadDate;
         TextView videoDuration;
         ImageView uploaderProfileImage;
-
 
         public VideoViewHolder(@NonNull View itemView) {
             super(itemView);

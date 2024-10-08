@@ -22,9 +22,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
 import com.project.unitube.R;
+import com.project.unitube.entities.Videos;
 import com.project.unitube.utils.manager.UserManager;
 import com.project.unitube.entities.Video;
-import com.project.unitube.entities.Videos;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -100,15 +100,15 @@ public class AddVideoScreen extends AppCompatActivity {
         try {
             Uri selectedVideoUri = getSelectedVideoUri();
             Uri selectedCoverPhotoUri = getSelectedPhotoUri();
-
             // Create a new Video object using the URIs and form data
             Video newVideoObject = new Video(
                     videoTitle.getText().toString(),
                     videoDescription.getText().toString(),
                     selectedVideoUri.toString(),
                     selectedCoverPhotoUri.toString(),
-                    UserManager.getInstance().getCurrentUser(),
-                    getVideoDuration(selectedVideoUri)
+                    UserManager.getInstance().getCurrentUser().getUserName(),
+                    getVideoDuration(selectedVideoUri),
+                    UserManager.getInstance().getCurrentUser().getProfilePicture()
             );
             Videos.videosList.add(newVideoObject); // Add the video to the list
             Toast.makeText(this, "Video uploaded successfully", Toast.LENGTH_SHORT).show();
@@ -129,7 +129,7 @@ public class AddVideoScreen extends AppCompatActivity {
         for (Video video : Videos.videosList) {
             Log.d("VideoList", "ID: " + video.getId() + ", Title: " + video.getTitle() +
                     ", Description: " + video.getDescription() + ", URL: " + video.getUrl() +
-                    ", Thumbnail: " + video.getThumbnailUrl() + ", User: " + video.getUser().getUserName() +
+                    ", Thumbnail: " + video.getThumbnailUrl() + ", User: " + video.getUploader() +
                     ", Duration: " + video.getDuration());
         }
     }

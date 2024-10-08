@@ -12,11 +12,11 @@ import retrofit2.http.PUT;
 import retrofit2.http.Path;
 
 public interface VideoWebServiceAPI {
-    @GET("videos/all")
+    @GET("api/videos")
     Call<List<Video>> getVideos();
 
-    @GET("videos/{videoId}")
-    Call<Video> getVideoById(@Path("videoId") int videoId);
+    @GET("api/users/{userId}/videos/{videoId}")
+    Call<Video> getVideoById(@Path("userId") int userId, @Path("videoId") int videoId);
 
     @GET("videos/user/{user_name}")
     Call<List<Video>> getUserVideos(@Path("user_name") String userName);
