@@ -39,8 +39,8 @@ public class VideoViewModel extends ViewModel {
         return videos;
     }
 
-    public LiveData<Video> getVideoByID(int id) {
-        return videoRepository.getVideoByID(id);
+    public LiveData<Video> getVideoByID(int userId, int id) {
+        return videoRepository.getVideoByID(userId, id);
     }
 
     /**

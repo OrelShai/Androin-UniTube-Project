@@ -26,8 +26,8 @@ public class VideoRepository {
         return videoListData;
     }
 
-    public LiveData<Video> getVideoByID(int id) {
-        return videoAPI.getVideoByID(id);
+    public LiveData<Video> getVideoByID(int userId, int id) {
+        return videoAPI.getVideoByID(userId, id);
     }
 
     public void insertVideo(Video video) {

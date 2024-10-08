@@ -1,5 +1,7 @@
 package com.project.unitube.network.objectAPI;
 
+import android.util.Log;
+
 import androidx.lifecycle.MutableLiveData;
 
 import com.project.unitube.entities.Video;
@@ -16,7 +18,7 @@ import retrofit2.Retrofit;
 
 public class VideoAPI {
     private MutableLiveData<List<Video>> videoListData;
-    private Video video;
+    //private Video video;
     //private VideoDao videoDao;
     VideoWebServiceAPI videoWebServiceAPI;
 
@@ -48,21 +50,32 @@ public class VideoAPI {
         return videoListData;
     }
 
-    public MutableLiveData<Video> getVideoByID(int id) {
+    public MutableLiveData<Video> getVideoByID(int userId, int id) {
         MutableLiveData<Video> videoData = new MutableLiveData<>();
-        Call<Video> call = videoWebServiceAPI.getVideoById(id);
+
+        // Log to know the function was called
+        Log.d("VideoAPI", "Fetching video with ID: " + id);
+
+        Call<Video> call = videoWebServiceAPI.getVideoById(userId, id);
         call.enqueue(new Callback<Video>() {
             @Override
             public void onResponse(Call<Video> call, Response<Video> response) {
                 if (response.isSuccessful() && response.body() != null) {
+                    // Log the success of the API call and video details
+                    Log.d("VideoAPI", "Video fetched successfully: " + response.body().getTitle());
                     videoData.postValue(response.body());
+                } else {
+                    // Log the failure case if response is not successful or body is null
+                    Log.w("VideoAPI", "Failed to fetch video. Response Code: " + response.code());
                 }
             }
-
             @Override
             public void onFailure(Call<Video> call, Throwable t) {
+                // Log the error in case the call fails
+                Log.e("VideoAPI", "Error fetching video: " + t.getMessage(), t);
             }
         });
+
         return videoData;
     }
 

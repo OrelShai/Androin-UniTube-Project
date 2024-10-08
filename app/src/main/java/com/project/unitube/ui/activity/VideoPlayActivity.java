@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,10 +14,13 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.VideoView;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -32,11 +34,18 @@ import com.project.unitube.utils.VideoInteractionHandler;
 import com.project.unitube.utils.VideoLoader;
 import com.project.unitube.utils.manager.CommentManager;
 import com.project.unitube.utils.manager.VideoContentManager;
+import com.project.unitube.viewmodel.VideoViewModel;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class VideoPlayActivity extends AppCompatActivity implements CommentAdapter.CommentAdapterListener {
 
     private static final String TAG = "VideoPlayActivity";
     public static final int REQUEST_CODE_READ_EXTERNAL_STORAGE = 1;
+
+    private VideoViewModel videoViewModel;
 
     private VideoView videoView;
     private TextView titleTextView, descriptionTextView, uploaderNameTextView, likeCountTextView,
@@ -63,7 +72,7 @@ public class VideoPlayActivity extends AppCompatActivity implements CommentAdapt
 
         initializeUIComponents();
         requestStoragePermission();
-        initializeManagers();
+        initializeViewModelAndManagers();
         loadVideoFromIntent();
     }
 
@@ -99,7 +108,11 @@ public class VideoPlayActivity extends AppCompatActivity implements CommentAdapt
         }
     }
 
-    private void initializeManagers() {
+    private void initializeViewModelAndManagers() {
+        // Initialize ViewModel
+        videoViewModel = new ViewModelProvider(this).get(VideoViewModel.class);
+
+        // Initialize Managers
         videoContentManager = new VideoContentManager(this, this);
         videoController = new VideoController(this, videoView, playPauseButton);
     }
@@ -108,16 +121,26 @@ public class VideoPlayActivity extends AppCompatActivity implements CommentAdapt
         Intent intent = getIntent();
         if (intent != null && intent.hasExtra("VIDEO_ID")) {
             int videoId = intent.getIntExtra("VIDEO_ID", -1);
-            currentVideo = getVideoById(videoId);
 
-            if (currentVideo != null) {
-                loadVideo();
-                updateVideoData();
-                initializeVideoInteraction();
-                initializeCommentManager();
-                initializeRecommendedVideos();
-                startProgressUpdates();
-            }
+            // Use ViewModel to get video by ID
+            int userId = -1;
+
+            videoViewModel.getVideoByID(userId, videoId).observe(this, video -> {
+                if (video != null) {
+                    currentVideo = video;  // Set the current video once it's loaded
+
+                    // Call methods to handle video loading and UI updates
+                    loadVideo();
+                    updateVideoData();
+                    initializeVideoInteraction();
+                    initializeCommentManager();
+                    initializeRecommendedVideos();
+                    startProgressUpdates();
+                } else {
+                    // Handle case where video is not found
+                    Toast.makeText(this, "Video not found", Toast.LENGTH_SHORT).show();
+                }
+            });
         }
     }
 
@@ -131,8 +154,8 @@ public class VideoPlayActivity extends AppCompatActivity implements CommentAdapt
     }
 
     private void updateVideoData() {
-        likeCountTextView.setText(String.valueOf(currentVideo.getLikesList().size()));
-        dislikeCountTextView.setText(String.valueOf(currentVideo.getDislikesList().size()));
+        likeCountTextView.setText(String.valueOf(currentVideo.getLikes()));
+        dislikeCountTextView.setText(String.valueOf(currentVideo.getDislikes()));
         commentCountTextView.setText("(" + currentVideo.getComments().size() + ")");
 
         commentsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -152,14 +175,17 @@ public class VideoPlayActivity extends AppCompatActivity implements CommentAdapt
     }
 
     private void initializeRecommendedVideos() {
-        Videos.videosToShow.clear();
-        for (Video video : Videos.videosList) {
-            if (video.getId() != currentVideo.getId()) {
-                Videos.videosToShow.add(video);
-            }
-        }
         recommendedVideosRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         VideoAdapter videoAdapter = new VideoAdapter(this);
+        videoViewModel.getVideos().observe(this, videos -> {
+            // Filter out the current video
+            List<Video> filteredVideos = videos.stream()
+                    .filter(video -> video.getId() != currentVideo.getId())
+                    .collect(Collectors.toList());
+
+            videoAdapter.setVideos(filteredVideos);
+        });
+        videoViewModel.getVideos();
         recommendedVideosRecyclerView.setAdapter(videoAdapter);
     }
 
@@ -172,15 +198,6 @@ public class VideoPlayActivity extends AppCompatActivity implements CommentAdapt
             }
         };
         handler.post(updateProgressAction);
-    }
-
-    private Video getVideoById(int videoId) {
-        for (Video video : Videos.videosList) {
-            if (video.getId() == videoId) {
-                return video;
-            }
-        }
-        return null;
     }
 
     @Override

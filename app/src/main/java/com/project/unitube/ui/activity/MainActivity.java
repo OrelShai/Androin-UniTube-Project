@@ -387,7 +387,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-
     private void initializeVideosToShow() {
         videoViewModel.getVideos().observe(this, videos -> {
             videoAdapter.setVideos(videos);
