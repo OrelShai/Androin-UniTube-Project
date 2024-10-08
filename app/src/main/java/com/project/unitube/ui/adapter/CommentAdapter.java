@@ -17,7 +17,9 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.project.unitube.R;
+import com.project.unitube.network.RetroFit.RetrofitClient;
 import com.project.unitube.utils.manager.UserManager;
 import com.project.unitube.entities.Comment;
 import com.project.unitube.viewmodel.CommentViewModel;
@@ -54,14 +56,14 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
         holder.commentContent.setText(comment.getCommentText());
 
         // Load user profile image
-        int profileImageResourceId = context.getResources().getIdentifier(comment.getProfilePicture().toString(), "drawable", context.getPackageName());
-        if (profileImageResourceId != 0) {
-            // Profile picture is a drawable resource
-            holder.commentUserProfileImage.setImageResource(profileImageResourceId);
-        } else {
-            // Profile picture is a uri
-            holder.commentUserProfileImage.setImageURI(Uri.parse(comment.getProfilePicture()));
-        }
+        String baseUrl = RetrofitClient.getBaseUrl();
+        String profilePhotoUrl = baseUrl + comment.getProfilePicture();;  // Combine base URL and path
+
+        Glide.with(context)
+                .load(profilePhotoUrl)
+                .circleCrop()
+                .placeholder(R.drawable.default_profile_image) // Placeholder in case of loading issues
+                .into(holder.commentUserProfileImage);
 
         // Set up more options button logic
         holder.moreOptionsButton.setOnClickListener(v -> {

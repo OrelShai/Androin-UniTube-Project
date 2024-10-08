@@ -11,11 +11,13 @@ import android.widget.Toast;
 
 import androidx.lifecycle.LifecycleOwner;
 
+import com.bumptech.glide.Glide;
 import com.project.unitube.R;
 import com.project.unitube.Unitube;
 import com.project.unitube.entities.Comment;
 import com.project.unitube.entities.User;
 import com.project.unitube.entities.Video;
+import com.project.unitube.network.RetroFit.RetrofitClient;
 import com.project.unitube.ui.adapter.CommentAdapter;
 import com.project.unitube.viewmodel.CommentViewModel;
 import com.project.unitube.viewmodel.UserViewModel;
@@ -53,13 +55,16 @@ public class CommentManager {
 
         // Set the user's profile image if logged in, otherwise set a placeholder image
         if (currentUser != null) {
-            String profilePictureName = currentUser.getProfilePicture();
-            int profileImageResourceId = context.getResources().getIdentifier(profilePictureName, "drawable", context.getPackageName());
-            if (profileImageResourceId != 0) {
-                userProfileImageView.setImageResource(profileImageResourceId);
-            } else {
-                userProfileImageView.setImageURI(Uri.parse(currentUser.getProfilePicture())); // Fallback profile image
-            }
+            // Construct the full profile picture URL
+            String baseUrl = RetrofitClient.getBaseUrl();
+            String profilePhotoUrl = baseUrl + currentUser.getProfilePicture();  // Combine base URL and path
+
+            Glide.with(context)
+                    .load(profilePhotoUrl)
+                    .circleCrop()
+                    .placeholder(R.drawable.default_profile_image) // Placeholder in case of loading issues
+                    .into(userProfileImageView);
+
         } else {
             userProfileImageView.setImageResource(R.drawable.ic_profile_placeholder); // Default image when not logged in
         }

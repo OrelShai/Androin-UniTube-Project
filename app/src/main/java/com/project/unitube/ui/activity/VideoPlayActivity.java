@@ -18,10 +18,12 @@ import android.widget.VideoView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.Manifest;
 
+import com.project.unitube.entities.Comment;
 import com.project.unitube.ui.adapter.CommentAdapter;
 import com.project.unitube.utils.manager.CommentManager;
 import com.project.unitube.R;
@@ -32,6 +34,10 @@ import com.project.unitube.utils.VideoInteractionHandler;
 import com.project.unitube.utils.VideoLoader;
 import com.project.unitube.entities.Video;
 import com.project.unitube.entities.Videos;
+import com.project.unitube.viewmodel.CommentViewModel;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * VideoPlayActivity handles the playback of a video, as well as displaying video details,
@@ -205,13 +211,21 @@ public class VideoPlayActivity extends AppCompatActivity implements CommentAdapt
         likeCountTextView.setText(String.valueOf(currentVideo.getLikesList().size()));
         dislikeCountTextView.setText(String.valueOf(currentVideo.getDislikesList().size()));
 
-        // Set the text of the TextView to display the count in parentheses
-        commentCountTextView.setText("(" + currentVideo.getComments().size() + ")");
-
         // Set up the RecyclerView for comments
         commentsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        CommentAdapter commentAdapter = new CommentAdapter(this, currentVideo.getComments(), this);
-        commentsRecyclerView.setAdapter(commentAdapter);
+
+        CommentViewModel commentViewModel = new CommentViewModel();
+        commentViewModel.getCommentsForVideo(currentVideo.getId()).observe(this, comments -> {
+            if (comments != null) {
+                currentVideo.setComments(comments);
+
+                // Set the text of the TextView to display the count in parentheses
+                commentCountTextView.setText("(" + currentVideo.getComments().size() + ")");
+
+                CommentAdapter commentAdapter = new CommentAdapter(this, currentVideo.getComments(), this);
+                commentsRecyclerView.setAdapter(commentAdapter);
+            }
+        });
     }
 
     /**

@@ -48,7 +48,7 @@ public class DataManager {
         Videos.videosList = new ArrayList<>();
         parseUsers(context);
         parseVideos(context);
-        getComments(context, (androidx.lifecycle.LifecycleOwner) context);
+//        getComments(context, (androidx.lifecycle.LifecycleOwner) context);
         logCommentsForAllVideos();  // Add this line to log comments after parsing
     }
 
@@ -159,34 +159,34 @@ public class DataManager {
 //    }
 
     // for each video from videos list, fetch comments from the server
-    private void getComments(Context context, androidx.lifecycle.LifecycleOwner lifecycleOwner) {
-        try {
-            // get comments for each video
-            for (Video video : Videos.videosList) {
-                    commentViewModel.getCommentsForVideo(video.getId()).observe(lifecycleOwner, comments -> {
-                        if (comments != null) {
-                            video.setComments(comments);  // Set the comments for the specific video
-                            for (Comment comment : comments) {
-                                Log.d("DataManager", "comment = \n" + "mongoID:" + comment.getId() + " video_id:" + video.getId() + " user_name:" + comment.getUserName() + " comment_text:" + comment.getCommentText());
-                            }
-                        } else {
-                            Log.d("DataManager", "No comments found for video ID: " + video.getId());
-                        }
-                    });
-
-                    // set profile picture for each comment - does not work yet!!
-                    for (Comment comment : video.getComments()) {
-                        userViewModel.getUser(comment.getUserName()).observe(lifecycleOwner, user -> {
-                            if (user != null) {
-                                comment.setProfilePicture(user.getProfilePicture());
-                            }
-                        });
-                    }
-                }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+//    private void getComments(Context context, androidx.lifecycle.LifecycleOwner lifecycleOwner) {
+//        try {
+//            // get comments for each video
+//            for (Video video : Videos.videosList) {
+//                    commentViewModel.getCommentsForVideo(video.getId()).observe(lifecycleOwner, comments -> {
+//                        if (comments != null) {
+//                            video.setComments(comments);  // Set the comments for the specific video
+//                            for (Comment comment : comments) {
+//                                Log.d("DataManager", "comment = \n" + "mongoID:" + comment.getId() + " video_id:" + video.getId() + " user_name:" + comment.getUserName() + " comment_text:" + comment.getCommentText());
+//                            }
+//                        } else {
+//                            Log.d("DataManager", "No comments found for video ID: " + video.getId());
+//                        }
+//                    });
+//
+//                    // set profile picture for each comment - does not work yet!!
+//                    for (Comment comment : video.getComments()) {
+//                        userViewModel.getUser(comment.getUserName()).observe(lifecycleOwner, user -> {
+//                            if (user != null) {
+//                                comment.setProfilePicture(user.getProfilePicture());
+//                            }
+//                        });
+//                    }
+//                }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
 
 
 
