@@ -4,9 +4,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
+import com.project.unitube.utils.manager.UserManager; // Import UserManager to access the token
 
 /**
  * Singleton class to manage the Retrofit instance.
@@ -25,13 +27,28 @@ public class RetrofitClient {
             synchronized (RetrofitClient.class) {
                 if (retrofit == null) {
                     OkHttpClient okHttpClient = new OkHttpClient.Builder()
-                            .connectTimeout(30, TimeUnit.SECONDS) // Increase connection timeout
-                            .readTimeout(30, TimeUnit.SECONDS) // Increase read timeout
-                            .writeTimeout(30, TimeUnit.SECONDS) // Increase write timeout
+                            .addInterceptor(chain -> {
+                                Request original = chain.request();
+                                Request.Builder builder = original.newBuilder();
+
+                                // Fetch token from UserManager
+                                String token = UserManager.getInstance().getToken();
+
+                                // Add the Authorization header if the token is available
+                                if (token != null && !token.isEmpty()) {
+                                    builder.header("Authorization", "Bearer " + token); // Prepend Bearer
+                                }
+
+                                Request request = builder.build();
+                                return chain.proceed(request);
+                            })
+                            .connectTimeout(30, TimeUnit.SECONDS)
+                            .readTimeout(30, TimeUnit.SECONDS)
+                            .writeTimeout(30, TimeUnit.SECONDS)
                             .build();
 
-                    retrofit = new Retrofit.Builder().
-                            baseUrl(BASE_URL)
+                    retrofit = new Retrofit.Builder()
+                            .baseUrl(BASE_URL)
                             .client(okHttpClient)
                             .callbackExecutor(Executors.newSingleThreadExecutor())
                             .addConverterFactory(ScalarsConverterFactory.create())

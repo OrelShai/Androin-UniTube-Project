@@ -15,8 +15,10 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.project.unitube.R;
 import com.project.unitube.entities.User;
+import com.project.unitube.network.RetroFit.RetrofitClient;
 import com.project.unitube.ui.adapter.VideoAdapter;
 import com.project.unitube.utils.manager.UserManager;
 
@@ -65,13 +67,21 @@ public class UserPageActivity extends AppCompatActivity {
             User user = (User) intent.getSerializableExtra("USER");
             if (user != null) {
                 // Load user profile image
+                String baseUrl = RetrofitClient.getBaseUrl();
+                String ProfilePic = baseUrl + user.getProfilePicture();
+                Glide.with(this)
+                        .load(ProfilePic)
+                        .circleCrop()
+                        .placeholder(R.drawable.default_profile_image) // Placeholder in case of loading issues
+                        .into(profileImageView);
 
-                int profileImageResourceId = getResources().getIdentifier(user.getProfilePicture(), "drawable", getPackageName());
-                if (profileImageResourceId != 0) {
-                    profileImageView.setImageResource(profileImageResourceId);
-                } else {
-                    profileImageView.setImageURI(Uri.parse(user.getProfilePicture())); // Fallback profile image
-                }
+//               // FAKE PROFILE IMAGES WILL BE SHOWN AFTER FETCHING FAKE USER FROM DATA BASE
+//                int profileImageResourceId = getResources().getIdentifier(user.getProfilePicture(), "drawable", getPackageName());
+//                if (profileImageResourceId != 0) {
+//                    profileImageView.setImageResource(profileImageResourceId);
+//                } else {
+//                    profileImageView.setImageURI(Uri.parse(user.getProfilePicture())); // Fallback profile image
+//                }
                 // Set user details
                 String fullName = user.getFirstName() + " " + user.getLastName();
                 fullNameTextView.setText(fullName);

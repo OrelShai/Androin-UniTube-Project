@@ -1,5 +1,7 @@
 package com.project.unitube.viewmodel;
 
+import android.net.Uri;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -16,8 +18,8 @@ public class UserViewModel extends ViewModel {
         userRepository = new UserRepository(Unitube.context);
     }
 
-    public  MutableLiveData<String> createUser(User user) {
-        return userRepository.createUser(user);
+    public MutableLiveData<String> createUser(User user, Uri photoUri) {
+        return userRepository.createUser(user, photoUri);
     }
 
     public MutableLiveData<User> getUser(String username) {
@@ -32,7 +34,7 @@ public class UserViewModel extends ViewModel {
         return userRepository.deleteUser(userName);
     }
 
-    public MutableLiveData<String> updateUser(User user) {
-        return userRepository.updateUser(user);
+    public MutableLiveData<String> updateUser(User user, Uri photoUri) {
+        return userRepository.updateUser(user, photoUri);
     }
 }

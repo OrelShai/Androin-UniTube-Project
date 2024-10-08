@@ -1,5 +1,7 @@
 package com.project.unitube.network.objectAPI;
 
+import android.util.Log;
+
 import androidx.lifecycle.MutableLiveData;
 
 import com.project.unitube.Room.Dao.CommentDao;
@@ -19,77 +21,104 @@ import retrofit2.Retrofit;
 
 public class CommentAPI {
 
-    private MutableLiveData<List<Comment>> commentListData;
-    private CommentDao commentDao;
     Retrofit retrofit;
     CommentWebServiceAPI commentWebServiceAPI;
 
-    public CommentAPI(MutableLiveData<List<Comment>> commentListData, CommentDao commentDao) {
-        this.commentListData = commentListData;
-        this.commentDao = commentDao;
+    public CommentAPI() {
         retrofit = RetrofitClient.getClient();
         commentWebServiceAPI = retrofit.create(CommentWebServiceAPI.class);
     }
 
-    public void getComments(int videoId) {
+
+    // Method to fetch comments for a specific video ID
+    public MutableLiveData<List<Comment>> getComments(int videoId) {
+        MutableLiveData<List<Comment>> commentsLiveData = new MutableLiveData<>();
+
         Call<List<Comment>> call = commentWebServiceAPI.getComments(videoId);
         call.enqueue(new Callback<List<Comment>>() {
             @Override
             public void onResponse(Call<List<Comment>> call, Response<List<Comment>> response) {
-
-                new Thread(() -> {
-                    commentDao.deleteAllComments();
-                    commentDao.insertAllComments(response.body());
-                    commentListData.postValue(commentDao.getAllComments());
-                }).start();
+                if (response.isSuccessful()) {
+                    commentsLiveData.postValue(response.body());
+                } else {
+                    Log.e("CommentAPI", "Failed to fetch comments: " + response.code());
+                    commentsLiveData.postValue(null);
+                }
             }
 
             @Override
             public void onFailure(Call<List<Comment>> call, Throwable t) {
+                Log.e("CommentAPI", "Error: " + t.getMessage());
+                commentsLiveData.postValue(null);
             }
         });
+
+        return commentsLiveData;
     }
 
-    public void createComment(int videoId, Comment comment) {
+    public MutableLiveData<String> createComment(int videoId, Comment comment) {
+        MutableLiveData<String> resultLiveData = new MutableLiveData<>();
+
         Call<Void> call = commentWebServiceAPI.createComment(videoId, comment);
         call.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
-                commentDao.insertComment(comment);
+                if (response.isSuccessful()) {
+                    resultLiveData.postValue("Success");
+                } else {
+                    resultLiveData.postValue("Failed: " + response.code());
+                }
             }
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
+                resultLiveData.postValue("failure: " + t.getMessage());
             }
         });
+        return resultLiveData;
     }
 
-    public void updateComment(int commentId, Comment comment) {
+    public MutableLiveData<String> updateComment(String commentId, Comment comment) {
+        MutableLiveData<String> resultLiveData = new MutableLiveData<>();
+
         Call<Void> call = commentWebServiceAPI.updateComment(commentId, comment);
         call.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
-                commentDao.updateComment(comment);
+                if (response.isSuccessful()) {
+                    resultLiveData.postValue("Success");
+                } else {
+                    resultLiveData.postValue("Failed: " + response.code());
+                }
             }
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
+                resultLiveData.postValue("failure: " + t.getMessage());
             }
         });
+        return resultLiveData;
     }
 
-    public void deleteComment(int commentId) {
+    public MutableLiveData<String> deleteComment(String commentId) {
+        MutableLiveData<String> resultLiveData = new MutableLiveData<>();
+
         Call<Void> call = commentWebServiceAPI.deleteComment(commentId);
         call.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
-                Comment comment = commentDao.getCommentByID(commentId);
-                commentDao.deleteComment(comment);
+                if (response.isSuccessful()) {
+                    resultLiveData.postValue("Success");
+                } else {
+                    resultLiveData.postValue("Failed: " + response.code());
+                }
             }
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
+                resultLiveData.postValue("failure: " + t.getMessage());
             }
         });
+        return resultLiveData;
     }
 }
