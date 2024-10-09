@@ -35,6 +35,7 @@ import com.project.unitube.utils.VideoLoader;
 import com.project.unitube.utils.manager.CommentManager;
 import com.project.unitube.utils.manager.VideoContentManager;
 import com.project.unitube.viewmodel.VideoViewModel;
+import com.project.unitube.viewmodel.CommentViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -140,7 +141,6 @@ public class VideoPlayActivity extends AppCompatActivity implements CommentAdapt
                     loadVideo();
                     updateVideoData();
                     initializeVideoInteraction();
-                    initializeCommentManager();
                     initializeRecommendedVideos();
                     startProgressUpdates();
                 } else {
@@ -160,14 +160,32 @@ public class VideoPlayActivity extends AppCompatActivity implements CommentAdapt
         videoView.start();
     }
 
+    /**
+     * Updates the UI with the current video's dynamic data such as likes, dislikes, and comments count.
+     */
     private void updateVideoData() {
+        // Set initial like and dislike counts
         likeCountTextView.setText(String.valueOf(currentVideo.getLikes()));
         dislikeCountTextView.setText(String.valueOf(currentVideo.getDislikes()));
-        commentCountTextView.setText("(" + currentVideo.getComments().size() + ")");
 
+        // Set up the RecyclerView for comments
         commentsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        CommentAdapter commentAdapter = new CommentAdapter(this, currentVideo.getComments(), this);
-        commentsRecyclerView.setAdapter(commentAdapter);
+
+        // Use ViewModel to get comments for the current video
+        CommentViewModel commentViewModel = new CommentViewModel();
+        commentViewModel.getCommentsForVideo(currentVideo.getId()).observe(this, comments -> {
+            if (comments != null) {
+                currentVideo.setComments(comments);
+
+                // Set the text of the TextView to display the count in parentheses
+                commentCountTextView.setText("(" + currentVideo.getComments().size() + ")");
+
+                CommentAdapter commentAdapter = new CommentAdapter(this, currentVideo.getComments(), this);
+                commentsRecyclerView.setAdapter(commentAdapter);
+
+                initializeCommentManager();
+            }
+        });
     }
 
     private void initializeVideoInteraction() {
