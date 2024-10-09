@@ -135,6 +135,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
         builder.setPositiveButton("OK", (dialog, which) -> {
             String newCommentText = input.getText().toString().trim();
             if (!newCommentText.isEmpty()) {
+                comment.setCommentText(newCommentText);
 
                 // Update the comment in the database
                 CommentViewModel commentViewModel = new CommentViewModel();
