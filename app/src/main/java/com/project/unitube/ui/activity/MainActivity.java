@@ -52,7 +52,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -410,7 +412,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                //filterVideos(s.toString());
+                filterVideos(s.toString());
             }
 
             @Override
@@ -419,24 +421,25 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-/*
+
     private void filterVideos(String query) {
-        Videos.videosToShow.clear();
-        if (query.isEmpty()) {
-            Videos.videosToShow.addAll(Videos.videosList);
-        } else {
-            String lowerCaseQuery = query.toLowerCase();
-            for (Video video : Videos.videosList) {
-                if (video.getTitle().toLowerCase().contains(lowerCaseQuery) ||
-                        video.getDescription().toLowerCase().contains(lowerCaseQuery) ||
-                        video.getUser().getUserName().toLowerCase().contains(lowerCaseQuery)) {
-                    Videos.videosToShow.add(video);
-                }
+        videoViewModel.getVideos().observe(this, videos -> {
+            List<Video> filteredVideos;
+            if (query.isEmpty()) {
+                filteredVideos = videos;
+            } else {
+                String lowerCaseQuery = query.toLowerCase();
+                filteredVideos = videos.stream()
+                        .filter(video ->
+                                video.getTitle().toLowerCase().contains(lowerCaseQuery) ||
+                                        video.getDescription().toLowerCase().contains(lowerCaseQuery) ||
+                                        video.getUploader().toLowerCase().contains(lowerCaseQuery))
+                        .collect(Collectors.toList());
             }
-        }
-        videoAdapter.notifyDataSetChanged();
+            videoAdapter.setVideos(filteredVideos);
+        });
     }
-*/
+
     @Override
     protected void onResume() {
         super.onResume();

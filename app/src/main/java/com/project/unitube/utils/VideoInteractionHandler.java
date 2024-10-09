@@ -2,6 +2,7 @@ package com.project.unitube.utils;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -11,12 +12,15 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.lifecycle.LifecycleOwner;
+
 import com.project.unitube.R;
 import com.project.unitube.entities.Videos;
 import com.project.unitube.utils.manager.UserManager;
 import com.project.unitube.entities.User;
 import com.project.unitube.entities.Video;
 import com.project.unitube.ui.activity.VideoPlayActivity;
+import com.project.unitube.viewmodel.VideoViewModel;
 
 public class VideoInteractionHandler {
 
@@ -29,11 +33,17 @@ public class VideoInteractionHandler {
     private ImageView likeIcon;
     private ImageView dislikeIcon;
     private Video currentVideo;
+    private VideoViewModel videoViewModel;
+    private LifecycleOwner lifecycleOwner;
+
     public static boolean updateDate = false;
 
-    public VideoInteractionHandler(Context context, int videoId, LinearLayout likeButton, LinearLayout dislikeButton,
-                                   TextView likeCountTextView, TextView dislikeCountTextView) {
+    public VideoInteractionHandler(Context context, LifecycleOwner lifecycleOwner, int videoId,
+                                   LinearLayout likeButton, LinearLayout dislikeButton,
+                                   TextView likeCountTextView, TextView dislikeCountTextView,
+                                   VideoViewModel videoViewModel) {
         this.context = context;
+        this.lifecycleOwner = lifecycleOwner;
         this.videoId = videoId;
         this.likeButton = likeButton;
         this.dislikeButton = dislikeButton;
@@ -41,22 +51,25 @@ public class VideoInteractionHandler {
         this.dislikeCountTextView = dislikeCountTextView;
         this.likeIcon = likeButton.findViewById(R.id.icon_like);
         this.dislikeIcon = dislikeButton.findViewById(R.id.icon_dislike);
-        this.currentVideo = getVideoById(videoId);
+        this.videoViewModel = videoViewModel;
 
+        fetchVideoDetails();
         setupInteractionListeners();
         setupOtherButtons();
-        updateButtonIcons();
     }
 
-    private Video getVideoById(int videoId) {
-        for (Video video : Videos.videosList) {
-            if (video.getId() == videoId) {
-                return video;
+    private void fetchVideoDetails() {
+        videoViewModel.getVideoByID(-1, videoId).observe(lifecycleOwner, video -> {
+            if (video != null) {
+                currentVideo = video;
+                updateButtonIcons();
+                updateLikeDislikeCounts();
+            } else {
+                // Handle the case where video is null (error case)
+                Toast.makeText(context, "Error: Unable to fetch video details", Toast.LENGTH_SHORT).show();
             }
-        }
-        return null;
+        });
     }
-
 
     private void setupInteractionListeners() {
         User currentUser = UserManager.getInstance().getCurrentUser();
@@ -65,9 +78,9 @@ public class VideoInteractionHandler {
             if (currentUser == null) {
                 showToast("You cannot like a video if you are not logged in.");
             } else if (currentVideo != null) {
-                currentVideo.addLike(currentUser.getUserName());
-                updateLikeDislikeCounts(currentVideo);
-                saveVideoState(currentVideo); // Save state after updating
+                String userName = currentUser.getUserName();
+                Log.d("VideoInteraction", "Attempting to toggle like for video ID: " + currentVideo.getId() + " by user: " + userName);
+                toggleLike(userName);
             }
         });
 
@@ -75,9 +88,33 @@ public class VideoInteractionHandler {
             if (currentUser == null) {
                 showToast("You cannot dislike a video if you are not logged in.");
             } else if (currentVideo != null) {
-                currentVideo.addDislike(currentUser.getUserName());
-                updateLikeDislikeCounts(currentVideo);
-                saveVideoState(currentVideo); // Save state after updating
+                String userName = currentUser.getUserName();
+                Log.d("VideoInteraction", "Attempting to toggle like for video ID: " + currentVideo.getId() + " by user: " + userName);
+                toggleDislike(userName);
+            }
+        });
+    }
+
+    private void toggleLike(String userName) {
+        videoViewModel.toggleLike(currentVideo.getId(), userName).observe(lifecycleOwner, result -> {
+            if (result != null) {
+                currentVideo = result;
+                updateButtonIcons();
+                updateLikeDislikeCounts();
+            } else {
+                showToast("Failed to update like status.");
+            }
+        });
+    }
+
+    private void toggleDislike(String userName) {
+        videoViewModel.toggleDislike(currentVideo.getId(), userName).observe(lifecycleOwner, result -> {
+            if (result != null) {
+                currentVideo = result;
+                updateButtonIcons();
+                updateLikeDislikeCounts();
+            } else {
+                showToast("Failed to update dislike status.");
             }
         });
     }
@@ -142,7 +179,7 @@ public class VideoInteractionHandler {
         }
     }
 
-    private void updateLikeDislikeCounts(Video currentVideo) {
+    private void updateLikeDislikeCounts() {
         likeCountTextView.setText(String.valueOf(currentVideo.getLikesList().size()));
         dislikeCountTextView.setText(String.valueOf(currentVideo.getDislikesList().size()));
         updateButtonIcons(); // Update button icons

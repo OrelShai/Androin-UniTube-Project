@@ -34,7 +34,6 @@ public class UserAPI {
         userWebServiceAPI = retrofit.create(UserWebServiceAPI.class);
     }
 
-
     public MutableLiveData<User> getUser(String username) {
         Call<User> call = userWebServiceAPI.getUser(username);
         call.enqueue(new Callback<User>() {
@@ -51,7 +50,6 @@ public class UserAPI {
         });
         return currentUser;
     }
-
 
     public MutableLiveData<User> loginUser(String username, String password) {
         Call<String> call = userWebServiceAPI.processLogin(username, password);

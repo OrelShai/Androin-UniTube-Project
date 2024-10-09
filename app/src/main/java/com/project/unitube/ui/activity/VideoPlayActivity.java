@@ -171,8 +171,16 @@ public class VideoPlayActivity extends AppCompatActivity implements CommentAdapt
     }
 
     private void initializeVideoInteraction() {
-        new VideoInteractionHandler(this, currentVideo.getId(), likeButton, dislikeButton,
-                likeCountTextView, dislikeCountTextView);
+        new VideoInteractionHandler(
+                this, // context
+                this, // lifecycleOwner (the activity itself)
+                currentVideo.getId(),
+                likeButton,
+                dislikeButton,
+                likeCountTextView,
+                dislikeCountTextView,
+                videoViewModel
+        );
     }
 
     private void initializeCommentManager() {

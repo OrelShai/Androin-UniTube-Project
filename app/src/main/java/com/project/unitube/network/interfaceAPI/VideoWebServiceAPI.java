@@ -1,4 +1,5 @@
 package com.project.unitube.network.interfaceAPI;
+import com.google.gson.JsonObject;
 import com.project.unitube.entities.Video;
 
 import java.util.List;
@@ -10,6 +11,7 @@ import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 public interface VideoWebServiceAPI {
     @GET("api/videos")
@@ -17,6 +19,12 @@ public interface VideoWebServiceAPI {
 
     @GET("api/users/{userId}/videos/{videoId}")
     Call<Video> getVideoById(@Path("userId") int userId, @Path("videoId") int videoId);
+
+    @POST("api/videos/{id}/like")
+    Call<Video> toggleLike(@Path("id") int videoId, @Body JsonObject body);
+
+    @POST("api/videos/{id}/dislike")
+    Call<Video> toggleDislike(@Path("id") int videoId, @Body JsonObject body);
 
     @GET("videos/user/{user_name}")
     Call<List<Video>> getUserVideos(@Path("user_name") String userName);

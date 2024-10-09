@@ -2,8 +2,10 @@ package com.project.unitube.network.objectAPI;
 
 import android.util.Log;
 
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.google.gson.JsonObject;
 import com.project.unitube.entities.Video;
 import com.project.unitube.Room.Dao.VideoDao;
 import com.project.unitube.network.RetroFit.RetrofitClient;
@@ -18,7 +20,6 @@ import retrofit2.Retrofit;
 
 public class VideoAPI {
     private MutableLiveData<List<Video>> videoListData;
-    //private Video video;
     //private VideoDao videoDao;
     VideoWebServiceAPI videoWebServiceAPI;
 
@@ -146,6 +147,55 @@ public class VideoAPI {
             public void onFailure(Call<Void> call, Throwable t) {
             }
         });
+    }
+
+    public LiveData<Video> toggleLike(int videoId, String userName) {
+        MutableLiveData<Video> videoData = new MutableLiveData<>();
+
+        // Create a request body with userName
+        JsonObject requestBody = new JsonObject();
+        requestBody.addProperty("userName", userName);
+
+        videoWebServiceAPI.toggleLike(videoId, requestBody).enqueue(new Callback<Video>() {
+            @Override
+            public void onResponse(Call<Video> call, Response<Video> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    videoData.postValue(response.body());
+                } else {
+                    videoData.postValue(null);
+                }
+            }
+            @Override
+            public void onFailure(Call<Video> call, Throwable t) {
+                videoData.postValue(null);
+            }
+        });
+        return videoData;
+    }
+
+    public LiveData<Video> toggleDislike(int videoId, String userName) {
+        MutableLiveData<Video> videoData = new MutableLiveData<>();
+
+        // Create a request body with userName
+        JsonObject requestBody = new JsonObject();
+        requestBody.addProperty("userName", userName);
+
+        videoWebServiceAPI.toggleDislike(videoId, requestBody).enqueue(new Callback<Video>() {
+            @Override
+            public void onResponse(Call<Video> call, Response<Video> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    videoData.postValue(response.body());
+                } else {
+                    videoData.postValue(null);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Video> call, Throwable t) {
+                videoData.postValue(null);
+            }
+        });
+        return videoData;
     }
 
 }

@@ -43,6 +43,15 @@ public class VideoViewModel extends ViewModel {
         return videoRepository.getVideoByID(userId, id);
     }
 
+
+    public LiveData<Video> toggleLike(int videoId, String userName) {
+        return videoRepository.toggleLike(videoId, userName);
+    }
+
+    public LiveData<Video> toggleDislike(int videoId, String userName) {
+        return videoRepository.toggleDislike(videoId, userName);
+    }
+
     /**
      * Inserts a new video.
      *

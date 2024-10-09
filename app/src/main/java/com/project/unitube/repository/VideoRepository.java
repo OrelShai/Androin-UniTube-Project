@@ -1,6 +1,7 @@
 package com.project.unitube.repository;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -27,6 +28,7 @@ public class VideoRepository {
     }
 
     public LiveData<Video> getVideoByID(int userId, int id) {
+        //Log.d("VideoRepository", "Fetching video with UserID: " + userId + " and VideoID: " + id);
         return videoAPI.getVideoByID(userId, id);
     }
 
@@ -40,6 +42,14 @@ public class VideoRepository {
 
     public void deleteVideo(Video video) {
         videoAPI.deleteVideo(video.getUploader(), video.getId());
+    }
+
+    public LiveData<Video> toggleLike(int videoId, String userName) {
+        return videoAPI.toggleLike(videoId, userName);
+    }
+
+    public LiveData<Video> toggleDislike(int videoId, String userName) {
+        return videoAPI.toggleDislike(videoId, userName);
     }
 
     class VideoListData extends MutableLiveData<List<Video>> {
