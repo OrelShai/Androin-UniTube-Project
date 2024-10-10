@@ -74,8 +74,6 @@ public class MainActivity extends AppCompatActivity {
 
     private UserViewModel userViewModel;
     private VideoViewModel videoViewModel;
-    private AppDB db;
-    private CommentDao commentDao;
 
     private static final String[] REQUIRED_PERMISSIONS = {
             Manifest.permission.CAMERA,
@@ -101,15 +99,8 @@ public class MainActivity extends AppCompatActivity {
         // Initialize VideosToShow with all videos
         initializeVideosToShow();
 
-        initializeRoomDB();
     }
 
-    private void initializeRoomDB() {
-        // Initialize the Room Database
-        db = AppDB.getInstance(this);
-        commentDao = db.commentDao();
-        //VideoDao videoDao = db.videoDao();
-    }
 
     private void initializeViewModels() {
         userViewModel = new ViewModelProvider(this).get(UserViewModel.class);

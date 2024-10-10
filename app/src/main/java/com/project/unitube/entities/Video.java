@@ -5,8 +5,8 @@ import androidx.room.PrimaryKey;
 import androidx.room.TypeConverters;
 
 import com.project.unitube.network.RetroFit.RetrofitClient;
-import com.project.unitube.utils.converter.CommentListConverter;
-import com.project.unitube.utils.converter.StringListConverter;
+import com.project.unitube.Room.converter.CommentListConverter;
+import com.project.unitube.Room.converter.StringListConverter;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
