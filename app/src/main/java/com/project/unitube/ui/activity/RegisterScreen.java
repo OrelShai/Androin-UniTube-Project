@@ -17,6 +17,8 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.project.unitube.R;
 import com.project.unitube.utils.manager.UserManager;
 import com.project.unitube.entities.User;
@@ -91,8 +93,10 @@ public class RegisterScreen extends AppCompatActivity  {
         signUpButton = findViewById(R.id.signUpButton);
 
         // Set default profile image
-        profileImageView.setImageResource(R.drawable.default_profile);
-    }
+        Glide.with(this)
+                .load(R.drawable.default_profile)
+                .transform(new CircleCrop())
+                .into(profileImageView);    }
 
     /**
      * Sets up listeners for the buttons in the activity.
