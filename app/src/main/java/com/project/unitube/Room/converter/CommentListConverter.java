@@ -1,16 +1,17 @@
-package com.project.unitube.utils.converter;
+package com.project.unitube.Room.converter;
 
 import androidx.room.TypeConverter;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.project.unitube.entities.Comment;
 
 import java.lang.reflect.Type;
 import java.util.List;
 
-public class StringListConverter {
+public class CommentListConverter {
     @TypeConverter
-    public static String fromStringList(List<String> list) {
+    public static String fromCommentList(List<Comment> list) {
         if (list == null) {
             return null;
         }
@@ -19,12 +20,12 @@ public class StringListConverter {
     }
 
     @TypeConverter
-    public static List<String> toStringList(String string) {
+    public static List<Comment> toCommentList(String string) {
         if (string == null) {
             return null;
         }
         Gson gson = new Gson();
-        Type type = new TypeToken<List<String>>() {}.getType();
+        Type type = new TypeToken<List<Comment>>() {}.getType();
         return gson.fromJson(string, type);
     }
 }

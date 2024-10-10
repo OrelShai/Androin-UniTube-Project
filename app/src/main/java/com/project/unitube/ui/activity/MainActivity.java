@@ -32,6 +32,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.google.android.material.navigation.NavigationView;
 //import com.project.unitube.Room.Dao.UserDao;
+import com.project.unitube.Room.Dao.CommentDao;
+import com.project.unitube.Room.Database.AppDB;
 import com.project.unitube.network.RetroFit.RetrofitClient;
 import com.project.unitube.utils.helper.DarkModeHelper;
 import com.project.unitube.utils.helper.NavigationHelper;
@@ -72,7 +74,8 @@ public class MainActivity extends AppCompatActivity {
 
     private UserViewModel userViewModel;
     private VideoViewModel videoViewModel;
-    private CommentViewModel commentViewModel;
+    private AppDB db;
+    private CommentDao commentDao;
 
     private static final String[] REQUIRED_PERMISSIONS = {
             Manifest.permission.CAMERA,
@@ -97,6 +100,15 @@ public class MainActivity extends AppCompatActivity {
 
         // Initialize VideosToShow with all videos
         initializeVideosToShow();
+
+        initializeRoomDB();
+    }
+
+    private void initializeRoomDB() {
+        // Initialize the Room Database
+        db = AppDB.getInstance(this);
+        commentDao = db.commentDao();
+        //VideoDao videoDao = db.videoDao();
     }
 
     private void initializeViewModels() {
