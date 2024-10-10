@@ -4,8 +4,8 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import androidx.room.TypeConverters;
 
+import com.project.unitube.network.RetroFit.RetrofitClient;
 import com.project.unitube.utils.converter.CommentListConverter;
-import com.project.unitube.utils.converter.UserConverter;
 import com.project.unitube.utils.converter.StringListConverter;
 
 import java.io.Serializable;
@@ -106,7 +106,8 @@ public class Video implements Serializable {
     }
 
     public String getProfilePicture() {
-        return profilePicture;
+        String baseUrl = RetrofitClient.getBaseUrl();
+        return baseUrl + profilePicture;
     }
 
     public List<String> getLikesList() {
@@ -184,34 +185,4 @@ public class Video implements Serializable {
         comments.add(comment);
     }
 
-    // Methods to handle likes and dislikes
-    public void addLike(String userName) {
-        if (!likesList.contains(userName)) {
-            likesList.add(userName);
-            likes++;
-            removeDislike(userName); // Remove dislike if present
-        }
-    }
-
-    public void removeLike(String userName) {
-        if (likesList.contains(userName)) {
-            likesList.remove(userName);
-            likes--;
-        }
-    }
-
-    public void addDislike(String userName) {
-        if (!dislikesList.contains(userName)) {
-            dislikesList.add(userName);
-            dislikes++;
-            removeLike(userName); // Remove like if present
-        }
-    }
-
-    public void removeDislike(String userName) {
-        if (dislikesList.contains(userName)) {
-            dislikesList.remove(userName);
-            dislikes--;
-        }
-    }
 }

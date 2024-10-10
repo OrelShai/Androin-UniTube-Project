@@ -22,8 +22,8 @@ public class UserViewModel extends ViewModel {
         return userRepository.createUser(user, photoUri);
     }
 
-    public MutableLiveData<User> getUser(String username) {
-        return userRepository.getUser(username);
+    public LiveData<User> getUserByUsername(String username) {
+        return userRepository.getUserByUsername(username);
     }
 
     public MutableLiveData<User> loginUser(String username, String password) {

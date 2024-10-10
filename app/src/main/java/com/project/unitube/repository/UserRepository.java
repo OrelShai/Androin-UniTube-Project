@@ -29,8 +29,8 @@ public class UserRepository {
         return userAPI.createUser(user, photoUri);
     }
 
-    public MutableLiveData<User> getUser(String username) {
-        return userAPI.getUser(username);
+    public MutableLiveData<User> getUserByUsername(String username) {
+        return userAPI.getUserByUsername(username);
     }
 
     public MutableLiveData<User> loginUser(String username, String password) {

@@ -20,11 +20,14 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.project.unitube.R;
 import com.project.unitube.entities.Videos;
+import com.project.unitube.utils.helper.VideoUploadRequest;
 import com.project.unitube.utils.manager.UserManager;
 import com.project.unitube.entities.Video;
+import com.project.unitube.viewmodel.VideoViewModel;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -98,39 +101,71 @@ public class AddVideoScreen extends AppCompatActivity {
 
     private void createAndAddVideo() {
         try {
+            // Log start of the method
+            Log.d("createAndAddVideo", "Start creating and adding video");
+
             Uri selectedVideoUri = getSelectedVideoUri();
             Uri selectedCoverPhotoUri = getSelectedPhotoUri();
-            // Create a new Video object using the URIs and form data
-            Video newVideoObject = new Video(
-                    videoTitle.getText().toString(),
-                    videoDescription.getText().toString(),
-                    selectedVideoUri.toString(),
-                    selectedCoverPhotoUri.toString(),
-                    UserManager.getInstance().getCurrentUser().getUserName(),
-                    getVideoDuration(selectedVideoUri),
-                    UserManager.getInstance().getCurrentUser().getProfilePicture()
-            );
-            Videos.videosList.add(newVideoObject); // Add the video to the list
-            Toast.makeText(this, "Video uploaded successfully", Toast.LENGTH_SHORT).show();
+            String duration = getVideoDuration(selectedVideoUri);
 
-            // Log all videos in the list
-            logAllVideos();
+            // Log selected URIs and duration
+            Log.d("createAndAddVideo", "Selected video URI: " + selectedVideoUri);
+            Log.d("createAndAddVideo", "Selected cover photo URI: " + selectedCoverPhotoUri);
+            Log.d("createAndAddVideo", "Video duration: " + duration);
 
-            // Set result to OK and finish the activity
-            setResult(RESULT_OK);
-            finish();
+            VideoViewModel videoViewModel = new ViewModelProvider(this).get(VideoViewModel.class);
+            videoViewModel.getHighestVideoId().observe(this, highestId -> {
+                if (highestId != null) {
+                    // Log highest video ID
+                    Log.d("createAndAddVideo", "Fetched highest video ID: " + highestId);
+
+                    // Create a VideoUploadRequest with the next video ID
+                    int nextVideoId = highestId + 1;
+                    VideoUploadRequest request = new VideoUploadRequest(
+                            nextVideoId,
+                            videoTitle.getText().toString(),
+                            videoDescription.getText().toString(),
+                            new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date()),
+                            duration,
+                            UserManager.getInstance().getCurrentUser().getProfilePicture()
+                    );
+
+                    // Log the video upload request details
+                    Log.d("createAndAddVideo", "Video upload request created with ID: " + nextVideoId);
+
+                    // Convert URIs to File objects
+                    File videoFile = new File(selectedVideoUri.getPath());
+                    File thumbnailFile = new File(selectedCoverPhotoUri.getPath());
+
+                    // Log file paths
+                    Log.d("createAndAddVideo", "Video file path: " + videoFile.getPath());
+                    Log.d("createAndAddVideo", "Thumbnail file path: " + thumbnailFile.getPath());
+
+                    // Call the uploadVideo method of VideoViewModel
+                    videoViewModel.uploadVideo(UserManager.getInstance().getCurrentUser().getUserName(), request, videoFile, thumbnailFile)
+                            .observe(this, uploadedVideo -> {
+                                if (uploadedVideo != null) {
+                                    // Log success
+                                    Log.d("createAndAddVideo", "Video uploaded successfully with ID: " + uploadedVideo.getId());
+                                    Toast.makeText(this, "Video uploaded successfully", Toast.LENGTH_SHORT).show();
+                                    setResult(RESULT_OK);
+                                    finish();
+                                } else {
+                                    // Log failure
+                                    Log.e("createAndAddVideo", "Error uploading video");
+                                    Toast.makeText(this, "Error uploading video", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                } else {
+                    // Log failure to fetch highest video ID
+                    Log.e("createAndAddVideo", "Error fetching highest video ID");
+                    Toast.makeText(this, "Error fetching highest video ID", Toast.LENGTH_SHORT).show();
+                }
+            });
         } catch (IOException e) {
-            e.printStackTrace();
+            // Log exception
+            Log.e("createAndAddVideo", "IOException occurred", e);
             Toast.makeText(this, "Error uploading video", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private void logAllVideos() {
-        for (Video video : Videos.videosList) {
-            Log.d("VideoList", "ID: " + video.getId() + ", Title: " + video.getTitle() +
-                    ", Description: " + video.getDescription() + ", URL: " + video.getUrl() +
-                    ", Thumbnail: " + video.getThumbnailUrl() + ", User: " + video.getUploader() +
-                    ", Duration: " + video.getDuration());
         }
     }
 
@@ -352,7 +387,6 @@ public class AddVideoScreen extends AppCompatActivity {
         File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         return File.createTempFile(prefix, suffix, storageDir);
     }
-
 
     public Uri getSelectedPhotoUri() {
         return selectedPhotoUri;

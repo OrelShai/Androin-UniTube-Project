@@ -7,8 +7,12 @@ import androidx.lifecycle.ViewModel;
 
 import com.project.unitube.entities.Video;
 import com.project.unitube.repository.VideoRepository;
+import com.project.unitube.utils.helper.VideoUploadRequest;
 
+import java.io.File;
 import java.util.List;
+import android.util.Log;
+
 
 /**
  * ViewModel class to manage Video data.
@@ -17,19 +21,11 @@ public class VideoViewModel extends ViewModel {
     private VideoRepository videoRepository;
     private LiveData<List<Video>> videos;
 
-    /**
-     * Constructor to initialize VideoRepository and fetch all videos.
-     */
     public VideoViewModel() {
         videoRepository = new VideoRepository();
         videos = videoRepository.getAllVideos();
     }
 
-    /**
-     * Returns the LiveData object containing the list of videos.
-     *
-     * @return LiveData object containing the list of videos
-     */
     public LiveData<List<Video>> getVideos() {
         return videos;
     }
@@ -43,7 +39,6 @@ public class VideoViewModel extends ViewModel {
         return videoRepository.getVideoByID(userId, id);
     }
 
-
     public LiveData<Video> toggleLike(int videoId, String userName) {
         return videoRepository.toggleLike(videoId, userName);
     }
@@ -52,31 +47,31 @@ public class VideoViewModel extends ViewModel {
         return videoRepository.toggleDislike(videoId, userName);
     }
 
-    /**
-     * Inserts a new video.
-     *
-     * @param video the video to be inserted
-     */
-    public void insertVideo(Video video) {
-        videoRepository.insertVideo(video);
+    public LiveData<Video> incrementVideoViews(int videoId) {
+        return videoRepository.incrementVideoViews(videoId);
     }
 
-    /**
-     * Deletes an existing video.
-     *
-     * @param video the video to be deleted
-     */
-    public void deleteVideo(Video video, int id) {
-        videoRepository.deleteVideo(video);
+    public LiveData<Video> editVideo(String userId, int videoId, String newTitle, String newDescription) {
+        return videoRepository.editVideo(userId, videoId, newTitle, newDescription);
     }
 
-    /**
-     * Updates an existing video.
-     *
-     * @param video the video to be updated
-     */
-    public void updateVideo(Video video) {
-        videoRepository.updateVideo(video);
+    public LiveData<Boolean> deleteVideo(String userName, int videoId) {
+        return videoRepository.deleteVideo(userName, videoId);
     }
 
+    public LiveData<List<Video>> getUserVideos(String username) {
+        return videoRepository.getUserVideos(username);
+    }
+
+    public LiveData<Video> uploadVideo(String userName, VideoUploadRequest request, File videoFile, File thumbnailFile) {
+        Log.d("uploadVideo", "VideoViewModel- Uploading video for user: " + userName);
+        Log.d("uploadVideo", "VideoViewModel- Video upload request: " + request);
+        Log.d("uploadVideo", "VideoViewModel- Video file path: " + videoFile.getPath());
+        Log.d("uploadVideo", "VideoViewModel- Thumbnail file path: " + thumbnailFile.getPath());
+        return videoRepository.uploadVideo(userName, request, videoFile, thumbnailFile);
+    }
+
+    public LiveData<Integer> getHighestVideoId() {
+        return videoRepository.getHighestVideoId();
+    }
 }

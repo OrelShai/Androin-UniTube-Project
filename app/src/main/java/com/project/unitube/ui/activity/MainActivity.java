@@ -258,7 +258,7 @@ public class MainActivity extends AppCompatActivity {
             Glide.with(this)
                     .load(profilePhotoUrl)
                     .circleCrop()
-                    .placeholder(R.drawable.default_profile_image) // Placeholder in case of loading issues
+                    .placeholder(R.drawable.default_profile) // Placeholder in case of loading issues
                     .into(editDialogprofileImageView);
         }
 
@@ -465,16 +465,16 @@ public class MainActivity extends AppCompatActivity {
                 Glide.with(this)
                         .load(profilePhotoUrl)
                         .circleCrop()
-                        .placeholder(R.drawable.default_profile_image) // Placeholder in case of loading issues
+                        .placeholder(R.drawable.default_profile) // Placeholder in case of loading issues
                         .into(currentUserProfilePic);
             } else {
                 Uri profilePhotoUri = Uri.parse(currentUser.getProfilePicture());
 
-                currentUserProfilePic.setImageResource(R.drawable.default_profile_image);
+                currentUserProfilePic.setImageResource(R.drawable.default_profile);
                 Glide.with(this)
                         .load(profilePhotoUri)  // This line seems redundant as profilePhotoUri is null here.
                         .circleCrop()
-                        .placeholder(R.drawable.default_profile_image) // Placeholder in case of loading issues
+                        .placeholder(R.drawable.default_profile) // Placeholder in case of loading issues
                         .into(currentUserProfilePic);
             }
 

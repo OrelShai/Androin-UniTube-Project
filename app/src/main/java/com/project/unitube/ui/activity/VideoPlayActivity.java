@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,7 +27,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.project.unitube.R;
 import com.project.unitube.entities.Video;
-import com.project.unitube.entities.Videos;
 import com.project.unitube.ui.adapter.CommentAdapter;
 import com.project.unitube.ui.adapter.VideoAdapter;
 import com.project.unitube.utils.VideoController;
@@ -137,6 +137,9 @@ public class VideoPlayActivity extends AppCompatActivity implements CommentAdapt
                 if (video != null) {
                     currentVideo = video;  // Set the current video once it's loaded
 
+                    // Increment view count
+                    incrementViewCount(videoId);
+
                     // Call methods to handle video loading and UI updates
                     loadVideo();
                     updateVideoData();
@@ -149,6 +152,17 @@ public class VideoPlayActivity extends AppCompatActivity implements CommentAdapt
                 }
             });
         }
+    }
+
+    private void incrementViewCount(int videoId) {
+        videoViewModel.incrementVideoViews(videoId).observe(this, updatedVideo -> {
+            if (updatedVideo != null) {
+                // Update the current video with the new view count
+                currentVideo = updatedVideo;
+            } else {
+                Log.e("VideoPlayActivity", "Failed to increment view count");
+            }
+        });
     }
 
     private void loadVideo() {

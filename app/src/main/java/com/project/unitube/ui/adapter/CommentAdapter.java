@@ -62,7 +62,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
         Glide.with(context)
                 .load(profilePhotoUrl)
                 .circleCrop()
-                .placeholder(R.drawable.default_profile_image) // Placeholder in case of loading issues
+                .placeholder(R.drawable.default_profile) // Placeholder in case of loading issues
                 .into(holder.commentUserProfileImage);
 
         // Set up more options button logic

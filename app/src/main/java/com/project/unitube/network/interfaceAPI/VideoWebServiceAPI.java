@@ -1,15 +1,20 @@
 package com.project.unitube.network.interfaceAPI;
 import com.google.gson.JsonObject;
 import com.project.unitube.entities.Video;
+import com.project.unitube.utils.helper.EditVideoRequest;
 
 import java.util.List;
 
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
+import retrofit2.http.Part;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
@@ -26,15 +31,36 @@ public interface VideoWebServiceAPI {
     @POST("api/videos/{id}/dislike")
     Call<Video> toggleDislike(@Path("id") int videoId, @Body JsonObject body);
 
-    @GET("videos/user/{user_name}")
-    Call<List<Video>> getUserVideos(@Path("user_name") String userName);
+    @POST("api/videos/{id}/increment")
+    Call<Video> incrementVideoViews(@Path("id") int videoId);
 
-    @PUT("videos/{user_name}/{videoId}")
-    Call<Void> editVideo(@Path("user_name") String userName, @Path("videoId") int videoId, @Body Video video);
+    @PUT("api/users/{userName}/videos/{videoId}")
+    Call<Video> editVideo(
+            @Path("userName") String userName,
+            @Path("videoId") int videoId,
+            @Body EditVideoRequest request
+    );
 
-    @POST("videos")
-    Call<Void> createVideo(@Body Video video);
+    @DELETE("api/users/{userName}/videos/{videoId}")
+    Call<Void> deleteVideo(@Path("userName") String userName, @Path("videoId") int videoId);
 
-    @DELETE("videos/{user_name}/{videoId}")
-    Call<Void> deleteVideo(@Path("user_name") String userName, @Path("videoId") int videoId);
+    @GET("api/users/{username}/videos")
+    Call<List<Video>> getUserVideos(@Path("username") String username);
+
+    @Multipart
+    @POST("api/users/{userName}/videos")
+    Call<Video> uploadVideo(
+            @Path("userName") String userName,
+            @Part("id") RequestBody videoId,
+            @Part("title") RequestBody title,
+            @Part("description") RequestBody description,
+            @Part("uploadDate") RequestBody uploadDate,
+            @Part("duration") RequestBody duration,
+            @Part("profilePicture") RequestBody profilePicture,
+            @Part MultipartBody.Part url,
+            @Part MultipartBody.Part thumbnailUrl
+    );
+
+    @GET("api/videos/highest-id")
+    Call<JsonObject> getHighestVideoId();
 }

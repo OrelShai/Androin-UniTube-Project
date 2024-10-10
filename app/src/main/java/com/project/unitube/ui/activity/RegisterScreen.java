@@ -91,7 +91,7 @@ public class RegisterScreen extends AppCompatActivity  {
         signUpButton = findViewById(R.id.signUpButton);
 
         // Set default profile image
-        profileImageView.setImageResource(R.drawable.default_profile_image);
+        profileImageView.setImageResource(R.drawable.default_profile);
     }
 
     /**

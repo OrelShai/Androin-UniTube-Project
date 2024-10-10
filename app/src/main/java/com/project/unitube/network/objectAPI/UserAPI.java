@@ -34,8 +34,8 @@ public class UserAPI {
         userWebServiceAPI = retrofit.create(UserWebServiceAPI.class);
     }
 
-    public MutableLiveData<User> getUser(String username) {
-        Call<User> call = userWebServiceAPI.getUser(username);
+    public MutableLiveData<User> getUserByUsername(String username) {
+        Call<User> call = userWebServiceAPI.getUserByUsername(username);
         call.enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
@@ -64,7 +64,7 @@ public class UserAPI {
 
                     // Store the user locally using Room
                     UserManager.token = actualToken.trim();
-                    currentUser = getUser(username);
+                    currentUser = getUserByUsername(username);
                 } else {
                     currentUser.postValue(null);  // Set null in case of failure
                 }

@@ -10,7 +10,14 @@ import com.project.unitube.entities.Video;
 import com.project.unitube.Room.Dao.VideoDao;
 import com.project.unitube.network.RetroFit.RetrofitClient;
 import com.project.unitube.network.interfaceAPI.VideoWebServiceAPI;
+import com.project.unitube.utils.helper.EditVideoRequest;
+import com.project.unitube.utils.helper.VideoUploadRequest;
 
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+
+import java.io.File;
 import java.util.List;
 
 import retrofit2.Call;
@@ -80,73 +87,115 @@ public class VideoAPI {
         return videoData;
     }
 
-    public void getUserVideos(String userName) {
-        Call<List<Video>> call = videoWebServiceAPI.getUserVideos(userName);
-        call.enqueue(new Callback<List<Video>>() {
+    public LiveData<List<Video>> getUserVideos(String username) {
+        MutableLiveData<List<Video>> videosLiveData = new MutableLiveData<>();
+
+        videoWebServiceAPI.getUserVideos(username).enqueue(new Callback<List<Video>>() {
             @Override
             public void onResponse(Call<List<Video>> call, Response<List<Video>> response) {
-                new Thread(() -> {
-                    //videoDao.deleteAllVideos();
-                    //videoDao.insertAllVideos(response.body());
-                    //videoListData.postValue(videoDao.getAllVideos());
-                }).start();
+                if (response.isSuccessful() && response.body() != null) {
+                    videosLiveData.postValue(response.body());
+                } else {
+                    videosLiveData.postValue(null);
+                    // Log error here
+                }
             }
 
             @Override
             public void onFailure(Call<List<Video>> call, Throwable t) {
+                videosLiveData.postValue(null);
+                // Log error here
             }
         });
+
+        return videosLiveData;
     }
 
-    public void editVideo(String userName, int videoId, Video video) {
-        Call<Void> call = videoWebServiceAPI.editVideo(userName, videoId, video);
-        call.enqueue(new Callback<Void>() {
+    public LiveData<Video> uploadVideo(String userName, VideoUploadRequest request, File videoFile, File thumbnailFile) {
+        MutableLiveData<Video> videoLiveData = new MutableLiveData<>();
+
+        Log.d("uploadVideo", "VideoAPI- Starting upload video for user: " + userName);
+
+        RequestBody idBody = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(request.getId()));
+        Log.d("uploadVideo", "VideoAPI- Created idBody: " + request.getId());
+
+        RequestBody titleBody = RequestBody.create(MediaType.parse("text/plain"), request.getTitle());
+        Log.d("uploadVideo", "VideoAPI- Created titleBody: " + request.getTitle());
+
+        RequestBody descriptionBody = RequestBody.create(MediaType.parse("text/plain"), request.getDescription());
+        Log.d("uploadVideo", "VideoAPI- Created descriptionBody: " + request.getDescription());
+
+        RequestBody uploadDateBody = RequestBody.create(MediaType.parse("text/plain"), request.getUploadDate());
+        Log.d("uploadVideo", "VideoAPI- Created uploadDateBody: " + request.getUploadDate());
+
+        RequestBody durationBody = RequestBody.create(MediaType.parse("text/plain"), request.getDuration());
+        Log.d("uploadVideo", "VideoAPI- Created durationBody: " + request.getDuration());
+
+        RequestBody profilePictureBody = RequestBody.create(MediaType.parse("text/plain"), request.getProfilePicture());
+        Log.d("uploadVideo", "VideoAPI- Created profilePictureBody: " + request.getProfilePicture());
+
+        RequestBody videoRequestBody = RequestBody.create(MediaType.parse("video/*"), videoFile);
+        Log.d("uploadVideo", "VideoAPI- Created videoRequestBody for file: " + videoFile.getName());
+
+        MultipartBody.Part videoPart = MultipartBody.Part.createFormData("url", videoFile.getName(), videoRequestBody);
+        Log.d("uploadVideo", "VideoAPI- Created videoPart: " + videoFile.getName());
+
+        RequestBody thumbnailRequestBody = RequestBody.create(MediaType.parse("image/*"), thumbnailFile);
+        Log.d("uploadVideo", "VideoAPI- Created thumbnailRequestBody for file: " + thumbnailFile.getName());
+
+        MultipartBody.Part thumbnailPart = MultipartBody.Part.createFormData("thumbnailUrl", thumbnailFile.getName(), thumbnailRequestBody);
+        Log.d("uploadVideo", "VideoAPI- Created thumbnailPart: " + thumbnailFile.getName());
+
+        Log.d("uploadVideo", "VideoAPI- Sending upload request to server...");
+
+        videoWebServiceAPI.uploadVideo(
+                userName,
+                idBody,
+                titleBody,
+                descriptionBody,
+                uploadDateBody,
+                durationBody,
+                profilePictureBody,
+                videoPart,
+                thumbnailPart
+        ).enqueue(new Callback<Video>() {
+            @Override
+            public void onResponse(Call<Video> call, Response<Video> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    Log.d("uploadVideo", "VideoAPI- Video upload successful for user: " + userName);
+                    Log.d("uploadVideo", "VideoAPI- Received video ID: " + response.body().getId());
+                    videoLiveData.postValue(response.body());
+                } else {
+                    Log.d("uploadVideo", "VideoAPI- Video upload failed for user: " + userName + " - Response not successful. Response code: " + response.code());
+                    videoLiveData.postValue(null);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Video> call, Throwable t) {
+                Log.d("uploadVideo", "VideoAPI- Video upload failed for user: " + userName + " - Error: " + t.getMessage());
+                videoLiveData.postValue(null);
+            }
+        });
+
+        return videoLiveData;
+    }
+
+
+    public LiveData<Boolean> deleteVideo(String userName, int videoId) {
+        MutableLiveData<Boolean> result = new MutableLiveData<>();
+        videoWebServiceAPI.deleteVideo(userName, videoId).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
-                new Thread(() -> {
-                    //videoDao.updateVideo(video);
-                    //videoListData.postValue(videoDao.getAllVideos());
-                }).start();
+                result.postValue(response.isSuccessful());
             }
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
+                result.postValue(false);
             }
         });
-    }
-
-    public void createVideo(Video video) {
-        Call<Void> call = videoWebServiceAPI.createVideo(video);
-        call.enqueue(new Callback<Void>() {
-            @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
-                new Thread(() -> {
-                    //videoDao.insertVideo(video);
-                    //videoListData.postValue(videoDao.getAllVideos());
-                }).start();
-            }
-
-            @Override
-            public void onFailure(Call<Void> call, Throwable t) {
-            }
-        });
-    }
-
-    public void deleteVideo(String userName, int videoId) {
-        Call<Void> call = videoWebServiceAPI.deleteVideo(userName, videoId);
-        call.enqueue(new Callback<Void>() {
-            @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
-                new Thread(() -> {
-                    //videoDao.deleteVideo(videoDao.getVideoByID(videoId));
-                    //videoListData.postValue(videoDao.getAllVideos());
-                }).start();
-            }
-
-            @Override
-            public void onFailure(Call<Void> call, Throwable t) {
-            }
-        });
+        return result;
     }
 
     public LiveData<Video> toggleLike(int videoId, String userName) {
@@ -198,4 +247,68 @@ public class VideoAPI {
         return videoData;
     }
 
+    public LiveData<Video> incrementVideoViews(int videoId) {
+        MutableLiveData<Video> videoData = new MutableLiveData<>();
+        videoWebServiceAPI.incrementVideoViews(videoId).enqueue(new Callback<Video>() {
+            @Override
+            public void onResponse(Call<Video> call, Response<Video> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    videoData.postValue(response.body());
+                } else {
+                    videoData.postValue(null);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Video> call, Throwable t) {
+                videoData.postValue(null);
+            }
+        });
+        return videoData;
+    }
+
+    public LiveData<Video> editVideo(String userName, int videoId, String newTitle, String newDescription) {
+        MutableLiveData<Video> videoData = new MutableLiveData<>();
+        EditVideoRequest request = new EditVideoRequest(newTitle, newDescription);
+
+        videoWebServiceAPI.editVideo(userName, videoId, request).enqueue(new Callback<Video>() {
+            @Override
+            public void onResponse(Call<Video> call, Response<Video> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    videoData.postValue(response.body());
+                } else {
+                    videoData.postValue(null);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Video> call, Throwable t) {
+                videoData.postValue(null);
+            }
+        });
+        return videoData;
+    }
+
+    public LiveData<Integer> getHighestVideoId() {
+        MutableLiveData<Integer> highestIdLiveData = new MutableLiveData<>();
+
+        videoWebServiceAPI.getHighestVideoId().enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    int highestId = response.body().get("highestId").getAsInt();
+                    highestIdLiveData.postValue(highestId); // Use postValue() instead of setValue()
+                } else {
+                    highestIdLiveData.postValue(null); // Use postValue() instead of setValue()
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                highestIdLiveData.postValue(null); // Use postValue() instead of setValue()
+            }
+        });
+
+        return highestIdLiveData;
+    }
 }

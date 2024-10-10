@@ -17,7 +17,7 @@
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:layout_gravity="center"
-            android:src="@drawable/default_profile_image"
+            android:src="@drawable/ic_profile_placeholder"
             android:contentDescription="@string/profile_photo" />
 
         <LinearLayout

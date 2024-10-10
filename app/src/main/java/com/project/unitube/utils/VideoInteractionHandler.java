@@ -156,7 +156,7 @@ public class VideoInteractionHandler {
         TextView moreText = moreButton.findViewById(R.id.button_text);
 
         // Set icon and text for more button
-        moreIcon.setImageResource(R.drawable.ic_more_vertical); // Ensure you have an appropriate icon in the drawable folder
+        moreIcon.setImageResource(R.drawable.ic_more_vertical);
         moreText.setText("More");
 
         // Set click listener for the more button to show the popup menu
@@ -212,7 +212,7 @@ public class VideoInteractionHandler {
         // Set click listeners for edit and delete buttons
         editButton.setOnClickListener(v -> {
             if (isUserLoggedIn()) {
-                showEditDialog();
+                edit();
                 popupWindow.dismiss();
             } else {
                 showLoginErrorMessage();
@@ -221,7 +221,7 @@ public class VideoInteractionHandler {
 
         deleteButton.setOnClickListener(v -> {
             if (isUserLoggedIn()) {
-                showDeleteDialog();
+                delete();
                 popupWindow.dismiss();
             } else {
                 showLoginErrorMessage();
@@ -232,11 +232,10 @@ public class VideoInteractionHandler {
         popupWindow.showAsDropDown(anchorView, 0, 0);
     }
 
-    private void showEditDialog() {
+    private void edit() {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("Edit Video");
 
-        // Set up the input views
         View dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_edit_video, null);
         EditText editTitle = dialogView.findViewById(R.id.edit_video_title);
         EditText editDescription = dialogView.findViewById(R.id.edit_video_description);
@@ -244,19 +243,11 @@ public class VideoInteractionHandler {
         editDescription.setText(currentVideo.getDescription());
         builder.setView(dialogView);
 
-        // Set up the buttons
         builder.setPositiveButton("Save", (dialog, which) -> {
             String newTitle = editTitle.getText().toString().trim();
             String newDescription = editDescription.getText().toString().trim();
             if (!newTitle.isEmpty() && !newDescription.isEmpty()) {
-                currentVideo.setTitle(newTitle);
-                currentVideo.setDescription(newDescription);
-                saveVideoState(currentVideo); // Save updated state
-
-                // Refresh UI elements if needed
-                if (context instanceof VideoPlayActivity) {
-                    ((VideoPlayActivity) context).updateVideoDetails(currentVideo);
-                }
+                updateVideo(newTitle, newDescription);
             } else {
                 Toast.makeText(context, "Title and description cannot be empty.", Toast.LENGTH_SHORT).show();
             }
@@ -266,18 +257,44 @@ public class VideoInteractionHandler {
         builder.show();
     }
 
-    private void showDeleteDialog() {
+    private void updateVideo(String newTitle, String newDescription) {
+        String userName = UserManager.getInstance().getCurrentUser().getUserName();
+
+        videoViewModel.editVideo(userName, currentVideo.getId(), newTitle, newDescription)
+                .observe(lifecycleOwner, updatedVideo -> {
+                    if (updatedVideo != null) {
+                        currentVideo = updatedVideo;
+                        if (context instanceof VideoPlayActivity) {
+                            ((VideoPlayActivity) context).updateVideoDetails(currentVideo);
+                        }
+                        Toast.makeText(context, "Video updated successfully", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(context, "Failed to update video", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private void delete() {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("Delete Video");
         builder.setMessage("Are you sure you want to delete this video?");
         builder.setPositiveButton("Delete", (dialog, which) -> {
-            Videos.videosList.remove(currentVideo);
-            saveVideoState(currentVideo); // Update the state
+            String userName = UserManager.getInstance().getCurrentUser().getUserName();
+            videoViewModel.deleteVideo(userName, currentVideo.getId()).observe(lifecycleOwner, success -> {
+                if (success) {
+                    // Video deleted successfully
+                    Videos.videosList.remove(currentVideo);
+                    Toast.makeText(context, "Video deleted successfully", Toast.LENGTH_SHORT).show();
 
-            // Optionally, refresh the UI or navigate away from the current activity
-            if (context instanceof VideoPlayActivity) {
-                ((VideoPlayActivity) context).finish(); // Close the activity
-            }
+                    // Optionally, refresh the UI or navigate away from the current activity
+                    if (context instanceof VideoPlayActivity) {
+                        ((VideoPlayActivity) context).finish(); // Close the activity
+                    }
+                } else {
+                    // Failed to delete video
+                    Toast.makeText(context, "Failed to delete video", Toast.LENGTH_SHORT).show();
+                }
+            });
         });
         builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
 
