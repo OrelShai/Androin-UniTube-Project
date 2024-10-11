@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
+import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 
@@ -14,16 +15,17 @@ import java.util.List;
 @Dao
 public interface CommentDao {
 
-    @Query("SELECT * FROM comment")
-    List<Comment> getAllComments();
+    // get comments list by video ID
+    @Query("SELECT * FROM comment WHERE videoId = :videoId")
+    List<Comment> getCommentsByVideoID(int videoId);
 
     @Query("SELECT * FROM comment WHERE id = :id")
     Comment getCommentByID(int id);
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertComment(Comment... comments);
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertAllComments(List<Comment> comments);
 
     @Update
@@ -31,7 +33,4 @@ public interface CommentDao {
 
     @Delete
     void deleteComment(Comment... comments);
-
-    @Query("DELETE FROM comment")
-    void deleteAllComments();
 }

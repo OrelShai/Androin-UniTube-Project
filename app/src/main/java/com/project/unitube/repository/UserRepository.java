@@ -6,7 +6,6 @@ import android.net.Uri;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import com.project.unitube.Room.Dao.UserDao;
 import com.project.unitube.Room.Database.AppDB;
 import com.project.unitube.entities.User;
 import com.project.unitube.network.objectAPI.UserAPI;
@@ -17,11 +16,9 @@ import retrofit2.Response;
 
 public class UserRepository {
     private UserAPI userAPI;
-    private final UserDao userDao;
 
     public UserRepository(Context context) {
         AppDB db = AppDB.getInstance(context);
-        userDao = db.userDao();
         userAPI = new UserAPI();
     }
 

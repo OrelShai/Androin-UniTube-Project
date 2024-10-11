@@ -1,11 +1,14 @@
 package com.project.unitube.network.objectAPI;
 
+import static com.project.unitube.Unitube.context;
+
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.google.gson.JsonObject;
+import com.project.unitube.Room.Database.AppDB;
 import com.project.unitube.entities.Video;
 import com.project.unitube.Room.Dao.VideoDao;
 import com.project.unitube.network.RetroFit.RetrofitClient;
@@ -27,27 +30,41 @@ import retrofit2.Retrofit;
 
 public class VideoAPI {
     private MutableLiveData<List<Video>> videoListData;
-    //private VideoDao videoDao;
     VideoWebServiceAPI videoWebServiceAPI;
+    private VideoDao videoDao;
 
     public VideoAPI(MutableLiveData<List<Video>> VideoListData) {
         this.videoListData = VideoListData;
-        //this.videoDao = videoDao;
         Retrofit retrofit = RetrofitClient.getClient();
         videoWebServiceAPI = retrofit.create(VideoWebServiceAPI.class);
+
+        // Initialize Room DAO
+        AppDB db = AppDB.getInstance(context);
+        this.videoDao = db.videoDao();  // Initialize VideoDao for Room operations
     }
 
     public MutableLiveData<List<Video>> getAllVideos() {
+        // First, check local cache (Room) in new thread
+        new Thread(() -> {
+            List<Video> localVideos = videoDao.getAllVideos();
+            if (!localVideos.isEmpty()) {
+                videoListData.postValue(localVideos);  // Return cached videos
+            }
+        }).start();
+
         Call<List<Video>> call = videoWebServiceAPI.getVideos();
         call.enqueue(new Callback<List<Video>>() {
             @Override
             public void onResponse(Call<List<Video>> call, Response<List<Video>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                new Thread(() -> {
-                    //videoDao.deleteAllVideos();
-                    //videoDao.insertAllVideos(response.body());
+                    // Update Room with the new list of videos in new thread
+                    new Thread(() -> {
+                        List<Video> videos = response.body();
+                        videoDao.insertAllVideos(videos);
+                    }).start();
+
+                    // Update LiveData with the new list of videos
                     videoListData.postValue(response.body());
-                }).start();
                 }
             }
 
@@ -61,17 +78,29 @@ public class VideoAPI {
     public MutableLiveData<Video> getVideoByID(int userId, int id) {
         MutableLiveData<Video> videoData = new MutableLiveData<>();
 
-        // Log to know the function was called
-        Log.d("VideoAPI", "Fetching video with ID: " + id);
+        // First, check Room cache in new thread
+        new Thread(() -> {
+            Video localVideo = videoDao.getVideoByID(id);
+            if (localVideo != null) {
+                videoData.postValue(localVideo);  // Return cached video
+            }
+        }).start();
 
+        // Then, fetch from the server
         Call<Video> call = videoWebServiceAPI.getVideoById(userId, id);
         call.enqueue(new Callback<Video>() {
             @Override
             public void onResponse(Call<Video> call, Response<Video> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    // Log the success of the API call and video details
-                    Log.d("VideoAPI", "Video fetched successfully: " + response.body().getTitle());
-                    videoData.postValue(response.body());
+                    Video video = response.body();
+
+                    // Update Room with the fetched video in new thread
+                    new Thread(() -> {
+                        videoDao.insertVideo(video);
+                    }).start();
+
+                    // Update LiveData with the new video data
+                    videoData.postValue(video);
                 } else {
                     // Log the failure case if response is not successful or body is null
                     Log.w("VideoAPI", "Failed to fetch video. Response Code: " + response.code());
@@ -87,14 +116,28 @@ public class VideoAPI {
         return videoData;
     }
 
+
     public LiveData<List<Video>> getUserVideos(String username) {
         MutableLiveData<List<Video>> videosLiveData = new MutableLiveData<>();
+
+        // First, check Room cache in new thread
+        new Thread(() -> {
+            List<Video> localVideos = videoDao.getVideosByUploader(username);
+            if (!localVideos.isEmpty()) {
+                videosLiveData.postValue(localVideos);  // Return cached videos
+            }
+        }).start();
 
         videoWebServiceAPI.getUserVideos(username).enqueue(new Callback<List<Video>>() {
             @Override
             public void onResponse(Call<List<Video>> call, Response<List<Video>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     videosLiveData.postValue(response.body());
+
+                    // Update Room with the fetched videos in new thread
+                    new Thread(() -> {
+                        videoDao.insertAllVideos(response.body());
+                    }).start();
                 } else {
                     videosLiveData.postValue(null);
                     // Log error here
@@ -164,7 +207,13 @@ public class VideoAPI {
                 if (response.isSuccessful() && response.body() != null) {
                     Log.d("uploadVideo", "VideoAPI- Video upload successful for user: " + userName);
                     Log.d("uploadVideo", "VideoAPI- Received video ID: " + response.body().getId());
-                    videoLiveData.postValue(response.body());
+                    Video video = response.body();
+                    // Insert the newly added video into Room in a new thread
+                    new Thread(() -> {
+                        videoDao.insertVideo(video);
+                    }).start();
+
+                    videoLiveData.postValue(video);
                 } else {
                     Log.d("uploadVideo", "VideoAPI- Video upload failed for user: " + userName + " - Response not successful. Response code: " + response.code());
                     videoLiveData.postValue(null);
@@ -188,6 +237,14 @@ public class VideoAPI {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 result.postValue(response.isSuccessful());
+
+                if (response.isSuccessful()) {
+                    // Delete the video from Room in a new thread
+                    new Thread(() -> {
+                        Video video = videoDao.getVideoByID(videoId);
+                        videoDao.deleteVideo(video);
+                    }).start();
+                }
             }
 
             @Override
@@ -275,7 +332,14 @@ public class VideoAPI {
             @Override
             public void onResponse(Call<Video> call, Response<Video> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    videoData.postValue(response.body());
+                    Video video = response.body();
+
+                    // Update Room with the edited video in a new thread
+                    new Thread(() -> {
+                        videoDao.updateVideo(video);
+                    }).start();
+
+                    videoData.postValue(video);
                 } else {
                     videoData.postValue(null);
                 }

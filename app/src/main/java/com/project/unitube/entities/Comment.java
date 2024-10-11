@@ -1,14 +1,11 @@
 package com.project.unitube.entities;
 
-import android.net.Uri;
-
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
-import androidx.room.TypeConverters;
 
 import com.google.gson.annotations.SerializedName;
-import com.project.unitube.utils.converter.UriConverter;
+
 @Entity
 public class Comment {
     @PrimaryKey
@@ -18,7 +15,6 @@ public class Comment {
     private int videoId;  // Stores the video ID this comment belongs to
     @SerializedName("name")
     private String userName;
-    @TypeConverters(UriConverter.class)
     private String profilePicture;
     @SerializedName("text")
     private String commentText;
