@@ -15,7 +15,7 @@ import java.util.List;
 public interface CommentDao {
 
     @Query("SELECT * FROM comment")
-    List<Comment> getAllComments();
+    LiveData<List<Comment>> getAllComments();
 
     @Query("SELECT * FROM comment WHERE id = :id")
     Comment getCommentByID(int id);
@@ -31,7 +31,4 @@ public interface CommentDao {
 
     @Delete
     void deleteComment(Comment... comments);
-
-    @Query("DELETE FROM comment")
-    void deleteAllComments();
 }
