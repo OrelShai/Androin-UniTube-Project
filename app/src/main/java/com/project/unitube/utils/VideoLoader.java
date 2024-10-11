@@ -46,6 +46,7 @@ public class VideoLoader {
     }
 
     public void setProfilePicture(String profilePicture){
+        //Log.d("ProfilePicture", "Setting profile picture. URL: " + profilePicture);
         Glide.with(context)
                 .load(profilePicture)
                 .placeholder(R.drawable.default_profile)
@@ -53,6 +54,7 @@ public class VideoLoader {
                 .circleCrop()
                 .into(uploaderProfileImageView);
     }
+
     public void setVideoView(String videoPath) {
         String TAG = "VideoPlayer";
         Log.d(TAG, "Setting video with path: " + videoPath);

@@ -11,8 +11,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -23,11 +26,15 @@ import com.bumptech.glide.request.target.Target;
 import com.project.unitube.R;
 import com.project.unitube.Unitube;
 import com.project.unitube.entities.Video;
+import com.project.unitube.network.RetroFit.RetrofitClient;
 import com.project.unitube.ui.activity.UserPageActivity;
 import com.project.unitube.ui.activity.VideoPlayActivity;
+import com.project.unitube.viewmodel.UserViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import retrofit2.Retrofit;
 
 public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHolder> {
     private final Context context;
@@ -54,7 +61,12 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
         Video video = videos.get(position);
 
         setTextViews(holder, video);
-        loadThumbnail(holder.videoThumbnail, video.getThumbnailUrl());
+        String thumbnailUrl = video.getThumbnailUrl();
+        if (!thumbnailUrl.startsWith("https://")) {
+            thumbnailUrl = RetrofitClient.getBaseUrl() + thumbnailUrl;
+        }
+        Log.d("loadThumbnail", "Loading '" + video.getTitle() + "' thumbnail: " + video.getThumbnailUrl());
+        loadThumbnail(holder.videoThumbnail, thumbnailUrl);
         loadProfilePicture(holder.uploaderProfileImage, video.getProfilePicture());
         setClickListeners(holder, video);
     }
@@ -95,11 +107,17 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
     }
 
     private void openUserPageActivity(String username) {
-        Intent intent = new Intent(context, UserPageActivity.class);
-        intent.putExtra("USERNAME", username);
-        context.startActivity(intent);
+        UserViewModel userViewModel = new UserViewModel();
+        userViewModel.getUserByUsername(username).observe((LifecycleOwner) context, user -> {
+            if (user != null) {
+                Intent intent = new Intent(context, UserPageActivity.class);
+                intent.putExtra("USER", user);
+                context.startActivity(intent);
+            } else {
+                Toast.makeText(context, "Failed to load user data", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
-
     @Override
     public int getItemCount() {
         return videos.size(); // Using the filtered list size

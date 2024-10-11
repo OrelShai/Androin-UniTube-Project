@@ -15,7 +15,7 @@ import com.project.unitube.entities.Video;
  * AppDB is the main database class for the application.
  * It integrates all DAOs and connects them to the ROOM database.
  */
-@Database(entities = {Video.class, Comment.class}, version = 1)
+@Database(entities = {Video.class, Comment.class}, version = 2)
 public abstract class AppDB extends RoomDatabase {
 
     // Singleton instance of the AppDB
@@ -38,6 +38,7 @@ public abstract class AppDB extends RoomDatabase {
                 if (INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
                                     AppDB.class, "appDB")
+                            .fallbackToDestructiveMigration()
                             .build();
                 }
             }

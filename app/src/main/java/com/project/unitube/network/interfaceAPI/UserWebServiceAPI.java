@@ -34,7 +34,7 @@ public interface UserWebServiceAPI {
     );
     // Fetch user details by userName
     @GET("api/users/{id}")
-    Call<User> getUser(@Path("id") String userName);
+    Call<User> getUserByUsername(@Path("id") String userName);
 
     // Update a user
     @Multipart

@@ -2,6 +2,7 @@ package com.project.unitube.ui.activity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -20,11 +21,14 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.project.unitube.R;
 import com.project.unitube.entities.Videos;
+import com.project.unitube.utils.helper.VideoUploadRequest;
 import com.project.unitube.utils.manager.UserManager;
 import com.project.unitube.entities.Video;
+import com.project.unitube.viewmodel.VideoViewModel;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -39,13 +43,15 @@ public class AddVideoScreen extends AppCompatActivity {
     private EditText videoTitle;
     private EditText videoDescription;
     private TextView videoUri;
-    private Button uploadVideoCoverButton;
+    private Button uploadThumbnailButton;
     private Button uploadVideoButton;
     private Button addVideoButton;
-    private ImageView uploadVideoCoverImage;
+    private ImageView thumbnailImageView;
 
-    private Uri selectedPhotoUri;
+    private Uri selectedThumbnailUri;
     private Uri selectedVideoUri;
+
+    private ProgressDialog progressDialog;
 
     private static final int PICK_IMAGE_REQUEST = 1;
     private static final int CAPTURE_IMAGE_REQUEST = 2;
@@ -72,20 +78,20 @@ public class AddVideoScreen extends AppCompatActivity {
         videoUri = findViewById(R.id.videoUri);
 
         // Initialize Buttons
-        uploadVideoCoverButton = findViewById(R.id.uploadVideoCoverButton);
+        uploadThumbnailButton = findViewById(R.id.uploadVideoCoverButton);
         uploadVideoButton = findViewById(R.id.uploadVideoButton);
         addVideoButton = findViewById(R.id.AddVideoButton);
 
         // Initialize ImageViews
-        uploadVideoCoverImage = findViewById(R.id.uploadVideoCoverImage);
+        thumbnailImageView = findViewById(R.id.uploadVideoCoverImage);
     }
 
     private void setUpListeners() {
         // Set click listener for uploadVideoButton
         uploadVideoButton.setOnClickListener(view -> showVideoPickerOptions());
 
-        // Set click listener for uploadVideoCoverButton
-        uploadVideoCoverButton.setOnClickListener(view -> showImagePickerOptions());
+        // Set click listener for uploadThumbnailButton
+        uploadThumbnailButton.setOnClickListener(view -> showThumbnailPickerOptions());
 
         // Initialize Bottom Navigation
         addVideoButton.setOnClickListener(view -> {
@@ -98,39 +104,64 @@ public class AddVideoScreen extends AppCompatActivity {
 
     private void createAndAddVideo() {
         try {
+
             Uri selectedVideoUri = getSelectedVideoUri();
-            Uri selectedCoverPhotoUri = getSelectedPhotoUri();
-            // Create a new Video object using the URIs and form data
-            Video newVideoObject = new Video(
-                    videoTitle.getText().toString(),
-                    videoDescription.getText().toString(),
-                    selectedVideoUri.toString(),
-                    selectedCoverPhotoUri.toString(),
-                    UserManager.getInstance().getCurrentUser().getUserName(),
-                    getVideoDuration(selectedVideoUri),
-                    UserManager.getInstance().getCurrentUser().getProfilePicture()
-            );
-            Videos.videosList.add(newVideoObject); // Add the video to the list
-            Toast.makeText(this, "Video uploaded successfully", Toast.LENGTH_SHORT).show();
+            Uri selectedThumbnailUri = getSelectedThumbnailUri();
+            String duration = getVideoDuration(selectedVideoUri);
 
-            // Log all videos in the list
-            logAllVideos();
+            // Log selected thumbnail URI
+            Log.d("createAndAddVideo", "Selected thumbnail URI: " + selectedThumbnailUri);
 
-            // Set result to OK and finish the activity
-            setResult(RESULT_OK);
-            finish();
+            VideoViewModel videoViewModel = new ViewModelProvider(this).get(VideoViewModel.class);
+            videoViewModel.getHighestVideoId().observe(this, highestId -> {
+                if (highestId != null) {
+
+                    // Create a VideoUploadRequest with the next video ID
+                    int nextVideoId = highestId + 1;
+                    VideoUploadRequest request = new VideoUploadRequest(
+                            nextVideoId,
+                            videoTitle.getText().toString(),
+                            videoDescription.getText().toString(),
+                            new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date()),
+                            duration,
+                            UserManager.getInstance().getCurrentUser().getProfilePicture()
+                    );
+
+                    // Convert URIs to File objects
+                    File videoFile = new File(selectedVideoUri.getPath());
+                    File thumbnailFile = new File(selectedThumbnailUri.getPath());
+
+                    // Show the progress dialog before starting the upload process
+                    progressDialog = new ProgressDialog(this);
+                    progressDialog.setMessage("Uploading video...");
+                    progressDialog.setCancelable(false); // Prevent the user from canceling the dialog
+                    progressDialog.show();
+
+                    // Call the uploadVideo method of VideoViewModel
+                    videoViewModel.uploadVideo(UserManager.getInstance().getCurrentUser().getUserName(), request, videoFile, thumbnailFile)
+                            .observe(this, uploadedVideo -> {
+                                if (uploadedVideo != null) {
+                                    // Log success
+                                    Log.d("createAndAddVideo", "Video uploaded successfully with ID: " + uploadedVideo.getId());
+                                    Toast.makeText(this, "Video uploaded successfully", Toast.LENGTH_SHORT).show();
+                                    setResult(RESULT_OK);
+                                    finish();
+                                } else {
+                                    // Log failure
+                                    Log.e("createAndAddVideo", "Error uploading video");
+                                    Toast.makeText(this, "Error uploading video", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                } else {
+                    // Log failure to fetch highest video ID
+                    Log.e("createAndAddVideo", "Error fetching highest video ID");
+                    Toast.makeText(this, "Error fetching highest video ID", Toast.LENGTH_SHORT).show();
+                }
+            });
         } catch (IOException e) {
-            e.printStackTrace();
+            // Log exception
+            Log.e("createAndAddVideo", "IOException occurred", e);
             Toast.makeText(this, "Error uploading video", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private void logAllVideos() {
-        for (Video video : Videos.videosList) {
-            Log.d("VideoList", "ID: " + video.getId() + ", Title: " + video.getTitle() +
-                    ", Description: " + video.getDescription() + ", URL: " + video.getUrl() +
-                    ", Thumbnail: " + video.getThumbnailUrl() + ", User: " + video.getUploader() +
-                    ", Duration: " + video.getDuration());
         }
     }
 
@@ -152,47 +183,50 @@ public class AddVideoScreen extends AppCompatActivity {
             isValid = false;
         }
 
-        if (getSelectedPhotoUri() == null) {
+        if (getSelectedThumbnailUri() == null) {
             Toast.makeText(this, "Cover photo is required", Toast.LENGTH_SHORT).show();
             isValid = false;
         }
         return isValid;
     }
 
-    public void showImagePickerOptions() {
+    public void showThumbnailPickerOptions() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Select Image Source");
         builder.setItems(new CharSequence[]{"Choose from Gallery", "Take a Photo"},
                 (dialog, which) -> {
                     switch (which) {
                         case 0:
-                            pickImageFromGallery();
+                            pickThumbnailFromGallery();
                             break;
                         case 1:
-                            captureImageFromCamera();
+                            captureThumbnailFromCamera();
                             break;
                     }
                 });
         builder.show();
     }
 
-    private void pickImageFromGallery() {
+    private void pickThumbnailFromGallery() {
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
     }
 
-    private void captureImageFromCamera() {
+    private void captureThumbnailFromCamera() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
             File photoFile = createImageFile();
             if (photoFile != null) {
-                Uri photoUri = FileProvider.getUriForFile(this, "com.project.unitube.fileprovider", photoFile);
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
-                selectedPhotoUri = photoUri; // Store the selected photo URI
+                selectedThumbnailUri = FileProvider.getUriForFile(this, "com.project.unitube.fileprovider", photoFile);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, selectedThumbnailUri);
                 startActivityForResult(takePictureIntent, CAPTURE_IMAGE_REQUEST);
+            } else {
+                Toast.makeText(this, "Failed to create image file", Toast.LENGTH_SHORT).show();
             }
+        } else {
+            Toast.makeText(this, "No camera application found", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -200,12 +234,14 @@ public class AddVideoScreen extends AppCompatActivity {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
         File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = null;
         try {
-            return File.createTempFile(imageFileName, ".jpg", storageDir);
-        } catch (IOException ex) {
-            ex.printStackTrace();
-            return null;
+            image = File.createTempFile(imageFileName, ".jpg", storageDir);
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Error creating file", Toast.LENGTH_SHORT).show();
         }
+        return image;
     }
 
     @Override
@@ -214,7 +250,7 @@ public class AddVideoScreen extends AppCompatActivity {
 
         if (resultCode == RESULT_OK) {
             if (requestCode == PICK_IMAGE_REQUEST || requestCode == CAPTURE_IMAGE_REQUEST) {
-                handlePhotoActivityResult(requestCode, resultCode, data);
+                handleThumbnailActivityResult(requestCode, resultCode, data);
             }
             if (requestCode == PICK_VIDEO_REQUEST || requestCode == CAPTURE_VIDEO_REQUEST) {
                 handleVideoActivityResult(requestCode, resultCode, data);
@@ -222,30 +258,59 @@ public class AddVideoScreen extends AppCompatActivity {
         }
     }
 
-    private void handlePhotoActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == Activity.RESULT_OK) {
-            try {
-                if (requestCode == PICK_IMAGE_REQUEST && data != null && data.getData() != null) {
-                    selectedPhotoUri = data.getData();
-                    // Save the image to a file
-                    File imageFile = saveUriToFile(selectedPhotoUri, "IMG_", ".jpg");
-                    selectedPhotoUri = Uri.fromFile(imageFile);
-                    // show the selected image
-                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), selectedPhotoUri);
-                    uploadVideoCoverImage.setImageBitmap(bitmap);
-                    uploadVideoCoverImage.setTag(selectedPhotoUri.toString());
-                } else if (requestCode == CAPTURE_IMAGE_REQUEST) {
-                    // The selectedPhotoUri is already set in captureImageFromCamera()
-                    if (selectedPhotoUri != null) {
-                        // show the selected image
-                        Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), selectedPhotoUri);
-                        uploadVideoCoverImage.setImageBitmap(bitmap);
-                        uploadVideoCoverImage.setTag(selectedPhotoUri.toString());
-                    }
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
+    public void handleThumbnailActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == PICK_IMAGE_REQUEST && data != null && data.getData() != null) {
+            selectedThumbnailUri = data.getData();
+            thumbnailImageView.setImageURI(selectedThumbnailUri);
+            thumbnailImageView.setTag(selectedThumbnailUri.toString());
+            saveImageFromUri(selectedThumbnailUri);
+        } else if (requestCode == CAPTURE_IMAGE_REQUEST) {
+            if (selectedThumbnailUri != null) {
+                thumbnailImageView.setImageURI(selectedThumbnailUri);
+                thumbnailImageView.setTag(selectedThumbnailUri.toString());
+                saveImageFromUri(selectedThumbnailUri);
+            } else {
+            Toast.makeText(this, "Failed to capture image", Toast.LENGTH_SHORT).show();
             }
+        }
+    }
+
+    private File saveUriToFile(Uri uri, String filePrefix, String fileExtension) throws IOException {
+        InputStream inputStream = getContentResolver().openInputStream(uri);
+        File file = createTempFile(filePrefix, fileExtension);
+        FileOutputStream outputStream = new FileOutputStream(file);
+        byte[] buffer = new byte[1024];
+        int length;
+        while ((length = inputStream.read(buffer)) > 0) {
+            outputStream.write(buffer, 0, length);
+        }
+        outputStream.close();
+        inputStream.close();
+        return file;
+    }
+
+    private File createTempFile(String prefix, String suffix) throws IOException {
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        return File.createTempFile(prefix, suffix, storageDir);
+    }
+
+    private void saveImageFromUri(Uri uri) {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_thumbnail.jpg";  // Unique filename
+        File imageFile = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), imageFileName);
+
+        try (InputStream inputStream = getContentResolver().openInputStream(uri);
+             FileOutputStream outputStream = new FileOutputStream(imageFile)) {
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = inputStream.read(buffer)) > 0) {
+                outputStream.write(buffer, 0, length);
+            }
+            this.selectedThumbnailUri = Uri.parse(imageFile.getAbsolutePath());
+            Toast.makeText(this, "Image saved successfully", Toast.LENGTH_SHORT).show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Failed to save image", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -334,28 +399,8 @@ public class AddVideoScreen extends AppCompatActivity {
         }
     }
 
-    private File saveUriToFile(Uri uri, String filePrefix, String fileExtension) throws IOException {
-        InputStream inputStream = getContentResolver().openInputStream(uri);
-        File file = createTempFile(filePrefix, fileExtension);
-        FileOutputStream outputStream = new FileOutputStream(file);
-        byte[] buffer = new byte[1024];
-        int length;
-        while ((length = inputStream.read(buffer)) > 0) {
-            outputStream.write(buffer, 0, length);
-        }
-        outputStream.close();
-        inputStream.close();
-        return file;
-    }
-
-    private File createTempFile(String prefix, String suffix) throws IOException {
-        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        return File.createTempFile(prefix, suffix, storageDir);
-    }
-
-
-    public Uri getSelectedPhotoUri() {
-        return selectedPhotoUri;
+    public Uri getSelectedThumbnailUri() {
+        return selectedThumbnailUri;
     }
 
     public Uri getSelectedVideoUri() {

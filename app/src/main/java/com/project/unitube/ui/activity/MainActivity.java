@@ -11,6 +11,7 @@ import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -54,7 +55,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -72,8 +75,6 @@ public class MainActivity extends AppCompatActivity {
 
     private UserViewModel userViewModel;
     private VideoViewModel videoViewModel;
-    private AppDB db;
-    private CommentDao commentDao;
 
     private static final String[] REQUIRED_PERMISSIONS = {
             Manifest.permission.CAMERA,
@@ -99,15 +100,8 @@ public class MainActivity extends AppCompatActivity {
         // Initialize VideosToShow with all videos
         initializeVideosToShow();
 
-        initializeRoomDB();
     }
 
-    private void initializeRoomDB() {
-        // Initialize the Room Database
-        db = AppDB.getInstance(this);
-        commentDao = db.commentDao();
-        //VideoDao videoDao = db.videoDao();
-    }
 
     private void initializeViewModels() {
         userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
@@ -268,7 +262,7 @@ public class MainActivity extends AppCompatActivity {
             Glide.with(this)
                     .load(profilePhotoUrl)
                     .circleCrop()
-                    .placeholder(R.drawable.default_profile_image) // Placeholder in case of loading issues
+                    .placeholder(R.drawable.default_profile) // Placeholder in case of loading issues
                     .into(editDialogprofileImageView);
         }
 
@@ -422,7 +416,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                //filterVideos(s.toString());
+                filterVideos(s.toString());
             }
 
             @Override
@@ -431,24 +425,25 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-/*
+
     private void filterVideos(String query) {
-        Videos.videosToShow.clear();
-        if (query.isEmpty()) {
-            Videos.videosToShow.addAll(Videos.videosList);
-        } else {
-            String lowerCaseQuery = query.toLowerCase();
-            for (Video video : Videos.videosList) {
-                if (video.getTitle().toLowerCase().contains(lowerCaseQuery) ||
-                        video.getDescription().toLowerCase().contains(lowerCaseQuery) ||
-                        video.getUser().getUserName().toLowerCase().contains(lowerCaseQuery)) {
-                    Videos.videosToShow.add(video);
-                }
+        videoViewModel.getVideos().observe(this, videos -> {
+            List<Video> filteredVideos;
+            if (query.isEmpty()) {
+                filteredVideos = videos;
+            } else {
+                String lowerCaseQuery = query.toLowerCase();
+                filteredVideos = videos.stream()
+                        .filter(video ->
+                                video.getTitle().toLowerCase().contains(lowerCaseQuery) ||
+                                        video.getDescription().toLowerCase().contains(lowerCaseQuery) ||
+                                        video.getUploader().toLowerCase().contains(lowerCaseQuery))
+                        .collect(Collectors.toList());
             }
-        }
-        videoAdapter.notifyDataSetChanged();
+            videoAdapter.setVideos(filteredVideos);
+        });
     }
-*/
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -469,21 +464,26 @@ public class MainActivity extends AppCompatActivity {
             if (currentUser.getProfilePicture() != null) {
                 // Construct the full profile picture URL
                 String baseUrl = RetrofitClient.getBaseUrl();
+                Log.d("ProfilePhoto", "Base URL: " + baseUrl);
+
                 String profilePhotoUrl = baseUrl + currentUser.getProfilePicture();  // Combine base URL and path
+                Log.d("ProfilePhoto", "Profile Photo: " +currentUser.getProfilePicture());
+                Log.d("ProfilePhoto", "Profile photo URL: " + profilePhotoUrl);
+
 
                 Glide.with(this)
                         .load(profilePhotoUrl)
                         .circleCrop()
-                        .placeholder(R.drawable.default_profile_image) // Placeholder in case of loading issues
+                        .placeholder(R.drawable.default_profile) // Placeholder in case of loading issues
                         .into(currentUserProfilePic);
             } else {
                 Uri profilePhotoUri = Uri.parse(currentUser.getProfilePicture());
 
-                currentUserProfilePic.setImageResource(R.drawable.default_profile_image);
+                currentUserProfilePic.setImageResource(R.drawable.default_profile);
                 Glide.with(this)
                         .load(profilePhotoUri)  // This line seems redundant as profilePhotoUri is null here.
                         .circleCrop()
-                        .placeholder(R.drawable.default_profile_image) // Placeholder in case of loading issues
+                        .placeholder(R.drawable.default_profile) // Placeholder in case of loading issues
                         .into(currentUserProfilePic);
             }
 

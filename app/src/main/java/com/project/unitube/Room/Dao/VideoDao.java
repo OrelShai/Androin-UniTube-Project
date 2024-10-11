@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
+import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 
@@ -20,10 +21,13 @@ public interface VideoDao {
     @Query("SELECT * FROM video WHERE id = :id")
     Video getVideoByID(int id);
 
-    @Insert
+    @Query("SELECT * FROM video WHERE uploader = :uploader")
+    List<Video> getVideosByUploader(String uploader);
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertVideo(Video... videos);
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertAllVideos(List<Video> videos);
 
     @Update

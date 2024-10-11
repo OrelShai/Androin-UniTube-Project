@@ -2,6 +2,7 @@ package com.project.unitube.utils;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -11,12 +12,15 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.lifecycle.LifecycleOwner;
+
 import com.project.unitube.R;
 import com.project.unitube.entities.Videos;
 import com.project.unitube.utils.manager.UserManager;
 import com.project.unitube.entities.User;
 import com.project.unitube.entities.Video;
 import com.project.unitube.ui.activity.VideoPlayActivity;
+import com.project.unitube.viewmodel.VideoViewModel;
 
 public class VideoInteractionHandler {
 
@@ -29,11 +33,17 @@ public class VideoInteractionHandler {
     private ImageView likeIcon;
     private ImageView dislikeIcon;
     private Video currentVideo;
+    private VideoViewModel videoViewModel;
+    private LifecycleOwner lifecycleOwner;
+
     public static boolean updateDate = false;
 
-    public VideoInteractionHandler(Context context, int videoId, LinearLayout likeButton, LinearLayout dislikeButton,
-                                   TextView likeCountTextView, TextView dislikeCountTextView) {
+    public VideoInteractionHandler(Context context, LifecycleOwner lifecycleOwner, int videoId,
+                                   LinearLayout likeButton, LinearLayout dislikeButton,
+                                   TextView likeCountTextView, TextView dislikeCountTextView,
+                                   VideoViewModel videoViewModel) {
         this.context = context;
+        this.lifecycleOwner = lifecycleOwner;
         this.videoId = videoId;
         this.likeButton = likeButton;
         this.dislikeButton = dislikeButton;
@@ -41,22 +51,25 @@ public class VideoInteractionHandler {
         this.dislikeCountTextView = dislikeCountTextView;
         this.likeIcon = likeButton.findViewById(R.id.icon_like);
         this.dislikeIcon = dislikeButton.findViewById(R.id.icon_dislike);
-        this.currentVideo = getVideoById(videoId);
+        this.videoViewModel = videoViewModel;
 
+        fetchVideoDetails();
         setupInteractionListeners();
         setupOtherButtons();
-        updateButtonIcons();
     }
 
-    private Video getVideoById(int videoId) {
-        for (Video video : Videos.videosList) {
-            if (video.getId() == videoId) {
-                return video;
+    private void fetchVideoDetails() {
+        videoViewModel.getVideoByID(-1, videoId).observe(lifecycleOwner, video -> {
+            if (video != null) {
+                currentVideo = video;
+                updateButtonIcons();
+                updateLikeDislikeCounts();
+            } else {
+                // Handle the case where video is null (error case)
+                Toast.makeText(context, "Error: Unable to fetch video details", Toast.LENGTH_SHORT).show();
             }
-        }
-        return null;
+        });
     }
-
 
     private void setupInteractionListeners() {
         User currentUser = UserManager.getInstance().getCurrentUser();
@@ -65,9 +78,9 @@ public class VideoInteractionHandler {
             if (currentUser == null) {
                 showToast("You cannot like a video if you are not logged in.");
             } else if (currentVideo != null) {
-                currentVideo.addLike(currentUser.getUserName());
-                updateLikeDislikeCounts(currentVideo);
-                saveVideoState(currentVideo); // Save state after updating
+                String userName = currentUser.getUserName();
+                Log.d("VideoInteraction", "Attempting to toggle like for video ID: " + currentVideo.getId() + " by user: " + userName);
+                toggleLike(userName);
             }
         });
 
@@ -75,9 +88,33 @@ public class VideoInteractionHandler {
             if (currentUser == null) {
                 showToast("You cannot dislike a video if you are not logged in.");
             } else if (currentVideo != null) {
-                currentVideo.addDislike(currentUser.getUserName());
-                updateLikeDislikeCounts(currentVideo);
-                saveVideoState(currentVideo); // Save state after updating
+                String userName = currentUser.getUserName();
+                Log.d("VideoInteraction", "Attempting to toggle like for video ID: " + currentVideo.getId() + " by user: " + userName);
+                toggleDislike(userName);
+            }
+        });
+    }
+
+    private void toggleLike(String userName) {
+        videoViewModel.toggleLike(currentVideo.getId(), userName).observe(lifecycleOwner, result -> {
+            if (result != null) {
+                currentVideo = result;
+                updateButtonIcons();
+                updateLikeDislikeCounts();
+            } else {
+                showToast("Failed to update like status.");
+            }
+        });
+    }
+
+    private void toggleDislike(String userName) {
+        videoViewModel.toggleDislike(currentVideo.getId(), userName).observe(lifecycleOwner, result -> {
+            if (result != null) {
+                currentVideo = result;
+                updateButtonIcons();
+                updateLikeDislikeCounts();
+            } else {
+                showToast("Failed to update dislike status.");
             }
         });
     }
@@ -119,7 +156,7 @@ public class VideoInteractionHandler {
         TextView moreText = moreButton.findViewById(R.id.button_text);
 
         // Set icon and text for more button
-        moreIcon.setImageResource(R.drawable.ic_more_vertical); // Ensure you have an appropriate icon in the drawable folder
+        moreIcon.setImageResource(R.drawable.ic_more_vertical);
         moreText.setText("More");
 
         // Set click listener for the more button to show the popup menu
@@ -142,7 +179,7 @@ public class VideoInteractionHandler {
         }
     }
 
-    private void updateLikeDislikeCounts(Video currentVideo) {
+    private void updateLikeDislikeCounts() {
         likeCountTextView.setText(String.valueOf(currentVideo.getLikesList().size()));
         dislikeCountTextView.setText(String.valueOf(currentVideo.getDislikesList().size()));
         updateButtonIcons(); // Update button icons
@@ -175,7 +212,7 @@ public class VideoInteractionHandler {
         // Set click listeners for edit and delete buttons
         editButton.setOnClickListener(v -> {
             if (isUserLoggedIn()) {
-                showEditDialog();
+                edit();
                 popupWindow.dismiss();
             } else {
                 showLoginErrorMessage();
@@ -184,7 +221,7 @@ public class VideoInteractionHandler {
 
         deleteButton.setOnClickListener(v -> {
             if (isUserLoggedIn()) {
-                showDeleteDialog();
+                delete();
                 popupWindow.dismiss();
             } else {
                 showLoginErrorMessage();
@@ -195,11 +232,10 @@ public class VideoInteractionHandler {
         popupWindow.showAsDropDown(anchorView, 0, 0);
     }
 
-    private void showEditDialog() {
+    private void edit() {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("Edit Video");
 
-        // Set up the input views
         View dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_edit_video, null);
         EditText editTitle = dialogView.findViewById(R.id.edit_video_title);
         EditText editDescription = dialogView.findViewById(R.id.edit_video_description);
@@ -207,19 +243,11 @@ public class VideoInteractionHandler {
         editDescription.setText(currentVideo.getDescription());
         builder.setView(dialogView);
 
-        // Set up the buttons
         builder.setPositiveButton("Save", (dialog, which) -> {
             String newTitle = editTitle.getText().toString().trim();
             String newDescription = editDescription.getText().toString().trim();
             if (!newTitle.isEmpty() && !newDescription.isEmpty()) {
-                currentVideo.setTitle(newTitle);
-                currentVideo.setDescription(newDescription);
-                saveVideoState(currentVideo); // Save updated state
-
-                // Refresh UI elements if needed
-                if (context instanceof VideoPlayActivity) {
-                    ((VideoPlayActivity) context).updateVideoDetails(currentVideo);
-                }
+                updateVideo(newTitle, newDescription);
             } else {
                 Toast.makeText(context, "Title and description cannot be empty.", Toast.LENGTH_SHORT).show();
             }
@@ -229,18 +257,44 @@ public class VideoInteractionHandler {
         builder.show();
     }
 
-    private void showDeleteDialog() {
+    private void updateVideo(String newTitle, String newDescription) {
+        String userName = UserManager.getInstance().getCurrentUser().getUserName();
+
+        videoViewModel.editVideo(userName, currentVideo.getId(), newTitle, newDescription)
+                .observe(lifecycleOwner, updatedVideo -> {
+                    if (updatedVideo != null) {
+                        currentVideo = updatedVideo;
+                        if (context instanceof VideoPlayActivity) {
+                            ((VideoPlayActivity) context).updateVideoDetails(currentVideo);
+                        }
+                        Toast.makeText(context, "Video updated successfully", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(context, "Failed to update video", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private void delete() {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("Delete Video");
         builder.setMessage("Are you sure you want to delete this video?");
         builder.setPositiveButton("Delete", (dialog, which) -> {
-            Videos.videosList.remove(currentVideo);
-            saveVideoState(currentVideo); // Update the state
+            String userName = UserManager.getInstance().getCurrentUser().getUserName();
+            videoViewModel.deleteVideo(userName, currentVideo.getId()).observe(lifecycleOwner, success -> {
+                if (success) {
+                    // Video deleted successfully
+                    Videos.videosList.remove(currentVideo);
+                    Toast.makeText(context, "Video deleted successfully", Toast.LENGTH_SHORT).show();
 
-            // Optionally, refresh the UI or navigate away from the current activity
-            if (context instanceof VideoPlayActivity) {
-                ((VideoPlayActivity) context).finish(); // Close the activity
-            }
+                    // Optionally, refresh the UI or navigate away from the current activity
+                    if (context instanceof VideoPlayActivity) {
+                        ((VideoPlayActivity) context).finish(); // Close the activity
+                    }
+                } else {
+                    // Failed to delete video
+                    Toast.makeText(context, "Failed to delete video", Toast.LENGTH_SHORT).show();
+                }
+            });
         });
         builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
 

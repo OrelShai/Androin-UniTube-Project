@@ -18,8 +18,6 @@ public class CommentRepository {
     private CommentListData commentListData;
 
     public CommentRepository(Context context) {
-//        AppDB db = AppDB.getInstance(context);
-//        commentDao = db.commentDao();
         commentAPI = new CommentAPI();
         commentListData = new CommentListData();
     }
