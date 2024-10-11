@@ -133,7 +133,7 @@ public class AddVideoScreen extends AppCompatActivity {
 
                     // Show the progress dialog before starting the upload process
                     progressDialog = new ProgressDialog(this);
-                    progressDialog.setMessage("Uploading video..."); // Customize the message as needed
+                    progressDialog.setMessage("Uploading video...");
                     progressDialog.setCancelable(false); // Prevent the user from canceling the dialog
                     progressDialog.show();
 
