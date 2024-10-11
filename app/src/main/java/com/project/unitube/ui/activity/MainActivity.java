@@ -11,6 +11,7 @@ import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -460,7 +461,12 @@ public class MainActivity extends AppCompatActivity {
             if (currentUser.getProfilePicture() != null) {
                 // Construct the full profile picture URL
                 String baseUrl = RetrofitClient.getBaseUrl();
+                Log.d("ProfilePhoto", "Base URL: " + baseUrl);
+
                 String profilePhotoUrl = baseUrl + currentUser.getProfilePicture();  // Combine base URL and path
+                Log.d("ProfilePhoto", "Profile Photo: " +currentUser.getProfilePicture());
+                Log.d("ProfilePhoto", "Profile photo URL: " + profilePhotoUrl);
+
 
                 Glide.with(this)
                         .load(profilePhotoUrl)

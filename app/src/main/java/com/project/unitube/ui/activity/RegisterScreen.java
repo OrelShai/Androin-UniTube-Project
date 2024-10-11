@@ -2,6 +2,7 @@ package com.project.unitube.ui.activity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -48,6 +49,9 @@ public class RegisterScreen extends AppCompatActivity  {
     private Button signUpButton;
     private Uri selectedPhotoUri;
     private UserViewModel userViewModel;
+
+    private ProgressDialog progressDialog;
+
     private static final int PICK_IMAGE_REQUEST = 1;
     private static final int CAPTURE_IMAGE_REQUEST = 2;
 
@@ -115,6 +119,12 @@ public class RegisterScreen extends AppCompatActivity  {
                         passwordEditText.getText().toString(),
                         userNameEditText.getText().toString(),
                         profileImageView.getTag() != null ? profileImageView.getTag().toString() : "default_profile_image");
+
+                // Show the progress dialog before starting the upload process
+                progressDialog = new ProgressDialog(this);
+                progressDialog.setMessage("Uploading video..."); // Customize the message as needed
+                progressDialog.setCancelable(false); // Prevent the user from canceling the dialog
+                progressDialog.show();
 
                 userViewModel.createUser(user, selectedPhotoUri).observe(this, result -> {
                     if (result.equals("success")) {
@@ -243,14 +253,12 @@ public class RegisterScreen extends AppCompatActivity  {
         builder.show();
     }
 
-
     private void pickImageFromGallery() {
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
     }
-
 
     private void captureImageFromCamera() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -302,10 +310,10 @@ public class RegisterScreen extends AppCompatActivity  {
         }
     }
 
-
-    public Uri getSelectedPhotoUri() {
+    /*public Uri getSelectedPhotoUri() {
         return selectedPhotoUri;
     }
+     */
 
 }
 

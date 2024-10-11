@@ -26,12 +26,15 @@ import com.bumptech.glide.request.target.Target;
 import com.project.unitube.R;
 import com.project.unitube.Unitube;
 import com.project.unitube.entities.Video;
+import com.project.unitube.network.RetroFit.RetrofitClient;
 import com.project.unitube.ui.activity.UserPageActivity;
 import com.project.unitube.ui.activity.VideoPlayActivity;
 import com.project.unitube.viewmodel.UserViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import retrofit2.Retrofit;
 
 public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHolder> {
     private final Context context;
@@ -58,8 +61,12 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
         Video video = videos.get(position);
 
         setTextViews(holder, video);
+        String thumbnailUrl = video.getThumbnailUrl();
+        if (!thumbnailUrl.startsWith("https://")) {
+            thumbnailUrl = RetrofitClient.getBaseUrl() + thumbnailUrl;
+        }
         Log.d("loadThumbnail", "Loading '" + video.getTitle() + "' thumbnail: " + video.getThumbnailUrl());
-        loadThumbnail(holder.videoThumbnail, video.getThumbnailUrl());
+        loadThumbnail(holder.videoThumbnail, thumbnailUrl);
         loadProfilePicture(holder.uploaderProfileImage, video.getProfilePicture());
         setClickListeners(holder, video);
     }
