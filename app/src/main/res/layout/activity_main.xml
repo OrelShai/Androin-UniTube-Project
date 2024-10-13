@@ -20,24 +20,15 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true" />
 
-
-        <!-- SwipeRefreshLayout wrapping RecyclerView -->
-        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-            android:id="@+id/swipe_refresh_layout"
+        <!-- RecyclerView to display video items -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/videoRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_below="@id/toolbar"
             android:layout_above="@id/bottom_bar"
             android:layout_weight="1"
-            android:layout_marginTop="0dp">
-
-            <!-- RecyclerView to display video items -->
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/videoRecyclerView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-
+            android:layout_marginTop="0dp" />
 
         <!-- Bottom Bar -->
         <include
