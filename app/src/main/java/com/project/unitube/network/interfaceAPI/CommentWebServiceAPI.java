@@ -18,7 +18,7 @@ public interface CommentWebServiceAPI {
     Call<List<Comment>> getComments(@Path("id") int videoId);
 
     @POST("api/comments/{id}")
-    Call<Void> createComment(@Path("id") int videoID, @Body Comment comment);
+    Call<Comment> createComment(@Path("id") int videoID, @Body Comment comment);
 
     @PUT("api/comments/{id}")
     Call<Void> updateComment(@Path("id") String commentId, @Body Comment comment);
