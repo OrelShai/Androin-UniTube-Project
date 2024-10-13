@@ -127,7 +127,7 @@ public class RegisterScreen extends AppCompatActivity  {
                 // Show the progress dialog before starting the upload process
                 progressDialog = new ProgressDialog(this);
                 progressDialog.setMessage("Creates a user...");
-                progressDialog.setCancelable(false); // Prevent the user from canceling the dialog
+                progressDialog.setCancelable(true); // enable dismiss by tapping outside of the dialog
                 progressDialog.show();
 
                 userViewModel.createUser(user, selectedPhotoUri).observe(this, result -> {
