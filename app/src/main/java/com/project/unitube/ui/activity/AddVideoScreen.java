@@ -379,6 +379,8 @@ public class AddVideoScreen extends AppCompatActivity {
                     this.videoUri.setText(selectedVideoUri.toString());
                 } else if (requestCode == CAPTURE_VIDEO_REQUEST) {
                     selectedVideoUri = data.getData();
+                    File videoFile = saveUriToFile(selectedVideoUri, "VID_", ".mp4");
+                    selectedVideoUri = Uri.fromFile(videoFile);
                     if (selectedVideoUri != null) {
                         this.videoUri.setText(selectedVideoUri.toString());
                     }
