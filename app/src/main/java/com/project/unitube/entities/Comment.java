@@ -9,6 +9,7 @@ import com.google.gson.annotations.SerializedName;
 @Entity
 public class Comment {
     @PrimaryKey
+    @NonNull
     @SerializedName("_id")
     private String id;  // MongoDB ObjectId
     private int videoId;  // Stores the video ID this comment belongs to
