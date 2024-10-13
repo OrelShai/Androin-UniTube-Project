@@ -106,7 +106,6 @@ public class MainActivity extends AppCompatActivity {
     private void initializeViewModels() {
         userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
         videoViewModel = new ViewModelProvider(this).get(VideoViewModel.class);
-//        commentViewModel = new ViewModelProvider(this).get(CommentViewModel.class);
     }
 
     private void initializeUIComponents() {
