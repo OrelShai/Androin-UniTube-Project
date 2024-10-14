@@ -20,7 +20,7 @@ public interface CommentDao {
     List<Comment> getCommentsByVideoID(int videoId);
 
     @Query("SELECT * FROM comment WHERE id = :id")
-    Comment getCommentByID(int id);
+    Comment getCommentByID(String id);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertComment(Comment... comments);

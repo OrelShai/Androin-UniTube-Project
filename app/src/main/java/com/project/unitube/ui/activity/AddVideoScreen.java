@@ -1,10 +1,12 @@
 package com.project.unitube.ui.activity;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
@@ -19,7 +21,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -57,6 +62,10 @@ public class AddVideoScreen extends AppCompatActivity {
     private static final int CAPTURE_IMAGE_REQUEST = 2;
     private static final int PICK_VIDEO_REQUEST = 101;
     private static final int CAPTURE_VIDEO_REQUEST = 102;
+
+    // Permission Request Codes
+    private static final int CAMERA_PERMISSION_REQUEST_CODE = 201;
+    private static final int STORAGE_PERMISSION_REQUEST_CODE = 202;
 
 
     @Override
@@ -100,6 +109,45 @@ public class AddVideoScreen extends AppCompatActivity {
                 createAndAddVideo();
             }
         });
+    }
+
+    // Permissions Methods
+    private boolean checkCameraPermission() {
+        return ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    private boolean checkStoragePermission() {
+        return ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+                && ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    private void requestCameraPermission() {
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_REQUEST_CODE);
+    }
+
+    private void requestStoragePermission() {
+        ActivityCompat.requestPermissions(this, new String[]{
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+        }, STORAGE_PERMISSION_REQUEST_CODE);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == CAMERA_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                captureThumbnailFromCamera();
+            } else {
+                Toast.makeText(this, "Camera permission is required to capture images.", Toast.LENGTH_SHORT).show();
+            }
+        } else if (requestCode == STORAGE_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                showThumbnailPickerOptions(); // or other storage operations
+            } else {
+                Toast.makeText(this, "Storage permission is required to access files.", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     private void createAndAddVideo() {
@@ -197,9 +245,15 @@ public class AddVideoScreen extends AppCompatActivity {
                 (dialog, which) -> {
                     switch (which) {
                         case 0:
+                            if (!checkStoragePermission()) {
+                                requestStoragePermission();
+                            }
                             pickThumbnailFromGallery();
                             break;
                         case 1:
+                            if (!checkCameraPermission()) {
+                                requestCameraPermission();
+                            }
                             captureThumbnailFromCamera();
                             break;
                     }
@@ -325,6 +379,8 @@ public class AddVideoScreen extends AppCompatActivity {
                     this.videoUri.setText(selectedVideoUri.toString());
                 } else if (requestCode == CAPTURE_VIDEO_REQUEST) {
                     selectedVideoUri = data.getData();
+                    File videoFile = saveUriToFile(selectedVideoUri, "VID_", ".mp4");
+                    selectedVideoUri = Uri.fromFile(videoFile);
                     if (selectedVideoUri != null) {
                         this.videoUri.setText(selectedVideoUri.toString());
                     }
@@ -344,10 +400,18 @@ public class AddVideoScreen extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         switch (which) {
                             case 0:
-                                pickVideoFromGallery();
+                                if (checkStoragePermission()) {
+                                    pickVideoFromGallery();
+                                } else {
+                                    requestStoragePermission();
+                                }
                                 break;
                             case 1:
-                                captureVideoFromCamera();
+                                if (checkCameraPermission()) {
+                                    captureVideoFromCamera();
+                                } else {
+                                    requestCameraPermission();
+                                }
                                 break;
                         }
                     }

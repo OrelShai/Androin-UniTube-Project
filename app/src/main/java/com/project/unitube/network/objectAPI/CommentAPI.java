@@ -81,22 +81,23 @@ public class CommentAPI {
     public MutableLiveData<String> createComment(int videoId, Comment comment) {
         MutableLiveData<String> resultLiveData = new MutableLiveData<>();
 
-        Call<Void> call = commentWebServiceAPI.createComment(videoId, comment);
-        call.enqueue(new Callback<Void>() {
+        Call<Comment> call = commentWebServiceAPI.createComment(videoId, comment);
+        call.enqueue(new Callback<Comment>() {
             @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
+            public void onResponse(Call<Comment> call, Response<Comment> response) {
                 if (response.isSuccessful()) {
                     resultLiveData.postValue("Success");
 
+                    Comment createdComment = response.body();  // Get the returned comment from the server
                     // Insert the created comment into Room
-                    new Thread(() -> commentDao.insertComment(comment)).start();
+                    new Thread(() -> commentDao.insertComment(createdComment)).start();
                 } else {
                     resultLiveData.postValue("Failed: " + response.code());
                 }
             }
 
             @Override
-            public void onFailure(Call<Void> call, Throwable t) {
+            public void onFailure(Call<Comment> call, Throwable t) {
                 resultLiveData.postValue("failure: " + t.getMessage());
             }
         });
@@ -140,7 +141,7 @@ public class CommentAPI {
 
                     // Remove the comment from Room
                     new Thread(() -> {
-                        Comment comment = commentDao.getCommentByID(Integer.parseInt(commentId)); // Fetch the comment by ID
+                        Comment comment = commentDao.getCommentByID(commentId); // Fetch the comment by ID
                         if (comment != null) {
                             commentDao.deleteComment(comment);
                         }
