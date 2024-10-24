@@ -26,7 +26,7 @@ Users can upload, view, and manage videos while ensuring data sync between local
     ```
    Make sure to replace 111.111.1.111 with your actual IP address.
    Note: If a physical Android device is connected, make sure it is connected to the same internet network as the computer running the server.
-6. Run the C++ server following the instructions found [here] (https://github.com/OrelShai/-UniTube--Server-cpp). Ensure the C++ server is up and running before starting the Node.js server.
+6. Run the C++ server following the instructions found [here](https://github.com/OrelShai/-UniTube--Server-cpp). Ensure the C++ server is up and running before starting the Node.js server.
 7. Run the Node.js server following the instructions found [here](https://github.com/hilaelpeleg/-UniTube--Server).
 
 ## Features ✨
