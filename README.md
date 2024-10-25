@@ -2,10 +2,12 @@
 
 # UniTube (Server & Local Database Integrated) 🎬
 
-This version of UniTube extends the Android application to work both with a backend server and a local database (Room) for offline capabilities.
+This version of UniTube extends the Android application to work with a backend server, a local database (Room) for offline capabilities, and a C++ server that must be run alongside the Node.js server.
 Users can upload, view, and manage videos while ensuring data sync between local and remote storage when network connectivity is available.
 
 ## Key Changes in This Version
+- **C++ Server Integration**: A C++ server is now involved in the video processing pipeline. Make sure the C++ server is running before starting the Node.js server.
+ ### Previous changes:
 - **Server Integration**: The app now interacts with a Node.js/Express backend server, using MongoDB for data storage and Multer for file uploads.
 - **Offline Mode with Room**: Added Room for local data persistence, enabling offline support for videos list and comments.
 - **Retrofit**: Used for API requests to the server, including video uploads, comments, user authentication, and other features.
@@ -24,8 +26,8 @@ Users can upload, view, and manage videos while ensuring data sync between local
     ```
    Make sure to replace 111.111.1.111 with your actual IP address.
    Note: If a physical Android device is connected, make sure it is connected to the same internet network as the computer running the server.
-6. Ensure the backend server is running (you can find the server project with instructions in this link: https://github.com/hilaelpeleg/-UniTube--Server).
-   
+6. Run the C++ server following the instructions found [here](https://github.com/OrelShai/-UniTube--Server-cpp). Ensure the C++ server is up and running before starting the Node.js server.
+7. Run the Node.js server following the instructions found [here](https://github.com/hilaelpeleg/-UniTube--Server).
 
 ## Features ✨
 ### Server Integration 🌐
@@ -59,14 +61,17 @@ all basic classes and their usage are explained in the main branch README for pa
 ## Server Interaction 📡
 The app interacts with a Node.js/Express server for all backend functionality. This includes user authentication, video and comment management, and profile picture uploads.
 For server setup, please refer to the backend README.
+In addition, a C++ server handles generating and providing recommended videos based on user activity and preferences.
 
 ## Additional Features
 - **Offline Mode**: Full support for offline video browsing and commenting.
 - **Profile Picture Uploads**: Users can upload profile pictures from the gallery or camera. the files are stored on the server.
 - **Syncing Local and Server Data**: after a successful response from the server, the data is stored in the local database for offline use.
 
-## Installation and Setup for Server
-Follow the instructions from the Server README for backend setup, including environment variables and MongoDB setup in the following link: https://github.com/hilaelpeleg/-UniTube--Server
+## Installation and Setup for Servers
+Follow the instructions from the Servers README for backend setup, including environment variables and MongoDB setup in the following links:
+- **node.js server**: https://github.com/hilaelpeleg/-UniTube--Server
+- **c++ server**: https://github.com/OrelShai/-UniTube--Server-cpp
 
 ## Detailed Features & Screenshots 📱
 For a detailed explanation of the app's features, functionality, and screenshots illustrating the user interface, refer to the `main` branch.
