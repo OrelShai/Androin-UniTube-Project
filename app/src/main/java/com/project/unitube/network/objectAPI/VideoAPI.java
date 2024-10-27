@@ -16,11 +16,15 @@ import com.project.unitube.network.interfaceAPI.VideoWebServiceAPI;
 import com.project.unitube.utils.helper.EditVideoRequest;
 import com.project.unitube.utils.helper.VideoUploadRequest;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -115,7 +119,6 @@ public class VideoAPI {
 
         return videoData;
     }
-
 
     public LiveData<List<Video>> getUserVideos(String username) {
         MutableLiveData<List<Video>> videosLiveData = new MutableLiveData<>();
@@ -230,7 +233,6 @@ public class VideoAPI {
         return videoLiveData;
     }
 
-
     public LiveData<Boolean> deleteVideo(String userName, int videoId) {
         MutableLiveData<Boolean> result = new MutableLiveData<>();
         videoWebServiceAPI.deleteVideo(userName, videoId).enqueue(new Callback<Void>() {
@@ -304,9 +306,14 @@ public class VideoAPI {
         return videoData;
     }
 
-    public LiveData<Video> incrementVideoViews(int videoId) {
+    public LiveData<Video> incrementVideoViews(int videoId, String userName) {
         MutableLiveData<Video> videoData = new MutableLiveData<>();
-        videoWebServiceAPI.incrementVideoViews(videoId).enqueue(new Callback<Video>() {
+
+        // Create the request body with the userName
+        JsonObject requestBody = new JsonObject();
+        requestBody.addProperty("userName", userName);
+
+        videoWebServiceAPI.incrementVideoViews(videoId, requestBody).enqueue(new Callback<Video>() {
             @Override
             public void onResponse(Call<Video> call, Response<Video> response) {
                 if (response.isSuccessful() && response.body() != null) {
@@ -321,6 +328,7 @@ public class VideoAPI {
                 videoData.postValue(null);
             }
         });
+
         return videoData;
     }
 
@@ -374,5 +382,33 @@ public class VideoAPI {
         });
 
         return highestIdLiveData;
+    }
+
+    public LiveData<List<Video>> getRecommendedVideos(String username, int videoId) {
+        MutableLiveData<List<Video>> recommendedVideosData = new MutableLiveData<>();
+
+        Call<List<Video>> call = videoWebServiceAPI.getRecommendedVideos(username, videoId);
+        call.enqueue(new Callback<List<Video>>() {
+            @Override
+            public void onResponse(Call<List<Video>> call, Response<List<Video>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    // Update Room with the new list of recommended videos in new thread
+                    new Thread(() -> {
+                        List<Video> recommendedVideos = response.body();
+                        //videoDao.insertRecommendedVideos(recommendedVideos);
+                    }).start();
+
+                    // Update LiveData with the new list of recommended videos
+                    recommendedVideosData.postValue(response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Video>> call, Throwable t) {
+                recommendedVideosData.postValue(new ArrayList<>());
+            }
+        });
+
+        return recommendedVideosData;
     }
 }
