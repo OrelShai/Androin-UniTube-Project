@@ -102,7 +102,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
     private void initializeViewModels() {
         userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
         videoViewModel = new ViewModelProvider(this).get(VideoViewModel.class);
@@ -475,6 +474,7 @@ public class MainActivity extends AppCompatActivity {
                         .circleCrop()
                         .placeholder(R.drawable.default_profile) // Placeholder in case of loading issues
                         .into(currentUserProfilePic);
+
             } else {
                 Uri profilePhotoUri = Uri.parse(currentUser.getProfilePicture());
 
@@ -484,6 +484,7 @@ public class MainActivity extends AppCompatActivity {
                         .circleCrop()
                         .placeholder(R.drawable.default_profile) // Placeholder in case of loading issues
                         .into(currentUserProfilePic);
+
             }
 
             currentUserProfilePic.setOnClickListener(view -> {

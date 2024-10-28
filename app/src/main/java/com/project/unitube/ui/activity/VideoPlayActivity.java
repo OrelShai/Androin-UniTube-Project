@@ -36,6 +36,7 @@ import com.project.unitube.utils.manager.CommentManager;
 import com.project.unitube.utils.manager.VideoContentManager;
 import com.project.unitube.viewmodel.VideoViewModel;
 import com.project.unitube.viewmodel.CommentViewModel;
+import com.project.unitube.utils.manager.UserManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -136,9 +137,16 @@ public class VideoPlayActivity extends AppCompatActivity implements CommentAdapt
             videoViewModel.getVideoByID(userId, videoId).observe(this, video -> {
                 if (video != null) {
                     currentVideo = video;  // Set the current video once it's loaded
+                    // Get current user, or use "guest" if no user is logged in
+                    String userName;
+                    try {
+                        userName = UserManager.getInstance().getCurrentUser().getUserName();
+                    } catch (NullPointerException e) {
+                        userName = "guest";
+                    }
 
                     // Increment view count
-                    incrementViewCount(videoId);
+                    incrementViewCount(videoId, userName);
 
                     // Call methods to handle video loading and UI updates
                     loadVideo();
@@ -154,8 +162,8 @@ public class VideoPlayActivity extends AppCompatActivity implements CommentAdapt
         }
     }
 
-    private void incrementViewCount(int videoId) {
-        videoViewModel.incrementVideoViews(videoId).observe(this, updatedVideo -> {
+    private void incrementViewCount(int videoId, String userName) {
+        videoViewModel.incrementVideoViews(videoId, userName).observe(this, updatedVideo -> {
             if (updatedVideo != null) {
                 // Update the current video with the new view count
                 currentVideo = updatedVideo;
@@ -224,15 +232,20 @@ public class VideoPlayActivity extends AppCompatActivity implements CommentAdapt
     private void initializeRecommendedVideos() {
         recommendedVideosRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         VideoAdapter videoAdapter = new VideoAdapter(this);
-        videoViewModel.getVideos().observe(this, videos -> {
-            // Filter out the current video
-            List<Video> filteredVideos = videos.stream()
-                    .filter(video -> video.getId() != currentVideo.getId())
-                    .collect(Collectors.toList());
 
-            videoAdapter.setVideos(filteredVideos);
+        // Get current user, or use "guest" if no user is logged in
+        String username;
+        try {
+            username = UserManager.getInstance().getCurrentUser().getUserName();
+        } catch (NullPointerException e) {
+            username = "guest";
+        }
+
+        // Observe recommended videos instead of all videos
+        videoViewModel.getRecommendedVideos(username, currentVideo.getId()).observe(this, recommendedVideos -> {
+            videoAdapter.setVideos(recommendedVideos);
         });
-        videoViewModel.getVideos();
+
         recommendedVideosRecyclerView.setAdapter(videoAdapter);
     }
 

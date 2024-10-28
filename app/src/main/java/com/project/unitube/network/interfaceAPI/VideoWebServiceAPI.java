@@ -3,6 +3,8 @@ import com.google.gson.JsonObject;
 import com.project.unitube.entities.Video;
 import com.project.unitube.utils.helper.EditVideoRequest;
 
+import org.json.JSONObject;
+
 import java.util.List;
 
 import okhttp3.MultipartBody;
@@ -32,7 +34,7 @@ public interface VideoWebServiceAPI {
     Call<Video> toggleDislike(@Path("id") int videoId, @Body JsonObject body);
 
     @POST("api/videos/{id}/increment")
-    Call<Video> incrementVideoViews(@Path("id") int videoId);
+    Call<Video> incrementVideoViews(@Path("id") int videoId, @Body JsonObject requestBody);
 
     @PUT("api/users/{userName}/videos/{videoId}")
     Call<Video> editVideo(
@@ -63,4 +65,7 @@ public interface VideoWebServiceAPI {
 
     @GET("api/videos/highest-id")
     Call<JsonObject> getHighestVideoId();
+
+    @GET("api/videos/{videoId}/recommendations/{username}/")
+    Call<List<Video>> getRecommendedVideos(@Path("username") String username, @Path("videoId") int videoId);
 }

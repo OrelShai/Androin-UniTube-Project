@@ -25,10 +25,12 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.project.unitube.R;
 import com.project.unitube.Unitube;
+import com.project.unitube.entities.User;
 import com.project.unitube.entities.Video;
 import com.project.unitube.network.RetroFit.RetrofitClient;
 import com.project.unitube.ui.activity.UserPageActivity;
 import com.project.unitube.ui.activity.VideoPlayActivity;
+import com.project.unitube.utils.manager.UserManager;
 import com.project.unitube.viewmodel.UserViewModel;
 
 import java.util.ArrayList;
@@ -38,7 +40,7 @@ import retrofit2.Retrofit;
 
 public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHolder> {
     private final Context context;
-    private List<Video> videos = new ArrayList<>();
+    private List<Video> videos = new ArrayList<>();;
 
     public void setVideos(List<Video> videos) {
         this.videos = videos;
@@ -59,6 +61,8 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
     @Override
     public void onBindViewHolder(@NonNull VideoViewHolder holder, int position) {
         Video video = videos.get(position);
+
+        Log.d("loadThumbnail", "thumbnail: " + video.getThumbnailUrl());
 
         setTextViews(holder, video);
         String thumbnailUrl = video.getThumbnailUrl();
@@ -118,6 +122,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
             }
         });
     }
+
     @Override
     public int getItemCount() {
         return videos.size(); // Using the filtered list size

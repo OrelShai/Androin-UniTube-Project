@@ -73,11 +73,10 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:src="@drawable/ic_search"
-                android:layout_marginEnd="8dp"
-                app:tint="?attr/colorOnPrimary"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"/>
+                app:tint="?attr/colorOnPrimary" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <!-- לוגו האפליקציה -->
@@ -87,7 +86,6 @@
             android:layout_height="60dp"
             android:contentDescription="@string/app_name"
             android:src="@drawable/unitube_logo"
-            android:scaleType="fitXY"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"

@@ -47,8 +47,8 @@ public class VideoViewModel extends ViewModel {
         return videoRepository.toggleDislike(videoId, userName);
     }
 
-    public LiveData<Video> incrementVideoViews(int videoId) {
-        return videoRepository.incrementVideoViews(videoId);
+    public LiveData<Video> incrementVideoViews(int videoId, String userName) {
+        return videoRepository.incrementVideoViews(videoId, userName);
     }
 
     public LiveData<Video> editVideo(String userId, int videoId, String newTitle, String newDescription) {
@@ -64,14 +64,14 @@ public class VideoViewModel extends ViewModel {
     }
 
     public LiveData<Video> uploadVideo(String userName, VideoUploadRequest request, File videoFile, File thumbnailFile) {
-        Log.d("uploadVideo", "VideoViewModel- Uploading video for user: " + userName);
-        Log.d("uploadVideo", "VideoViewModel- Video upload request: " + request);
-        Log.d("uploadVideo", "VideoViewModel- Video file path: " + videoFile.getPath());
-        Log.d("uploadVideo", "VideoViewModel- Thumbnail file path: " + thumbnailFile.getPath());
         return videoRepository.uploadVideo(userName, request, videoFile, thumbnailFile);
     }
 
     public LiveData<Integer> getHighestVideoId() {
         return videoRepository.getHighestVideoId();
+    }
+
+    public LiveData<List<Video>> getRecommendedVideos(String username, int videoId) {
+        return videoRepository.getRecommendedVideos(username, videoId);
     }
 }

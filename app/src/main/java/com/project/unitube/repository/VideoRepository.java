@@ -50,8 +50,8 @@ public class VideoRepository {
         return videoAPI.toggleDislike(videoId, userName);
     }
 
-    public LiveData<Video> incrementVideoViews(int videoId) {
-        return videoAPI.incrementVideoViews(videoId);
+    public LiveData<Video> incrementVideoViews(int videoId, String userName) {
+        return videoAPI.incrementVideoViews(videoId, userName);
     }
 
     public LiveData<Video> editVideo(String userId, int videoId, String newTitle, String newDescription) {
@@ -68,6 +68,10 @@ public class VideoRepository {
 
     public LiveData<Integer> getHighestVideoId() {
         return videoAPI.getHighestVideoId();
+    }
+
+    public LiveData<List<Video>> getRecommendedVideos(String username, int videoId){
+        return videoAPI.getRecommendedVideos(username, videoId);
     }
 
     class VideoListData extends MutableLiveData<List<Video>> {
