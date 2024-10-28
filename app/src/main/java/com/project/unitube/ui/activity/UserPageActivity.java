@@ -21,6 +21,8 @@ import com.project.unitube.network.RetroFit.RetrofitClient;
 import com.project.unitube.ui.adapter.VideoAdapter;
 import com.project.unitube.viewmodel.VideoViewModel;
 
+import java.util.ArrayList;
+
 public class UserPageActivity extends AppCompatActivity {
 
     private static final String TAG = "UserPageActivity";
@@ -48,6 +50,28 @@ public class UserPageActivity extends AppCompatActivity {
 
         // Set up RecyclerView
         setupRecyclerView();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        initializeVideosToShow(); // Ensure the videos list is updated
+        videoAdapter.notifyDataSetChanged(); // Refresh the adapter
+    }
+
+    private void initializeVideosToShow() {
+        // Fetch user videos
+        String username = user.getUserName();
+        videoViewModel.getUserVideos(username).observe(this, videos -> {
+            if (videos != null && !videos.isEmpty()) {
+                Log.d(TAG, "setupRecyclerView: Received " + videos.size() + " videos for user " + username);
+                videoAdapter.setVideos(videos);
+            } else {
+                Log.d(TAG, "setupRecyclerView: No videos found for user " + username);
+                // No need to show an error toast, as the user may simply have no videos
+                videoAdapter.setVideos(new ArrayList<>());
+            }
+        });
     }
 
     private void initializeUIComponents() {
@@ -110,17 +134,7 @@ public class UserPageActivity extends AppCompatActivity {
         // Initialize VideoViewModel
         videoViewModel = new ViewModelProvider(this).get(VideoViewModel.class);
 
-        // Fetch user videos
-        String username = user.getUserName(); // Assuming you have a 'user' object
-        videoViewModel.getUserVideos(username).observe(this, videos -> {
-            if (videos != null) {
-                Log.d(TAG, "setupRecyclerView: Received " + videos.size() + " videos for user " + username);
-                videoAdapter.setVideos(videos);
-            } else {
-                Log.e(TAG, "setupRecyclerView: Failed to fetch videos for user " + username);
-                Toast.makeText(this, "Failed to load user videos", Toast.LENGTH_SHORT).show();
-            }
-        });
+        initializeVideosToShow();
 
         Log.d(TAG, "setupRecyclerView: RecyclerView setup complete");
     }
