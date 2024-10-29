@@ -7,6 +7,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -255,16 +256,18 @@ public class RegisterScreen extends AppCompatActivity  {
                 (dialog, which) -> {
                     switch (which) {
                         case 0:
-                            if (!hasStoragePermission()) {
+                            if (hasStoragePermission()) {
+                                pickImageFromGallery();
+                            } else {
                                 requestStoragePermission();
                             }
-                            pickImageFromGallery();
                             break;
                         case 1:
-                            if (!hasCameraPermission()) {
+                            if (hasCameraPermission()) {
+                                captureImageFromCamera();
+                            } else {
                                 requestCameraPermission();
                             }
-                            captureImageFromCamera();
                             break;
                     }
                 });
@@ -334,8 +337,13 @@ public class RegisterScreen extends AppCompatActivity  {
     }
 
     private boolean hasStoragePermission() {
-        return ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
-                && ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            return ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_IMAGES)
+                    == PackageManager.PERMISSION_GRANTED;
+        } else {
+            return ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                    == PackageManager.PERMISSION_GRANTED;
+        }
     }
 
     // Request camera permission
@@ -345,7 +353,15 @@ public class RegisterScreen extends AppCompatActivity  {
 
     // Request storage permissions
     private void requestStoragePermission() {
-        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, STORAGE_PERMISSION_CODE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.READ_MEDIA_IMAGES},
+                    STORAGE_PERMISSION_CODE);
+        } else {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                    STORAGE_PERMISSION_CODE);
+        }
     }
 
     // Handle permission request results
@@ -360,7 +376,7 @@ public class RegisterScreen extends AppCompatActivity  {
             }
         } else if (requestCode == STORAGE_PERMISSION_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                showImagePickerOptions();  // Proceed to show options if storage permission is granted
+                pickImageFromGallery();  // Proceed to show options if storage permission is granted
             } else {
                 Toast.makeText(this, "Storage permission denied", Toast.LENGTH_SHORT).show();
             }
