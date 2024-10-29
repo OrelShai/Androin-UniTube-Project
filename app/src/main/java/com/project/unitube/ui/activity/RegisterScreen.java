@@ -255,18 +255,16 @@ public class RegisterScreen extends AppCompatActivity  {
                 (dialog, which) -> {
                     switch (which) {
                         case 0:
-                            if (hasStoragePermission()) {
-                                pickImageFromGallery();
-                            } else {
-                                requestStoragePermission();  // Request storage permission
+                            if (!hasStoragePermission()) {
+                                requestStoragePermission();
                             }
+                            pickImageFromGallery();
                             break;
                         case 1:
-                            if (hasCameraPermission()) {
-                                captureImageFromCamera();
-                            } else {
-                                requestCameraPermission();  // Request camera permission
+                            if (!hasCameraPermission()) {
+                                requestCameraPermission();
                             }
+                            captureImageFromCamera();
                             break;
                     }
                 });
@@ -368,7 +366,6 @@ public class RegisterScreen extends AppCompatActivity  {
             }
         }
     }
-
 }
 
 

@@ -395,25 +395,20 @@ public class AddVideoScreen extends AppCompatActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Select Video Source");
         builder.setItems(new CharSequence[]{"Choose from Gallery", "Take a Video"},
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        switch (which) {
-                            case 0:
-                                if (checkStoragePermission()) {
-                                    pickVideoFromGallery();
-                                } else {
-                                    requestStoragePermission();
-                                }
-                                break;
-                            case 1:
-                                if (checkCameraPermission()) {
-                                    captureVideoFromCamera();
-                                } else {
-                                    requestCameraPermission();
-                                }
-                                break;
-                        }
+                (dialog, which) -> {
+                    switch (which) {
+                        case 0:
+                            if (!checkStoragePermission()) {
+                                requestStoragePermission();
+                            }
+                            pickVideoFromGallery();
+                            break;
+                        case 1:
+                            if (!checkCameraPermission()) {
+                                requestCameraPermission();
+                            }
+                            captureVideoFromCamera();
+                            break;
                     }
                 });
         builder.show();
