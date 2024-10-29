@@ -258,14 +258,16 @@ public class RegisterScreen extends AppCompatActivity  {
                         case 0:
                             if (hasStoragePermission()) {
                                 pickImageFromGallery();
+                            } else {
+                                requestStoragePermission();
                             }
-                            requestStoragePermission();
                             break;
                         case 1:
                             if (hasCameraPermission()) {
                                 captureImageFromCamera();
+                            } else {
+                                requestCameraPermission();
                             }
-                            requestCameraPermission();
                             break;
                     }
                 });
@@ -374,7 +376,7 @@ public class RegisterScreen extends AppCompatActivity  {
             }
         } else if (requestCode == STORAGE_PERMISSION_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                showImagePickerOptions();  // Proceed to show options if storage permission is granted
+                pickImageFromGallery();  // Proceed to show options if storage permission is granted
             } else {
                 Toast.makeText(this, "Storage permission denied", Toast.LENGTH_SHORT).show();
             }

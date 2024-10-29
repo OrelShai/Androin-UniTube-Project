@@ -179,13 +179,16 @@ public class AddVideoScreen extends AppCompatActivity {
 
                     // Create a VideoUploadRequest with the next video ID
                     int nextVideoId = highestId + 1;
+                    String profilePicture = UserManager.getInstance().getCurrentUser() != null
+                            ? UserManager.getInstance().getCurrentUser().getProfilePicture()
+                            : "default_profile_picture";
                     VideoUploadRequest request = new VideoUploadRequest(
                             nextVideoId,
                             videoTitle.getText().toString(),
                             videoDescription.getText().toString(),
                             new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date()),
                             duration,
-                            UserManager.getInstance().getCurrentUser().getProfilePicture()
+                            profilePicture
                     );
 
                     // Convert URIs to File objects
