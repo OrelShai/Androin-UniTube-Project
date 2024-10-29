@@ -70,7 +70,7 @@ In addition, a C++ server handles generating and providing recommended videos ba
 
 ## Installation and Setup for Servers
 Follow the instructions from the Servers README for backend setup, including environment variables and MongoDB setup in the following links:
-- **node.js server**: https://github.com/hilaelpeleg/-UniTube--Server
+- **node.js server**: https://github.com/hilaelpeleg/-UniTube--Server/tree/main-part-4
 - **c++ server**: https://github.com/OrelShai/-UniTube--Server-cpp
 
 ## Detailed Features & Screenshots 📱
