@@ -10,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -117,19 +118,31 @@ public class AddVideoScreen extends AppCompatActivity {
     }
 
     private boolean checkStoragePermission() {
-        return ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
-                && ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            return ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_IMAGES)
+                    == PackageManager.PERMISSION_GRANTED;
+        } else {
+            return ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                    == PackageManager.PERMISSION_GRANTED;
+        }
     }
 
     private void requestCameraPermission() {
-        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_REQUEST_CODE);
+        ActivityCompat.requestPermissions(this,
+                new String[]{Manifest.permission.CAMERA},
+                CAMERA_PERMISSION_REQUEST_CODE);
     }
 
     private void requestStoragePermission() {
-        ActivityCompat.requestPermissions(this, new String[]{
-                Manifest.permission.READ_EXTERNAL_STORAGE,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE
-        }, STORAGE_PERMISSION_REQUEST_CODE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.READ_MEDIA_IMAGES},
+                    STORAGE_PERMISSION_REQUEST_CODE);
+        } else {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                    STORAGE_PERMISSION_REQUEST_CODE);
+        }
     }
 
     @Override
@@ -245,16 +258,18 @@ public class AddVideoScreen extends AppCompatActivity {
                 (dialog, which) -> {
                     switch (which) {
                         case 0:
-                            if (!checkStoragePermission()) {
+                            if (checkStoragePermission()) {
+                                pickThumbnailFromGallery();
+                            } else {
                                 requestStoragePermission();
                             }
-                            pickThumbnailFromGallery();
                             break;
                         case 1:
-                            if (!checkCameraPermission()) {
+                            if (checkCameraPermission()) {
+                                captureThumbnailFromCamera();
+                            } else {
                                 requestCameraPermission();
                             }
-                            captureThumbnailFromCamera();
                             break;
                     }
                 });
@@ -398,16 +413,18 @@ public class AddVideoScreen extends AppCompatActivity {
                 (dialog, which) -> {
                     switch (which) {
                         case 0:
-                            if (!checkStoragePermission()) {
+                            if (checkStoragePermission()) {
+                                pickVideoFromGallery();
+                            } else {
                                 requestStoragePermission();
                             }
-                            pickVideoFromGallery();
                             break;
                         case 1:
-                            if (!checkCameraPermission()) {
+                            if (checkCameraPermission()) {
+                                captureVideoFromCamera();
+                            } else {
                                 requestCameraPermission();
                             }
-                            captureVideoFromCamera();
                             break;
                     }
                 });
