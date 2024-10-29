@@ -74,9 +74,5 @@ Follow the instructions from the Servers README for backend setup, including env
 - **c++ server**: https://github.com/OrelShai/-UniTube--Server-cpp
 
 ## Detailed Features & Screenshots 📱
-For a detailed explanation of the app's features, functionality, and screenshots illustrating the user interface, refer to the `main` branch.
-The `main` branch includes visual examples and guides on how each feature works.
-
-
-
-
+For a detailed explanation of the app's features, functionality, and screenshots illustrating the user interface, refer to wiki in the following link:
+https://github.com/OrelShai/-UniTube--Server-cpp/wiki/4.-App:-End%E2%80%90to%E2%80%90end-Examples
